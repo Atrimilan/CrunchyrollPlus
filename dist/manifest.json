@@ -1,0 +1,48 @@
+{
+    "name": "Crunchyroll Plus",
+    "description": "Enhance your Crunchyroll experience with the Crunchyroll Plus extension",
+    "author": "Milan NICOLAS",
+    "version": "1.0",
+    "manifest_version": 3,
+    "permissions": [
+        "storage",
+        "activeTab"
+    ],
+    "content_scripts": [
+        {
+            "matches": [
+                "https://static.crunchyroll.com/vilos-v2/web/vilos/player.html*"
+            ],
+            "exclude_matches": [
+              "https://www.crunchyroll.com/forum*"
+            ],
+            "all_frames": true,
+            "js": [
+                "js/jquery-3.6.0.min.js",
+                "js/crp-player.js"
+            ],
+            "css":[
+                "css/crp-player.css"
+            ]
+        },
+        {
+            "matches": [
+                "https://beta.crunchyroll.com/*",
+                "https://www.crunchyroll.com/*"
+            ],
+            "exclude_matches": [
+              "https://www.crunchyroll.com/forum*"
+            ],
+            "all_frames": true,
+            "js": [
+                "js/jquery-3.6.0.min.js"
+            ]
+        }
+    ],
+    "action": {
+        "default_popup": "popup.html"
+    },
+    "background": {
+        "service_worker": "js/background.js"
+    }
+}

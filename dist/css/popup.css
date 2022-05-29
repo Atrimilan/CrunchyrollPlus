@@ -1,0 +1,27 @@
+body {
+  background-color: rgb(92, 92, 95);
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  color: white;
+  text-shadow: 1px 1px 5px rgb(45, 45, 47), 0 0 1em rgb(45, 45, 47), 0 0 0.2em rgb(45, 45, 47);
+  height: 200px;
+  width: 300px;
+  position: relative;
+  margin: auto;
+}
+
+h1 {
+  margin: 0;
+  text-align: center;
+}
+
+.wrapper {
+  /* Prevent user to select text */
+  -moz-user-select: none;
+  /* Firefox */
+  -webkit-user-select: none;
+  /* Chrome, Safari, Opera from version 15 */
+  -ms-user-select: none;
+  /* Internet Explorer from version 10 and Edge */
+  user-select: none;
+  /* Standard property */
+}
