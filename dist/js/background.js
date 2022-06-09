@@ -49,10 +49,10 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
 
 /***/ }),
 
-/***/ "./assets/sass/popup.scss":
-/*!********************************!*\
-  !*** ./assets/sass/popup.scss ***!
-  \********************************/
+/***/ "./assets/sass/default_popup.scss":
+/*!****************************************!*\
+  !*** ./assets/sass/default_popup.scss ***!
+  \****************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
@@ -149,7 +149,7 @@ __webpack_require__.r(__webpack_exports__);
 /******/ 		// [resolve, reject, Promise] = chunk loading, 0 = chunk loaded
 /******/ 		var installedChunks = {
 /******/ 			"/dist/js/background": 0,
-/******/ 			"dist/css/popup": 0
+/******/ 			"dist/css/default_popup": 0
 /******/ 		};
 /******/ 		
 /******/ 		// no chunk on demand loading
@@ -199,8 +199,8 @@ __webpack_require__.r(__webpack_exports__);
 /******/ 	// startup
 /******/ 	// Load entry module and return exports
 /******/ 	// This entry module depends on other loaded chunks and execution need to be delayed
-/******/ 	__webpack_require__.O(undefined, ["dist/css/popup"], () => (__webpack_require__("./assets/js/background.js")))
-/******/ 	var __webpack_exports__ = __webpack_require__.O(undefined, ["dist/css/popup"], () => (__webpack_require__("./assets/sass/popup.scss")))
+/******/ 	__webpack_require__.O(undefined, ["dist/css/default_popup"], () => (__webpack_require__("./assets/js/background.js")))
+/******/ 	var __webpack_exports__ = __webpack_require__.O(undefined, ["dist/css/default_popup"], () => (__webpack_require__("./assets/sass/default_popup.scss")))
 /******/ 	__webpack_exports__ = __webpack_require__.O(__webpack_exports__);
 /******/ 	
 /******/ })()

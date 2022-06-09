@@ -1,13 +1,13 @@
 body {
-    background-color: rgb(92, 92, 95);
+    background-color: #000000;
     font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
     color: white;
     text-shadow: 1px 1px 5px rgb(45, 45, 47), 0 0 1em rgb(45, 45, 47), 0 0 0.2em rgb(45, 45, 47);
 
-    height: 200px;
+    height: fit-content;
     width: 300px;
     position: relative;
-    margin: auto;
+    margin: 0;
 }
 
 h1 {
@@ -21,4 +21,42 @@ h1 {
     -webkit-user-select: none; /* Chrome, Safari, Opera from version 15 */
     -ms-user-select: none; /* Internet Explorer from version 10 and Edge */
     user-select: none; /* Standard property */
+
+    margin: 5% 0;
+}
+
+header,
+footer {
+  text-align: center;
+  padding: 3%;
+  background-color: #23252b;
+  border-bottom: 1px solid #141519;
+}
+
+header > * {
+  margin: 1%;
+}
+
+footer {
+  height: fit-content;
+  display: flex;
+  justify-content: space-between;
+  padding : 2% 3%;
+}
+footer > * {
+  color: #717171;
+  text-decoration: none;
+  font-size: 11px;
+  margin: 0;
+}
+#github-link:hover {
+  color: #a0a0a0;
+}
+
+.icon {
+  width: 15%;
+}
+
+.logo {
+  width: 75%;
 }
