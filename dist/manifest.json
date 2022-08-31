@@ -2,7 +2,7 @@
     "name": "Crunchyroll Plus",
     "description": "Enhance your Crunchyroll experience with the Crunchyroll Plus extension",
     "author": "Milan NICOLAS",
-    "version": "1.0",
+    "version": "1.0.0",
     "manifest_version": 3,
     "icons": {
         "16": "./images/icons/crp_icon_16.png",
@@ -12,7 +12,8 @@
     },
     "permissions": [
         "storage",
-        "activeTab"
+        "activeTab",
+        "tabs"
     ],
     "content_scripts": [
         {
@@ -24,7 +25,6 @@
             ],
             "all_frames": true,
             "js": [
-                "js/jquery-3.6.0.min.js",
                 "js/crp-player.js"
             ],
             "css": [
@@ -41,7 +41,10 @@
             ],
             "all_frames": true,
             "js": [
-                "js/jquery-3.6.0.min.js"
+                "js/crp-player.js"
+            ],
+            "css": [
+                "css/crp-player.css"
             ]
         }
     ],

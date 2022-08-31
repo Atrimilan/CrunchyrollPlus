@@ -60,6 +60,19 @@ __webpack_require__.r(__webpack_exports__);
 // extracted by mini-css-extract-plugin
 
 
+/***/ }),
+
+/***/ "./assets/sass/crp-player.scss":
+/*!*************************************!*\
+  !*** ./assets/sass/crp-player.scss ***!
+  \*************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+// extracted by mini-css-extract-plugin
+
+
 /***/ })
 
 /******/ 	});
@@ -149,6 +162,7 @@ __webpack_require__.r(__webpack_exports__);
 /******/ 		// [resolve, reject, Promise] = chunk loading, 0 = chunk loaded
 /******/ 		var installedChunks = {
 /******/ 			"/dist/js/background": 0,
+/******/ 			"dist/css/crp-player": 0,
 /******/ 			"dist/css/default_popup": 0
 /******/ 		};
 /******/ 		
@@ -199,8 +213,9 @@ __webpack_require__.r(__webpack_exports__);
 /******/ 	// startup
 /******/ 	// Load entry module and return exports
 /******/ 	// This entry module depends on other loaded chunks and execution need to be delayed
-/******/ 	__webpack_require__.O(undefined, ["dist/css/default_popup"], () => (__webpack_require__("./assets/js/background.js")))
-/******/ 	var __webpack_exports__ = __webpack_require__.O(undefined, ["dist/css/default_popup"], () => (__webpack_require__("./assets/sass/default_popup.scss")))
+/******/ 	__webpack_require__.O(undefined, ["dist/css/crp-player","dist/css/default_popup"], () => (__webpack_require__("./assets/js/background.js")))
+/******/ 	__webpack_require__.O(undefined, ["dist/css/crp-player","dist/css/default_popup"], () => (__webpack_require__("./assets/sass/default_popup.scss")))
+/******/ 	var __webpack_exports__ = __webpack_require__.O(undefined, ["dist/css/crp-player","dist/css/default_popup"], () => (__webpack_require__("./assets/sass/crp-player.scss")))
 /******/ 	__webpack_exports__ = __webpack_require__.O(__webpack_exports__);
 /******/ 	
 /******/ })()
