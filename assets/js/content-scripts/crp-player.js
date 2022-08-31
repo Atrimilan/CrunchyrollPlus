@@ -1,11 +1,4 @@
 
-// Add JQuery to the page
-var script = document.createElement('script');
-script.src = 'https://code.jquery.com/jquery-3.6.0.min.js';
-document.getElementsByTagName('head')[0].appendChild(script);
-
-
-
 chrome.runtime.sendMessage({ type: "time" }, function (response) {
     console.log(response.message);
 });
@@ -121,7 +114,7 @@ function ObserveVideoPlayer() {
 }
 
 delay(1000).then(() => {
-    console.clear();
+    //console.clear();
     let color = '#f47521';
     console.log("%cCrunchyroll PLUS", `color: ${color}`);
 });

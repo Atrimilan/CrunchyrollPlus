@@ -9,10 +9,6 @@ function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o =
 
 function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
 
-// Add JQuery to the page
-var script = document.createElement('script');
-script.src = 'https://code.jquery.com/jquery-3.6.0.min.js';
-document.getElementsByTagName('head')[0].appendChild(script);
 chrome.runtime.sendMessage({
   type: "time"
 }, function (response) {
@@ -177,7 +173,7 @@ function ObserveVideoPlayer() {
 }
 
 delay(1000).then(function () {
-  console.clear();
+  //console.clear();
   var color = '#f47521';
   console.log("%cCrunchyroll PLUS", "color: ".concat(color));
 });
