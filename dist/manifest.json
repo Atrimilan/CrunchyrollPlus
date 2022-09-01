@@ -41,10 +41,7 @@
             ],
             "all_frames": true,
             "js": [
-                "js/crp-player.js"
-            ],
-            "css": [
-                "css/crp-player.css"
+                "js/crp-page.js"
             ]
         }
     ],
