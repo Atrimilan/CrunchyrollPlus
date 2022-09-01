@@ -42,6 +42,9 @@
             "all_frames": true,
             "js": [
                 "js/crp-page.js"
+            ],
+            "css": [
+                "css/crp-page.css"
             ]
         }
     ],

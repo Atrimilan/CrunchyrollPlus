@@ -3,6 +3,7 @@
     "/dist/js/popup.js": "/dist/js/popup.js",
     "/dist/js/crp-player.js": "/dist/js/crp-player.js",
     "/dist/js/crp-page.js": "/dist/js/crp-page.js",
+    "/dist/css/crp-page.css": "/dist/css/crp-page.css",
     "/dist/css/crp-player.css": "/dist/css/crp-player.css",
     "/dist/css/default_popup.css": "/dist/css/default_popup.css"
 }

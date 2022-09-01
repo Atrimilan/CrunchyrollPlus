@@ -16,6 +16,7 @@ var __webpack_exports__ = {};
 var playerParent = document.getElementById('velocity-controls-package');
 var controlsContainer = null; // Because the #vilosControlsContainer div is not loaded yet
 
+var playerObserver = null;
 var controlsContainerObserver = null;
 ObserveVideoPlayer(); // Video player observer
 
@@ -78,10 +79,12 @@ function ObserveControlsContainer() {
 
 
 function LoadCrpTools() {
-  var div = document.createElement("div");
-  div.classList.add('crpPlayer');
-  div.id = 'crunchyrollPlusDiv';
-  controlsContainer.children[0].children[0].children[1].children[2].children[0].appendChild(div);
+  var crpTool = document.createElement("div");
+  crpTool.classList.add('crpTools');
+  crpTool.id = 'moveForward';
+  controlsContainer.children[0].children[0].children[1].children[2].children[0].appendChild(crpTool.cloneNode(true));
+  crpTool.id = 'moveBackward';
+  controlsContainer.children[0].children[0].children[1].children[2].children[0].appendChild(crpTool.cloneNode(true));
 }
 
 chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {

@@ -7,6 +7,7 @@ mix.setPublicPath('./')
     .js('assets/js/content-scripts/crp-player.js', 'dist/js')   // Content-script : crp-player
     .sass('assets/sass/crp-player.scss', 'dist/css')            // Content-script style : crp-player
     .js('assets/js/content-scripts/crp-page.js', 'dist/js')     // Content-script : crp-page
+    .sass('assets/sass/crp-page.scss', 'dist/css')            // Content-script style : crp-page
     .options({
         processCssUrls: false
     });
