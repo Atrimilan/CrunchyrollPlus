@@ -3,6 +3,18 @@ var __webpack_exports__ = {};
 /*!*************************************************!*\
   !*** ./assets/js/content-scripts/crp-player.js ***!
   \*************************************************/
+function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _unsupportedIterableToArray(arr) || _nonIterableSpread(); }
+
+function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
+
+function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
+
+function _iterableToArray(iter) { if (typeof Symbol !== "undefined" && iter[Symbol.iterator] != null || iter["@@iterator"] != null) return Array.from(iter); }
+
+function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) return _arrayLikeToArray(arr); }
+
+function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
+
 /*
  * Notes about the default Crunchyroll video player [id: velocity-controls-package]
  *
@@ -76,48 +88,67 @@ function ObserveControlsContainer() {
 
 function LoadCrpTools() {
   if (controlsContainer.firstChild.hasChildNodes()) {
-    var crpTool = document.createElement("button");
-    crpTool.classList.add('crpTools'); // Move backward button
+    // Controls on the left of the player
+    var leftControls = controlsContainer.querySelector("[data-testid='vilos-play_pause_button']").parentNode.parentNode; // let rightControls = controlsContainer.querySelector("#settingsControl").parentNode;
+    // Move backward button
 
-    moveBackward = crpTool.cloneNode(true);
-    moveBackward.id = 'moveBackward';
-    moveBackward.addEventListener("click", function (event) {
-      event.stopPropagation();
+    var moveBackward = CreateCrpTool('moveBackward', ['crpTools'], 'moveBackward.svg');
+    moveBackward.addEventListener("click", function () {
       chrome.runtime.sendMessage({
         type: "time"
       }, function (response) {
         video.currentTime -= ~~response.message;
       });
-    });
-    controlsContainer.children[0].children[0].children[1].children[2].children[0].appendChild(moveBackward); // Move forward button
+    }); // Move forward button
 
-    moveForward = crpTool.cloneNode(true);
-    moveForward.id = 'moveForward';
-    moveForward.addEventListener("click", function (event) {
-      event.stopPropagation(); // Prevent click propagation (it would pause/resume the video)
-
+    var moveForward = CreateCrpTool('moveForward', ['crpTools'], 'moveForward.svg');
+    moveForward.addEventListener("click", function () {
       chrome.runtime.sendMessage({
         type: "time"
       }, function (response) {
         video.currentTime += ~~response.message;
       });
-    });
-    controlsContainer.children[0].children[0].children[1].children[2].children[0].appendChild(moveForward); // Sound booster button:
+    }); // Sound booster button (https://developer.mozilla.org/en-US/docs/Web/API/AudioContext/createMediaElementSource)
 
-    soundBooster = crpTool.cloneNode(true);
-    soundBooster.id = 'soundBooster';
-    soundBooster.addEventListener("click", function (event) {
-      event.stopPropagation(); // https://developer.mozilla.org/en-US/docs/Web/API/AudioContext/createMediaElementSource
-
+    var soundBooster = CreateCrpTool('soundBoosterOff', ['crpTools'], 'soundBoosterOff.svg');
+    soundBooster.addEventListener("click", function () {
       var audioCtx = new AudioContext();
       var source = audioCtx.createMediaElementSource(video);
       var gainNode = audioCtx.createGain();
-      gainNode.gain.value = 2;
+      gainNode.gain.value = 5;
       source.connect(gainNode);
       gainNode.connect(audioCtx.destination);
-    });
-    controlsContainer.children[0].children[0].children[1].children[2].children[0].appendChild(soundBooster);
+    }); // Append all CrunchyrollPlus controls
+
+    leftControls.appendChild(moveBackward);
+    leftControls.appendChild(moveForward);
+    leftControls.appendChild(soundBooster);
   }
+} // Create a default CrunchyrollPlus control
+
+
+function CreateCrpTool(id, classList, imageWithExtension) {
+  var _crpTool$classList;
+
+  var crpTool = document.createElement("button");
+
+  (_crpTool$classList = crpTool.classList).add.apply(_crpTool$classList, _toConsumableArray(classList));
+
+  crpTool.id = id;
+  crpTool.appendChild(CreateCrpImg("".concat(id, "Img"), imageWithExtension));
+  crpTool.addEventListener("click", function (event) {
+    event.stopPropagation(); // Prevent click propagation (it would pause/resume the video)
+  });
+  return crpTool;
+} // Create an image (for a CrunchyrollPlus control)
+
+
+function CreateCrpImg(id, imageWithExtension) {
+  var crpImg = document.createElement('img');
+  crpImg.id = id;
+  crpImg.src = chrome.runtime.getURL("images/controls/".concat(imageWithExtension)); // Requires web_accessible_resources in the manifest
+
+  return crpImg;
 } // Messages received from Popup
 
 

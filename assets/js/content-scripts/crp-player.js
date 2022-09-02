@@ -76,49 +76,69 @@ function ObserveControlsContainer() {
 
 // CrunchyrollPlus controls initializer
 function LoadCrpTools() {
+
     if (controlsContainer.firstChild.hasChildNodes()) {
-        let crpTool = document.createElement("button");
-        crpTool.classList.add('crpTools');
+        // Controls on the left of the player
+        let leftControls = controlsContainer.querySelector("[data-testid='vilos-play_pause_button']").parentNode.parentNode;
+        // let rightControls = controlsContainer.querySelector("#settingsControl").parentNode;
 
         // Move backward button
-        moveBackward = crpTool.cloneNode(true);
-        moveBackward.id = 'moveBackward';
-        moveBackward.addEventListener("click", (event) => {
-            event.stopPropagation();
+        let moveBackward = CreateCrpTool('moveBackward', ['crpTools'], 'moveBackward.svg');
+        moveBackward.addEventListener("click", () => {
             chrome.runtime.sendMessage({ type: "time" }, function (response) {
                 video.currentTime -= ~~response.message;
             });
         });
-        controlsContainer.children[0].children[0].children[1].children[2].children[0].appendChild(moveBackward);
 
         // Move forward button
-        moveForward = crpTool.cloneNode(true);
-        moveForward.id = 'moveForward';
-        moveForward.addEventListener("click", (event) => {
-            event.stopPropagation();    // Prevent click propagation (it would pause/resume the video)
+        let moveForward = CreateCrpTool('moveForward', ['crpTools'], 'moveForward.svg');
+        moveForward.addEventListener("click", () => {
             chrome.runtime.sendMessage({ type: "time" }, function (response) {
                 video.currentTime += ~~response.message;
             });
         });
-        controlsContainer.children[0].children[0].children[1].children[2].children[0].appendChild(moveForward);
-        
-        // Sound booster button:
-        soundBooster = crpTool.cloneNode(true);
-        soundBooster.id = 'soundBooster';
-        soundBooster.addEventListener("click", (event) => {
-            event.stopPropagation();
 
-            // https://developer.mozilla.org/en-US/docs/Web/API/AudioContext/createMediaElementSource
+        // Sound booster button (https://developer.mozilla.org/en-US/docs/Web/API/AudioContext/createMediaElementSource)
+        let soundBooster = CreateCrpTool('soundBoosterOff', ['crpTools'], 'soundBoosterOff.svg');
+        soundBooster.addEventListener("click", () => {
             const audioCtx = new AudioContext();
             let source = audioCtx.createMediaElementSource(video);
             const gainNode = audioCtx.createGain();
-            gainNode.gain.value = 2;
+            gainNode.gain.value = 5;
             source.connect(gainNode);
             gainNode.connect(audioCtx.destination);
         });
-        controlsContainer.children[0].children[0].children[1].children[2].children[0].appendChild(soundBooster);
+
+        // Append all CrunchyrollPlus controls
+        leftControls.appendChild(moveBackward);
+        leftControls.appendChild(moveForward);
+        leftControls.appendChild(soundBooster);
     }
 }
+
+// Create a default CrunchyrollPlus control
+function CreateCrpTool(id, classList, imageWithExtension) {
+    let crpTool = document.createElement("button");
+    crpTool.classList.add(...classList);
+    crpTool.id = id;
+    crpTool.appendChild(CreateCrpImg(`${id}Img`, imageWithExtension));
+
+    crpTool.addEventListener("click", function (event) {
+        event.stopPropagation();    // Prevent click propagation (it would pause/resume the video)
+    });
+
+    return crpTool;
+}
+
+// Create an image (for a CrunchyrollPlus control)
+function CreateCrpImg(id, imageWithExtension) {
+    let crpImg = document.createElement('img');
+    crpImg.id = id;
+    crpImg.src = chrome.runtime.getURL(`images/controls/${imageWithExtension}`);    // Requires web_accessible_resources in the manifest
+    return crpImg;
+}
+
+
 
 // Messages received from Popup
 chrome.runtime.onMessage.addListener(

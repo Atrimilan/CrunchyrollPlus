@@ -53,5 +53,15 @@
     },
     "background": {
         "service_worker": "js/background.js"
-    }
+    },
+    "web_accessible_resources": [
+        {
+            "resources": [
+                "images/*"
+            ],
+            "matches": [
+                "https://static.crunchyroll.com/*"
+            ]
+        }
+    ]
 }
