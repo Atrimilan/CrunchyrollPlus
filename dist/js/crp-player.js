@@ -13,6 +13,7 @@ var __webpack_exports__ = {};
  *   - It is not visible until you hover over the video player
  * • Third one appears above the two previous ones when you hover over the video player, it's a vignette effect
  */
+var video = document.getElementById('player0');
 var playerParent = document.getElementById('velocity-controls-package');
 var controlsContainer = null; // Because the #vilosControlsContainer div is not loaded yet
 
@@ -33,10 +34,7 @@ function ObserveVideoPlayer() {
           Array.from(mutation.addedNodes).map(function (node) {
             if (node.id == 'vilosControlsContainer') {
               controlsContainer = node;
-
-              if (controlsContainer.firstChild.hasChildNodes()) {
-                LoadCrpTools(); // Load CrunchyrollPlus controls if controlsContainer has child nodes
-              }
+              LoadCrpTools(); // Load CrunchyrollPlus controls if controlsContainer has child nodes
 
               console.clear();
               console.log("%cCrunchyroll PLUS", "color: #f47521");
@@ -68,9 +66,7 @@ function ObserveControlsContainer() {
   controlsContainerObserver = new MutationObserver(function (mutations) {
     mutations.forEach(function (mutation) {
       if (mutation.type == 'childList' && mutation.addedNodes.length > 0) {
-        if (controlsContainer.firstChild.hasChildNodes()) {
-          LoadCrpTools(); // Load CrunchyrollPlus controls if controlsContainer has child nodes
-        }
+        LoadCrpTools(); // Load CrunchyrollPlus controls if controlsContainer has child nodes
       }
     });
   });
@@ -79,13 +75,51 @@ function ObserveControlsContainer() {
 
 
 function LoadCrpTools() {
-  var crpTool = document.createElement("div");
-  crpTool.classList.add('crpTools');
-  crpTool.id = 'moveForward';
-  controlsContainer.children[0].children[0].children[1].children[2].children[0].appendChild(crpTool.cloneNode(true));
-  crpTool.id = 'moveBackward';
-  controlsContainer.children[0].children[0].children[1].children[2].children[0].appendChild(crpTool.cloneNode(true));
-}
+  if (controlsContainer.firstChild.hasChildNodes()) {
+    var crpTool = document.createElement("button");
+    crpTool.classList.add('crpTools'); // Move backward button
+
+    moveBackward = crpTool.cloneNode(true);
+    moveBackward.id = 'moveBackward';
+    moveBackward.addEventListener("click", function (event) {
+      event.stopPropagation();
+      chrome.runtime.sendMessage({
+        type: "time"
+      }, function (response) {
+        video.currentTime -= ~~response.message;
+      });
+    });
+    controlsContainer.children[0].children[0].children[1].children[2].children[0].appendChild(moveBackward); // Move forward button
+
+    moveForward = crpTool.cloneNode(true);
+    moveForward.id = 'moveForward';
+    moveForward.addEventListener("click", function (event) {
+      event.stopPropagation(); // Prevent click propagation (it would pause/resume the video)
+
+      chrome.runtime.sendMessage({
+        type: "time"
+      }, function (response) {
+        video.currentTime += ~~response.message;
+      });
+    });
+    controlsContainer.children[0].children[0].children[1].children[2].children[0].appendChild(moveForward); // Sound booster button:
+
+    soundBooster = crpTool.cloneNode(true);
+    soundBooster.id = 'soundBooster';
+    soundBooster.addEventListener("click", function (event) {
+      event.stopPropagation(); // https://developer.mozilla.org/en-US/docs/Web/API/AudioContext/createMediaElementSource
+
+      var audioCtx = new AudioContext();
+      var source = audioCtx.createMediaElementSource(video);
+      var gainNode = audioCtx.createGain();
+      gainNode.gain.value = 2;
+      source.connect(gainNode);
+      gainNode.connect(audioCtx.destination);
+    });
+    controlsContainer.children[0].children[0].children[1].children[2].children[0].appendChild(soundBooster);
+  }
+} // Messages received from Popup
+
 
 chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
   console.log("%cMessage received from Popup", "color: #ff0000");
@@ -95,14 +129,14 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
     chrome.runtime.sendMessage({
       type: "time"
     }, function (response) {
-      document.getElementById('player0').currentTime += ~~response.message;
+      video.currentTime += ~~response.message;
     });
   } else if (request.type === "moveBackward") {
     console.log("Move backward");
     chrome.runtime.sendMessage({
       type: "time"
     }, function (response) {
-      document.getElementById('player0').currentTime -= ~~response.message;
+      video.currentTime -= ~~response.message;
     });
   } else {
     console.log(null);

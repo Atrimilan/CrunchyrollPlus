@@ -6,7 +6,9 @@ chrome.runtime.onInstalled.addListener(() => {
 
 function InitStorage(){
     chrome.storage.sync.get((result) => {
-        chrome.storage.sync.set({ time: (result.time === undefined) ? 15 : result.time });  // Set default time = 15 if not set
+        chrome.storage.sync.set({
+            time: (result.time === undefined) ? 5 : result.time,    // Set default time = 15 if not set
+        });
     });
 }
 
@@ -17,7 +19,7 @@ function ClearStorage(){
 chrome.runtime.onMessage.addListener(
     function (request, sender, sendResponse) {
         
-        console.log(sender.tab ? "from a content script:" + sender.tab.url : "from the extension");
+       // console.log(sender.tab ? "from a content script:" + sender.tab.url : "from the extension");
 
         if (request.type === "time") {
             chrome.storage.sync.get(['time'], (result) => {
