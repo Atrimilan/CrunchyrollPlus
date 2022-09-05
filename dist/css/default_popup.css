@@ -1,39 +1,39 @@
 body {
-  color: #ffffff;
+  color: whitesmoke;
   font-family: "Lato", Helvetica Neue, helvetica, sans-serif;
-  background-color: #000000;
+  background-color: #050505;
   height: 500px;
   width: 300px;
   position: relative;
   margin: 0;
 }
 
-.crunchy-text {
+.crp_text {
   font-weight: 500;
   line-height: var(--line-height);
   font-size: 16px;
 }
 
-.crunchy-h1 {
+.crp_h1 {
   text-align: center;
   font-weight: 600;
   font-size: 22px;
 }
 
-.wrapper {
-  /* Prevent user to select text */
-  -moz-user-select: none; /* Firefox */
-  -webkit-user-select: none; /* Chrome, Safari, Opera from version 15 */ /* Internet Explorer from version 10 and Edge */
-  user-select: none; /* Standard property */
-  margin: 5% 0;
-}
+/*.wrapper {
+  // Prevent user from selecting text
+  -moz-user-select: none; // Firefox
+  -webkit-user-select: none; // Chrome, Safari, Opera from version 15
+  -ms-user-select: none; // Internet Explorer from version 10 and Edge
+  user-select: none; // Standard property
 
+  margin: 5% 0;
+}*/
 header {
   text-align: center;
   background-color: #23252b;
   border-bottom: 1px solid #141519;
 }
-
 header > * {
   margin: 1%;
 }
@@ -54,7 +54,6 @@ footer {
   display: flex;
   justify-content: space-between;
 }
-
 #footer-text > * {
   color: #8a8a8a;
   text-decoration: none;

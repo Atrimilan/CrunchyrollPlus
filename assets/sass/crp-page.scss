@@ -1,13 +1,7 @@
 .prev-next-episodes,
 .episode-list,
 .erc-up-next-section {
-    img {
-        filter: blur(20px);
-        -webkit-filter: blur(20px);
-        -moz-filter: blur(20px);
-        -o-filter: blur(20px);
-        -ms-filter: blur(20px);
-    }
+    // <img> blurring is injected from crp-page.js
     * {
         overflow: hidden;
     }

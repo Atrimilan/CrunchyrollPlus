@@ -1,12 +1,3 @@
-.prev-next-episodes img,
-.episode-list img,
-.erc-up-next-section img {
-  filter: blur(20px);
-  -webkit-filter: blur(20px);
-  -moz-filter: blur(20px);
-  -o-filter: blur(20px);
-  -ms-filter: blur(20px);
-}
 .prev-next-episodes *,
 .episode-list *,
 .erc-up-next-section * {

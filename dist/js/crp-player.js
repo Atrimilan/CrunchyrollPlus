@@ -26,11 +26,13 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
  * • Third one appears above the two previous ones when you hover over the video player, it's a vignette effect
  */
 var video = document.getElementById('player0');
-var playerParent = document.getElementById('velocity-controls-package');
-var controlsContainer = null; // Because the #vilosControlsContainer div is not loaded yet
+var playerParent = null;
+var playerObserver = null; // Observer
 
-var playerObserver = null;
-var controlsContainerObserver = null;
+var controlsContainer = null; // Null for now, because the #vilosControlsContainer div is not loaded yet
+
+var controlsContainerObserver = null; // Observer
+
 ObserveVideoPlayer(); // Video player observer
 
 function ObserveVideoPlayer() {
@@ -64,8 +66,12 @@ function ObserveVideoPlayer() {
         }
       }
     });
-  });
-  playerObserver.observe(playerParent, config);
+  }); // Crunchyroll seems to instanciate and destroy the video player multiple time, this will probably need to be revisited later
+
+  if (!!(playerParent = document.getElementById('velocity-controls-package'))) {
+    // Get node and check if it is not null
+    playerObserver.observe(playerParent, config);
+  }
 } // Default Crunchyroll controls observer
 
 
@@ -92,7 +98,7 @@ function LoadCrpTools() {
     var leftControls = controlsContainer.querySelector("[data-testid='vilos-play_pause_button']").parentNode.parentNode; // let rightControls = controlsContainer.querySelector("#settingsControl").parentNode;
     // Move backward button
 
-    var moveBackward = CreateCrpTool('moveBackward', ['crpTools'], 'moveBackward.svg');
+    var moveBackward = CreateCrpTool('moveBackward', ['crpTools', "r-1ozmr9b"], 'moveBackward.svg');
     moveBackward.addEventListener("click", function () {
       chrome.runtime.sendMessage({
         type: "time"
@@ -101,7 +107,7 @@ function LoadCrpTools() {
       });
     }); // Move forward button
 
-    var moveForward = CreateCrpTool('moveForward', ['crpTools'], 'moveForward.svg');
+    var moveForward = CreateCrpTool('moveForward', ['crpTools', "r-1ozmr9b"], 'moveForward.svg');
     moveForward.addEventListener("click", function () {
       chrome.runtime.sendMessage({
         type: "time"
@@ -110,7 +116,7 @@ function LoadCrpTools() {
       });
     }); // Sound booster button (https://developer.mozilla.org/en-US/docs/Web/API/AudioContext/createMediaElementSource)
 
-    var soundBooster = CreateCrpTool('soundBoosterOff', ['crpTools'], 'soundBoosterOff.svg');
+    var soundBooster = CreateCrpTool('soundBoosterOff', ['crpTools', "r-1ozmr9b"], 'soundBoosterOff.svg');
     soundBooster.addEventListener("click", function () {
       var audioCtx = new AudioContext();
       var source = audioCtx.createMediaElementSource(video);
@@ -149,33 +155,15 @@ function CreateCrpImg(id, imageWithExtension) {
   crpImg.src = chrome.runtime.getURL("images/controls/".concat(imageWithExtension)); // Requires web_accessible_resources in the manifest
 
   return crpImg;
-} // Messages received from Popup
-
-
-chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
-  console.log("%cMessage received from Popup", "color: #ff0000");
-
-  if (request.type === "moveForward") {
-    console.log("Move forward");
-    chrome.runtime.sendMessage({
-      type: "time"
-    }, function (response) {
-      video.currentTime += ~~response.message;
-    });
-  } else if (request.type === "moveBackward") {
-    console.log("Move backward");
-    chrome.runtime.sendMessage({
-      type: "time"
-    }, function (response) {
-      video.currentTime -= ~~response.message;
-    });
-  } else {
-    console.log(null);
-  }
-});
+}
 /*
 chrome.runtime.sendMessage({ type: "time" }, function (response) {
     console.log(response.message);
+});
+chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
+    chrome.tabs.sendMessage(tabs[0].id, {type: "moveForward"}, function(response) {
+        console.log(response);
+    });
 });
 
 // Wait for an given element to be loaded - https://stackoverflow.com/a/61511955

@@ -12,11 +12,11 @@
 
 let video = document.getElementById('player0');
 
-let playerParent = document.getElementById('velocity-controls-package');
-let controlsContainer = null;   // Because the #vilosControlsContainer div is not loaded yet
+let playerParent = null;
+let playerObserver = null;  // Observer
 
-let playerObserver = null;
-let controlsContainerObserver = null;
+let controlsContainer = null;   // Null for now, because the #vilosControlsContainer div is not loaded yet
+let controlsContainerObserver = null;   // Observer
 
 ObserveVideoPlayer();
 
@@ -55,7 +55,11 @@ function ObserveVideoPlayer() {
             }
         });
     });
-    playerObserver.observe(playerParent, config);
+
+    // Crunchyroll seems to instanciate and destroy the video player multiple time, this will probably need to be revisited later
+    if (!!(playerParent = document.getElementById('velocity-controls-package'))) {  // Get node and check if it is not null
+        playerObserver.observe(playerParent, config);
+    }
 }
 
 // Default Crunchyroll controls observer
@@ -83,7 +87,7 @@ function LoadCrpTools() {
         // let rightControls = controlsContainer.querySelector("#settingsControl").parentNode;
 
         // Move backward button
-        let moveBackward = CreateCrpTool('moveBackward', ['crpTools'], 'moveBackward.svg');
+        let moveBackward = CreateCrpTool('moveBackward', ['crpTools', "r-1ozmr9b"], 'moveBackward.svg');
         moveBackward.addEventListener("click", () => {
             chrome.runtime.sendMessage({ type: "time" }, function (response) {
                 video.currentTime -= ~~response.message;
@@ -91,7 +95,7 @@ function LoadCrpTools() {
         });
 
         // Move forward button
-        let moveForward = CreateCrpTool('moveForward', ['crpTools'], 'moveForward.svg');
+        let moveForward = CreateCrpTool('moveForward', ['crpTools', "r-1ozmr9b"], 'moveForward.svg');
         moveForward.addEventListener("click", () => {
             chrome.runtime.sendMessage({ type: "time" }, function (response) {
                 video.currentTime += ~~response.message;
@@ -99,7 +103,7 @@ function LoadCrpTools() {
         });
 
         // Sound booster button (https://developer.mozilla.org/en-US/docs/Web/API/AudioContext/createMediaElementSource)
-        let soundBooster = CreateCrpTool('soundBoosterOff', ['crpTools'], 'soundBoosterOff.svg');
+        let soundBooster = CreateCrpTool('soundBoosterOff', ['crpTools', "r-1ozmr9b"], 'soundBoosterOff.svg');
         soundBooster.addEventListener("click", () => {
             const audioCtx = new AudioContext();
             let source = audioCtx.createMediaElementSource(video);
@@ -139,36 +143,14 @@ function CreateCrpImg(id, imageWithExtension) {
 }
 
 
-
-// Messages received from Popup
-chrome.runtime.onMessage.addListener(
-    function (request, sender, sendResponse) {
-        console.log("%cMessage received from Popup", `color: #ff0000`);
-
-        if (request.type === "moveForward") {
-            console.log("Move forward");
-
-            chrome.runtime.sendMessage({ type: "time" }, function (response) {
-                video.currentTime += ~~response.message;
-            });
-        }
-        else if (request.type === "moveBackward") {
-            console.log("Move backward");
-
-            chrome.runtime.sendMessage({ type: "time" }, function (response) {
-                video.currentTime -= ~~response.message;
-            });
-        }
-        else {
-            console.log(null);
-        }
-    }
-);
-
-
 /*
 chrome.runtime.sendMessage({ type: "time" }, function (response) {
     console.log(response.message);
+});
+chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
+    chrome.tabs.sendMessage(tabs[0].id, {type: "moveForward"}, function(response) {
+        console.log(response);
+    });
 });
 
 // Wait for an given element to be loaded - https://stackoverflow.com/a/61511955
