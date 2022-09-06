@@ -101,7 +101,7 @@ function LoadCrpTools() {
     var moveBackward = CreateCrpTool('moveBackward', ['crpTools', "r-1ozmr9b"], 'moveBackward.svg');
     moveBackward.addEventListener("click", function () {
       chrome.runtime.sendMessage({
-        type: "time"
+        type: "moveBackwardTime"
       }, function (response) {
         video.currentTime -= ~~response.message;
       });
@@ -110,7 +110,7 @@ function LoadCrpTools() {
     var moveForward = CreateCrpTool('moveForward', ['crpTools', "r-1ozmr9b"], 'moveForward.svg');
     moveForward.addEventListener("click", function () {
       chrome.runtime.sendMessage({
-        type: "time"
+        type: "moveForwardTime"
       }, function (response) {
         video.currentTime += ~~response.message;
       });
@@ -155,7 +155,11 @@ function CreateCrpImg(id, imageWithExtension) {
   crpImg.src = chrome.runtime.getURL("images/controls/".concat(imageWithExtension)); // Requires web_accessible_resources in the manifest
 
   return crpImg;
-}
+} // Messages received from Popup
+
+
+chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {// Nothing yet
+});
 /*
 chrome.runtime.sendMessage({ type: "time" }, function (response) {
     console.log(response.message);

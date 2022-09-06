@@ -1,24 +1,18 @@
-
-<!-- Switch button made by Aaron Iker: https://codepen.io/aaroniker/pen/rNNLQVe?editors=1100 -->
-
 <template>
     <label class="switch">
-        <input type="checkbox" v-model="isChecked" @change="notifyParent()"/>
-        <div><span></span></div>
+        <input type="checkbox" v-model="isChecked" @change="notifySwitch()" />
+        <span class="slider"></span>
     </label>
 </template>
 
 <script>
 export default {
     name: "SwitchButton",
-    data(){
-        return {
-            isChecked: false,
-        };
+    props: {
+        isChecked: Boolean,
     },
     methods: {
-        notifyParent() {
-            console.log("Notify : " + this.isChecked);
+        notifySwitch() {
             this.$emit("switched", this.isChecked);
         },
     },
@@ -26,80 +20,55 @@ export default {
 </script>
 
 <style scoped lang="scss">
+// Simple switch by Ibrahim Bilal: https://codepen.io/ibrahim-bilal/pen/zYWveOb
+
+@mixin prefix($name, $value) {
+    @each $vendor in ("-webkit-", "-moz-", "-ms-", "-o-", "") {
+        #{$vendor}#{$name}: #{$value};
+    }
+}
+
 .switch {
-    --line: #555;
-    --dot: #ff2b01;
-    --circle: #888;
-    --duration: 0.3s;
-    cursor: pointer;
+    position: relative;
+    display: inline-block;
+    width: 40px;
+    height: 20px;
+
     input {
-        display: none;
-        & + div {
-            position: relative;
-            &:before,
-            &:after {
-                --s: 1;
-                content: "";
-                position: absolute;
-                height: 4px;
-                top: 7.5px;
-                width: 24px;
-                background: var(--line);
-                transform: scaleX(var(--s));
-                transition: transform var(--duration) ease;
-            }
-            &:before {
-                --s: 0;
-                left: 0;
-                transform-origin: 0 50%;
-                border-radius: 2px 0 0 2px;
-            }
-            &:after {
-                left: 22px;
-                transform-origin: 100% 50%;
-                border-radius: 0 2px 2px 0;
-            }
-            span {
-                padding-left: 56px;
-                line-height: 24px;
-                color: var(--text);
-                &:before {
-                    --x: 0;
-                    --b: var(--circle);
-                    --s: 4px;
-                    content: "";
-                    position: absolute;
-                    left: 0;
-                    top: 0;
-                    width: 18px;
-                    height: 18px;
-                    border-radius: 50%;
-                    box-shadow: inset 0 0 0 var(--s) var(--b);
-                    transform: translateX(var(--x));
-                    transition: box-shadow var(--duration) ease,
-                        transform var(--duration) ease;
-                }
-                &:not(:empty) {
-                    padding-left: 64px;
-                }
+        opacity: 0;
+        width: 0;
+        height: 0;
+
+        &:checked + .slider {
+            background-color: #ff3b15;
+
+            &::before {
+                @include prefix(transform, translateX(20px));
             }
         }
-        &:checked {
-            & + div {
-                &:before {
-                    --s: 1;
-                }
-                &:after {
-                    --s: 0;
-                }
-                span {
-                    &:before {
-                        --x: 28px;
-                        --s: 12px;
-                        --b: var(--dot);
-                    }
-                }
-            }
+    }
+
+    .slider {
+        position: absolute;
+        cursor: pointer;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: #23252b;
+        border-radius: 50px;
+        @include prefix(transition, 0.3s);
+
+        &::before {
+            border-radius: 50%;
+            position: absolute;
+            content: "";
+            height: 16px;
+            width: 16px;
+            left: 2px;
+            bottom: 2px;
+            background-color: whitesmoke;
+            @include prefix(transition, 0.3s);
         }
     }
 }

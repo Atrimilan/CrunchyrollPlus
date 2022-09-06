@@ -21,17 +21,17 @@ body {
   font-size: 22px;
 }
 
-/*.wrapper {
+.wrapper {
   // Prevent user from selecting text
   -moz-user-select: none; // Firefox
   -webkit-user-select: none; // Chrome, Safari, Opera from version 15
   -ms-user-select: none; // Internet Explorer from version 10 and Edge
   user-select: none; // Standard property
 
-  margin: 5% 0;
-}*/
+  margin: 5% 2%;
+}
 
-header{
+header {
   text-align: center;
   background-color: #23252b;
   border-bottom: 1px solid #141519;
@@ -43,8 +43,8 @@ header{
 footer {
   background-color: #23252b;
   border-top: 1px solid #141519;
-  position:absolute;
-  bottom:0;
+  position: absolute;
+  bottom: 0;
   width: 100%;
 }
 #footer-text {
@@ -61,7 +61,8 @@ footer {
   }
 }
 
-#github-link:hover {
+#github-link:hover,
+#author:hover {
   color: #a0a0a0;
 }
 

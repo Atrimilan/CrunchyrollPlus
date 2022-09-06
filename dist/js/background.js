@@ -10,7 +10,7 @@
 chrome.runtime.onInstalled.addListener(function () {
   chrome.storage.sync.get(function (result) {
     console.log(result);
-  }); // Print existing storage data
+  }); // Log existing storage data to the console
 
   InitStorage();
 }); // Initialize default storage settings
@@ -18,43 +18,64 @@ chrome.runtime.onInstalled.addListener(function () {
 function InitStorage() {
   chrome.storage.sync.get(function (result) {
     chrome.storage.sync.set({
-      time: result.time === undefined ? 5 : result.time,
-      // Set default time = 5 if not set
+      // Set a default value if not set yet
+      moveForwardTime: result.moveForwardTime === undefined ? 5 : result.moveForwardTime,
+      moveBackwardTime: result.moveBackwardTime === undefined ? 5 : result.moveBackwardTime,
       themeColor: result.themeColor === undefined ? "#f47521" : result.themeColor,
       blurredThumbnails: result.blurredThumbnails === undefined ? false : result.blurredThumbnails
     });
   });
 }
-
-function ClearStorage() {
-  chrome.storage.sync.clear();
-} // Listen for messages from popup or content-script, and return the corresponding result
+/*function ResetStorage() {
+    chrome.storage.sync.clear();
+    InitStorage();
+}
+ResetStorage();*/
+// Listen for messages from popup or content-script, and return the corresponding result
 
 
 chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
-  // console.log(sender.tab ? "from a content script:" + sender.tab.url : "from the extension");
-  if (request.type === "time") {
-    chrome.storage.sync.get(['time'], function (result) {
-      //console.log("Get time : " + result.time + " seconds");
-      sendResponse({
-        message: result.time
+  switch (request.type) {
+    case "moveForwardTime":
+      chrome.storage.sync.get(['moveForwardTime'], function (result) {
+        sendResponse({
+          message: result.moveForwardTime
+        });
       });
-    });
-    return true; // Must write this, otherwise "Unchecked runtime.lastError: The message port closed before a response was received."
-  } else if (request.type === "themeColor") {
-    chrome.storage.sync.get(['themeColor'], function (result) {
-      sendResponse({
-        message: result.themeColor
-      });
-    });
-    return true;
-  } else {
-    sendResponse({
-      message: null
-    }); // If the request type is unknown, return null
+      break;
 
-    return true;
+    case "moveBackwardTime":
+      chrome.storage.sync.get(['moveBackwardTime'], function (result) {
+        sendResponse({
+          message: result.moveBackwardTime
+        });
+      });
+      break;
+
+    case "themeColor":
+      chrome.storage.sync.get(['themeColor'], function (result) {
+        sendResponse({
+          message: result.themeColor
+        });
+      });
+      break;
+
+    case "blurredThumbnails":
+      chrome.storage.sync.get(['blurredThumbnails'], function (result) {
+        sendResponse({
+          message: result.blurredThumbnails
+        });
+      });
+      break;
+
+    default:
+      sendResponse({
+        message: null
+      });
+    // If the request type is unknown, return null
   }
+
+  return true; // Must return true, otherwise "Unchecked runtime.lastError: The message port closed before a response was received."
 });
 
 /***/ }),
