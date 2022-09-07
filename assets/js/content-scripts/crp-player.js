@@ -117,7 +117,41 @@ function LoadCrpTools() {
         leftControls.appendChild(moveBackward);
         leftControls.appendChild(moveForward);
         leftControls.appendChild(soundBooster);
+
+        // Change playbar color to the stored theme color
+        chrome.runtime.sendMessage({ type: "themeColor" }, function (response) {
+            if (!!response.message) {
+                changePlayBarColor(response.message);
+            }
+        });
     }
+}
+
+// Change the playbar color (watched time bar and reticle)
+function changePlayBarColor(themeColor) {
+
+    let playerPointer = document.querySelector('[data-testid="vilos-knob"]');
+    playerPointer.style.visibility = "hidden";
+
+    let crpPointer = document.createElement('div');
+    crpPointer.id = "crpPointer";
+    crpPointer.style.backgroundColor = themeColor;
+
+    playerPointer.appendChild(crpPointer);
+
+
+    let watchedTime = document.querySelector('[data-testid="vilos-scrub_bar"]').children[0].children[0].children[0]
+        .children[1].children[0].children[0];  // They should hire someone to add ids wherever they are missing !
+    watchedTime.style.visibility = "hidden";
+
+    let crpWatchedTime = document.createElement('div');
+    crpWatchedTime.id = "crpWatchedTime";
+    crpWatchedTime.style.backgroundColor = themeColor;
+
+    watchedTime.appendChild(crpWatchedTime);
+    
+    // playerPointer and watchedTime "style" properties cannot be changed because it is automatically updated by the player
+    // This is why a child is created, while parent visibility is set to "hidden"
 }
 
 // Create a default CrunchyrollPlus control

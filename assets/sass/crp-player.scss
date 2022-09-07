@@ -15,3 +15,21 @@
     width: 30px;
     height: 30px;
 }
+
+#crpPointer {
+    background-color: rgb(244, 117, 33);
+    border-radius: 8px;
+    box-shadow: rgba(0, 0, 0, 0.6) 0px 0px 4px;
+    transform: scale(1);
+    visibility: visible;
+    height: 16px;
+    width: 16px;
+}
+
+#crpWatchedTime {
+    align-self: flex-start;
+    background-color: rgb(244, 117, 33);
+    visibility: visible;
+    height: 100%;
+    width: 100%;
+}
