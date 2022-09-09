@@ -55,7 +55,7 @@ export default {
         left: 0;
         right: 0;
         bottom: 0;
-        background-color: #23252b;
+        background-color: #32353c;
         border-radius: 50px;
         @include prefix(transition, 0.3s);
 

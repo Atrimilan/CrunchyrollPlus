@@ -8,10 +8,11 @@ chrome.runtime.onInstalled.addListener(() => {
 function InitStorage() {
     chrome.storage.sync.get((result) => {
         chrome.storage.sync.set({   // Set a default value if not set yet
-            moveForwardTime: (result.moveForwardTime === undefined) ? 5 : result.moveForwardTime,
-            moveBackwardTime: (result.moveBackwardTime === undefined) ? 5 : result.moveBackwardTime,
-            themeColor: (result.themeColor === undefined) ? "#f47521" : result.themeColor,
-            blurredThumbnails: (result.blurredThumbnails === undefined) ? false : result.blurredThumbnails,
+            moveForwardTime: (result.moveForwardTime === undefined) ? 5 : result.moveForwardTime,   // Time to move forward
+            moveBackwardTime: (result.moveBackwardTime === undefined) ? 5 : result.moveBackwardTime,    // Time to move backward
+            themeColor: (result.themeColor === undefined) ? "#f47521" : result.themeColor,  // Set website theme color
+            blurredThumbnails: (result.blurredThumbnails === undefined) ? false : result.blurredThumbnails, // Blur episode thumbnails
+            avatarFavicon: (result.avatarFavicon === undefined) ? false : result.avatarFavicon, // Use avatar as favicon
         });
     });
 }
@@ -37,6 +38,9 @@ chrome.runtime.onMessage.addListener(
                 break;
             case "blurredThumbnails":
                 chrome.storage.sync.get(['blurredThumbnails'], (result) => { sendResponse({ message: result.blurredThumbnails }); });
+                break;
+            case "avatarFavicon":
+                chrome.storage.sync.get(['avatarFavicon'], (result) => { sendResponse({ message: result.avatarFavicon }); });
                 break;
             default:
                 sendResponse({ message: null });    // If the request type is unknown, return null

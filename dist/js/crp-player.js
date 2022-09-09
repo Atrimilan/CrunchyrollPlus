@@ -142,13 +142,13 @@ function LoadCrpTools() {
 
 
 function changePlayBarColor(themeColor) {
-  var playerPointer = document.querySelector('[data-testid="vilos-knob"]');
+  var playerPointer = document.querySelector('div[data-testid="vilos-knob"]');
   playerPointer.style.visibility = "hidden";
   var crpPointer = document.createElement('div');
   crpPointer.id = "crpPointer";
   crpPointer.style.backgroundColor = themeColor;
   playerPointer.appendChild(crpPointer);
-  var watchedTime = document.querySelector('[data-testid="vilos-scrub_bar"]').children[0].children[0].children[0].children[1].children[0].children[0]; // They should hire someone to add ids wherever they are missing !
+  var watchedTime = document.querySelector('div[data-testid="vilos-scrub_bar"]').children[0].children[0].children[0].children[1].children[0].children[0]; // They should hire someone to add ids wherever they are missing !
 
   watchedTime.style.visibility = "hidden";
   var crpWatchedTime = document.createElement('div');
@@ -187,41 +187,26 @@ function CreateCrpImg(id, imageWithExtension) {
 chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {// Nothing yet
 });
 /*
-chrome.runtime.sendMessage({ type: "time" }, function (response) {
-    console.log(response.message);
-});
-chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
-    chrome.tabs.sendMessage(tabs[0].id, {type: "moveForward"}, function(response) {
-        console.log(response);
-    });
-});
-
-// Wait for an given element to be loaded - https://stackoverflow.com/a/61511955
-// USE : waitForElementLoaded('#myDivId').then(result => { console.log(result); });
-// OR : (async () => { var result = await waitForElementLoaded('#myDivId'); })();
-function waitForElementLoaded(selector) {
-    return new Promise(resolve => {
-        if (document.querySelector(selector)) {
-            return resolve(document.querySelector(selector));
-        }
-        const observer = new MutationObserver(mutations => {
-            if (document.querySelector(selector)) {
-                resolve(document.querySelector(selector));
-                observer.disconnect();
-            }
-        });
-        observer.observe(document.body, {
-            childList: true,
-            subtree: true
-        });
-    });
-}
-
 // Wait for given milliseconds
 // USE : delay(1000).then(() => { ... });
 function delay(time) {
     return new Promise(resolve => setTimeout(resolve, time));
 }
 */
+// Change loading spinner color to the stored theme color
+
+var loadSpinner = document.querySelectorAll('div[data-testid="vilos-loading"] path');
+
+(function setLoadingSpinnerColor() {
+  chrome.runtime.sendMessage({
+    type: "themeColor"
+  }, function (response) {
+    if (!!response.message) {
+      loadSpinner.forEach(function (element) {
+        element.style.stroke = response.message;
+      });
+    }
+  });
+})();
 /******/ })()
 ;

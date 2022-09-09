@@ -17511,6 +17511,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
   data: function data() {
     return {
       blurringState: false,
+      avatarFaviconState: false,
       themeColor: ""
     };
   },
@@ -17540,12 +17541,27 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
         currentWindow: true
       }, function (tabs) {
         chrome.tabs.sendMessage(tabs[0].id, {
-          type: status ? "hideThumbnails" : "showThumbnails"
+          type: "toggleThumbnails",
+          state: status
         });
       }); // And save status to chrome storage
 
       chrome.storage.sync.set({
         blurredThumbnails: status
+      });
+    },
+    toggleAvatarFavicon: function toggleAvatarFavicon(status) {
+      chrome.tabs.query({
+        active: true,
+        currentWindow: true
+      }, function (tabs) {
+        chrome.tabs.sendMessage(tabs[0].id, {
+          type: "toggleAvatarFavicon",
+          state: status
+        });
+      });
+      chrome.storage.sync.set({
+        avatarFavicon: status
       });
     }
   },
@@ -17573,8 +17589,15 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 
             case 5:
               _this.blurringState = _context.sent.message;
+              _context.next = 8;
+              return chrome.runtime.sendMessage({
+                type: "avatarFavicon"
+              });
 
-            case 6:
+            case 8:
+              _this.avatarFaviconState = _context.sent.message;
+
+            case 9:
             case "end":
               return _context.stop();
           }
@@ -17727,6 +17750,13 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
     })
   }, null, 8
   /* PROPS */
+  , ["isChecked"])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", null, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_SwitchButton, {
+    isChecked: $data.avatarFaviconState,
+    onSwitched: _cache[3] || (_cache[3] = function ($event) {
+      return $options.toggleAvatarFavicon($event);
+    })
+  }, null, 8
+  /* PROPS */
   , ["isChecked"])])])])])]), _hoisted_7]);
 }
 
@@ -17816,7 +17846,7 @@ __webpack_require__.r(__webpack_exports__);
 
 var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_0___default()(function(i){return i[1]});
 // Module
-___CSS_LOADER_EXPORT___.push([module.id, ".switch[data-v-104eeb27] {\n  position: relative;\n  display: inline-block;\n  width: 40px;\n  height: 20px;\n}\n.switch input[data-v-104eeb27] {\n  opacity: 0;\n  width: 0;\n  height: 0;\n}\n.switch input:checked + .slider[data-v-104eeb27] {\n  background-color: #ff3b15;\n}\n.switch input:checked + .slider[data-v-104eeb27]::before {\n  transform: translateX(20px);\n}\n.switch .slider[data-v-104eeb27] {\n  position: absolute;\n  cursor: pointer;\n  top: 0;\n  left: 0;\n  right: 0;\n  bottom: 0;\n  background-color: #23252b;\n  border-radius: 50px;\n  transition: 0.3s;\n}\n.switch .slider[data-v-104eeb27]::before {\n  border-radius: 50%;\n  position: absolute;\n  content: \"\";\n  height: 16px;\n  width: 16px;\n  left: 2px;\n  bottom: 2px;\n  background-color: whitesmoke;\n  transition: 0.3s;\n}", ""]);
+___CSS_LOADER_EXPORT___.push([module.id, ".switch[data-v-104eeb27] {\n  position: relative;\n  display: inline-block;\n  width: 40px;\n  height: 20px;\n}\n.switch input[data-v-104eeb27] {\n  opacity: 0;\n  width: 0;\n  height: 0;\n}\n.switch input:checked + .slider[data-v-104eeb27] {\n  background-color: #ff3b15;\n}\n.switch input:checked + .slider[data-v-104eeb27]::before {\n  transform: translateX(20px);\n}\n.switch .slider[data-v-104eeb27] {\n  position: absolute;\n  cursor: pointer;\n  top: 0;\n  left: 0;\n  right: 0;\n  bottom: 0;\n  background-color: #32353c;\n  border-radius: 50px;\n  transition: 0.3s;\n}\n.switch .slider[data-v-104eeb27]::before {\n  border-radius: 50%;\n  position: absolute;\n  content: \"\";\n  height: 16px;\n  width: 16px;\n  left: 2px;\n  bottom: 2px;\n  background-color: whitesmoke;\n  transition: 0.3s;\n}", ""]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 

@@ -16,6 +16,7 @@
         <tr>
         <td><ColorInput :color=themeColor @selected="themeColorSelected($event)" @isChoosing="themeColorChoosing($event)" /></td>
         <td><SwitchButton :isChecked=blurringState @switched="toggleBlurring($event)" /></td>
+        <td><SwitchButton :isChecked=avatarFaviconState @switched="toggleAvatarFavicon($event)" /></td>
         </tr>
         </tbody>
         </table>
@@ -43,6 +44,7 @@ export default {
     data() {
         return {
             blurringState: false,
+            avatarFaviconState: false,
             themeColor: "",
         };
     },
@@ -60,10 +62,16 @@ export default {
         toggleBlurring(status) {
             // Toggle thumbnails blurring dynamically
             chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
-                chrome.tabs.sendMessage(tabs[0].id, {type: (status ? "hideThumbnails" : "showThumbnails")});
+                chrome.tabs.sendMessage(tabs[0].id, {type: "toggleThumbnails", state: status});
             });
             // And save status to chrome storage
             chrome.storage.sync.set({ blurredThumbnails: status });
+        },
+        toggleAvatarFavicon(status) {
+            chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
+                chrome.tabs.sendMessage(tabs[0].id, {type: "toggleAvatarFavicon", state: status});
+            });
+            chrome.storage.sync.set({ avatarFavicon: status });
         },
     },
     mounted() {
@@ -72,6 +80,7 @@ export default {
         (async () => {
             this.themeColor = (await chrome.runtime.sendMessage({ type: "themeColor" })).message;
             this.blurringState = (await chrome.runtime.sendMessage({ type: "blurredThumbnails" })).message;
+            this.avatarFaviconState = (await chrome.runtime.sendMessage({ type: "avatarFavicon" })).message;
         })();
     }
 };
