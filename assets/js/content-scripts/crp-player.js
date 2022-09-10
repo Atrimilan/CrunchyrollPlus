@@ -103,14 +103,24 @@ function LoadCrpTools() {
         });
 
         // Sound booster button (https://developer.mozilla.org/en-US/docs/Web/API/AudioContext/createMediaElementSource)
-        let soundBooster = CreateCrpTool('soundBoosterOff', ['crpTools', "r-1ozmr9b"], 'soundBoosterOff.svg');
+        let soundBooster = CreateCrpTool('soundBoosterOff', ['crpTools', "r-1ozmr9b"],
+            soundBoosterEnabled ? 'soundBoosterOn.svg' : 'soundBoosterOff.svg');
         soundBooster.addEventListener("click", () => {
-            const audioCtx = new AudioContext();
-            let source = audioCtx.createMediaElementSource(video);
-            const gainNode = audioCtx.createGain();
-            gainNode.gain.value = 5;
-            source.connect(gainNode);
-            gainNode.connect(audioCtx.destination);
+            if (!soundBoosterInitialized) {
+                InitSoundBooster();
+            }
+            if (!soundBoosterEnabled) { // If disabled, boost gain with stored sound multiplier
+                chrome.runtime.sendMessage({ type: "soundMultiplier" }, function (response) {
+                    gainNode.gain.value = 1 + response.message / 10;
+                    soundBoosterEnabled = true;
+                    soundBooster.firstChild.src = chrome.runtime.getURL(`images/controls/soundBoosterOn.svg`);
+                });
+            }
+            else {  // If enabled, set gain value to 1
+                gainNode.gain.value = 1;
+                soundBoosterEnabled = false;
+                soundBooster.firstChild.src = chrome.runtime.getURL(`images/controls/soundBoosterOff.svg`);
+            }
         });
 
         // Append all CrunchyrollPlus controls
@@ -125,6 +135,20 @@ function LoadCrpTools() {
             }
         });
     }
+}
+
+var soundBoosterInitialized = false, soundBoosterEnabled = false;
+var audioCtx = null, gainNode = null, source = null;
+
+// Initialize sound booster variables
+function InitSoundBooster() {
+    audioCtx = new AudioContext();
+    source = audioCtx.createMediaElementSource(video);
+    gainNode = audioCtx.createGain();
+    gainNode.gain.value = 1;
+    source.connect(gainNode);
+    gainNode.connect(audioCtx.destination);
+    soundBoosterInitialized = true;
 }
 
 // Change the playbar color (watched time bar and reticle)
@@ -149,9 +173,9 @@ function changePlayBarColor(themeColor) {
     crpWatchedTime.style.backgroundColor = themeColor;
 
     watchedTime.appendChild(crpWatchedTime);
-    
+
     // playerPointer and watchedTime "style" properties cannot be changed because it is automatically updated by the player
-    // This is why a child is created, while parent visibility is set to "hidden"
+    // This is why child nodes are created, while their parent's visibility is set to "hidden"
 }
 
 // Create a default CrunchyrollPlus control

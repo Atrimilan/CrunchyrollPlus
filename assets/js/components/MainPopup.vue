@@ -17,6 +17,12 @@
         <td><ColorInput :color=themeColor @selected="themeColorSelected($event)" @isChoosing="themeColorChoosing($event)" /></td>
         <td><SwitchButton :isChecked=blurringState @switched="toggleBlurring($event)" /></td>
         <td><SwitchButton :isChecked=avatarFaviconState @switched="toggleAvatarFavicon($event)" /></td>
+        <td>
+            <div class="sliderWithInfo">
+                <RangeSlider ref="soundMultiplier" :min=0 :max=40 :value=soundMultiplier @selected="soundMultiplierSelected($event)" @isChoosing="soundMultiplierChoosing($event)" />
+                <InfoArea :text=soundGain />
+            </div>
+        </td>
         </tr>
         </tbody>
         </table>
@@ -35,17 +41,23 @@
 <script>
 import ColorInput from "./ColorInput.vue";
 import SwitchButton from "./SwitchButton.vue";
+import RangeSlider from "./RangeSlider.vue";
+import InfoArea from "./InfoArea.vue";
 export default {
     name: "MainPopup",
     components: {
         ColorInput,
-        SwitchButton
+        SwitchButton,
+        RangeSlider,
+        InfoArea
     },
     data() {
         return {
             blurringState: false,
             avatarFaviconState: false,
             themeColor: "",
+            soundMultiplier: 0,
+            soundGain: 1
         };
     },
     methods: {
@@ -73,6 +85,12 @@ export default {
             });
             chrome.storage.sync.set({ avatarFavicon: status });
         },
+        soundMultiplierChoosing(value){
+            this.soundGain = value / 10  + 1;
+        },
+        soundMultiplierSelected(value){
+            chrome.storage.sync.set({ soundMultiplier: value });
+        },
     },
     mounted() {
         // SwitchButton, ColorInput, etc. need to be initialized in the Popup to their current status
@@ -81,7 +99,22 @@ export default {
             this.themeColor = (await chrome.runtime.sendMessage({ type: "themeColor" })).message;
             this.blurringState = (await chrome.runtime.sendMessage({ type: "blurredThumbnails" })).message;
             this.avatarFaviconState = (await chrome.runtime.sendMessage({ type: "avatarFavicon" })).message;
+            this.soundMultiplier = parseInt((await chrome.runtime.sendMessage({ type: "soundMultiplier" })).message);
+            this.soundGain = this.soundMultiplier / 10  + 1;
         })();
     }
 };
 </script>
+
+<style scoped lang="scss">
+.sliderWithInfo {
+    width: fit-content;
+    > * {
+        display: inline-block;
+        vertical-align: middle;
+    }
+    :deep(textarea) {
+        margin-left: 5px;
+    }
+}
+</style>

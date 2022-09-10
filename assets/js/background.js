@@ -1,6 +1,7 @@
 
 chrome.runtime.onInstalled.addListener(() => {
     chrome.storage.sync.get((result) => { console.log(result); });  // Log existing storage data to the console
+    //ResetStorage();
     InitStorage();
 });
 
@@ -13,15 +14,14 @@ function InitStorage() {
             themeColor: (result.themeColor === undefined) ? "#f47521" : result.themeColor,  // Set website theme color
             blurredThumbnails: (result.blurredThumbnails === undefined) ? false : result.blurredThumbnails, // Blur episode thumbnails
             avatarFavicon: (result.avatarFavicon === undefined) ? false : result.avatarFavicon, // Use avatar as favicon
+            soundMultiplier: (result.soundMultiplier === undefined) ? 0 : result.soundMultiplier,   // Increase video player's sound
         });
     });
 }
 
-/*function ResetStorage() {
+function ResetStorage() {
     chrome.storage.sync.clear();
-    InitStorage();
 }
-ResetStorage();*/
 
 // Listen for messages from popup or content-script, and return the corresponding result
 chrome.runtime.onMessage.addListener(
@@ -41,6 +41,9 @@ chrome.runtime.onMessage.addListener(
                 break;
             case "avatarFavicon":
                 chrome.storage.sync.get(['avatarFavicon'], (result) => { sendResponse({ message: result.avatarFavicon }); });
+                break;
+            case "soundMultiplier":
+                chrome.storage.sync.get(['soundMultiplier'], (result) => { sendResponse({ message: result.soundMultiplier }); });
                 break;
             default:
                 sendResponse({ message: null });    // If the request type is unknown, return null

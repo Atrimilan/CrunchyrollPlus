@@ -11,6 +11,7 @@ chrome.runtime.onInstalled.addListener(function () {
   chrome.storage.sync.get(function (result) {
     console.log(result);
   }); // Log existing storage data to the console
+  //ResetStorage();
 
   InitStorage();
 }); // Initialize default storage settings
@@ -27,17 +28,17 @@ function InitStorage() {
       // Set website theme color
       blurredThumbnails: result.blurredThumbnails === undefined ? false : result.blurredThumbnails,
       // Blur episode thumbnails
-      avatarFavicon: result.avatarFavicon === undefined ? false : result.avatarFavicon // Use avatar as favicon
+      avatarFavicon: result.avatarFavicon === undefined ? false : result.avatarFavicon,
+      // Use avatar as favicon
+      soundMultiplier: result.soundMultiplier === undefined ? 0 : result.soundMultiplier // Increase video player's sound
 
     });
   });
 }
-/*function ResetStorage() {
-    chrome.storage.sync.clear();
-    InitStorage();
-}
-ResetStorage();*/
-// Listen for messages from popup or content-script, and return the corresponding result
+
+function ResetStorage() {
+  chrome.storage.sync.clear();
+} // Listen for messages from popup or content-script, and return the corresponding result
 
 
 chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
@@ -78,6 +79,14 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
       chrome.storage.sync.get(['avatarFavicon'], function (result) {
         sendResponse({
           message: result.avatarFavicon
+        });
+      });
+      break;
+
+    case "soundMultiplier":
+      chrome.storage.sync.get(['soundMultiplier'], function (result) {
+        sendResponse({
+          message: result.soundMultiplier
         });
       });
       break;

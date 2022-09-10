@@ -43,6 +43,7 @@ export default {
             background-color: #ff3b15;
 
             &::before {
+                filter: drop-shadow(0px 0px 2px #9d250e);
                 @include prefix(transform, translateX(20px));
             }
         }
@@ -66,8 +67,9 @@ export default {
             height: 16px;
             width: 16px;
             left: 2px;
-            bottom: 2px;
+            bottom: 2.5px;
             background-color: whitesmoke;
+            filter: drop-shadow(0px 0px 2px #131416);
             @include prefix(transition, 0.3s);
         }
     }
