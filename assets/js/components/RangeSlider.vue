@@ -26,7 +26,7 @@ export default {
         }
     },
     watch: {
-        // Value need to be watched, because it is asynchronously updated from the MainPopup
+        // Value needs to be watched, because it is asynchronously updated from the MainPopup
         value: function(val, oldVal) {
             // When new value is received, initialize slider background
             var gradientValue = (this.value - this.min) / (this.max - this.min) * 100;

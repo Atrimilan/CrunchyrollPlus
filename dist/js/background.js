@@ -30,7 +30,7 @@ function InitStorage() {
       // Blur episode thumbnails
       avatarFavicon: result.avatarFavicon === undefined ? false : result.avatarFavicon,
       // Use avatar as favicon
-      soundMultiplier: result.soundMultiplier === undefined ? 0 : result.soundMultiplier // Increase video player's sound
+      soundMultiplier: result.soundMultiplier === undefined ? 10 : result.soundMultiplier // Increase video player's sound
 
     });
   });

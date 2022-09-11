@@ -14,7 +14,7 @@ function InitStorage() {
             themeColor: (result.themeColor === undefined) ? "#f47521" : result.themeColor,  // Set website theme color
             blurredThumbnails: (result.blurredThumbnails === undefined) ? false : result.blurredThumbnails, // Blur episode thumbnails
             avatarFavicon: (result.avatarFavicon === undefined) ? false : result.avatarFavicon, // Use avatar as favicon
-            soundMultiplier: (result.soundMultiplier === undefined) ? 0 : result.soundMultiplier,   // Increase video player's sound
+            soundMultiplier: (result.soundMultiplier === undefined) ? 10 : result.soundMultiplier,   // Increase video player's sound
         });
     });
 }

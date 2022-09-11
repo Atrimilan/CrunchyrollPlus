@@ -7,10 +7,9 @@
 
     
     <div class="wrapper">
-        <h1 class="crp_h1">Hello</h1>
-        <p class="crp_text">This is a test.</p>
-        <p class="crp_text">And a second one.</p>
-
+        <h1 class="crp_h1">{{ i18n("Hello") }}</h1>
+        <p class="crp_text">{{ i18n("configuration") }}</p>
+        
         <table>
         <tbody>
         <tr>
@@ -38,11 +37,12 @@
 </div>
 </template>
 
+
 <script>
-import ColorInput from "./ColorInput.vue";
-import SwitchButton from "./SwitchButton.vue";
-import RangeSlider from "./RangeSlider.vue";
-import InfoArea from "./InfoArea.vue";
+import ColorInput from "./components/ColorInput.vue";
+import SwitchButton from "./components/SwitchButton.vue";
+import RangeSlider from "./components/RangeSlider.vue";
+import InfoArea from "./components/InfoArea.vue";
 export default {
     name: "MainPopup",
     components: {
@@ -91,6 +91,10 @@ export default {
         soundMultiplierSelected(value){
             chrome.storage.sync.set({ soundMultiplier: value });
         },
+        // Internationalization
+        i18n(message){
+            return chrome.i18n.getMessage(message);
+        }
     },
     mounted() {
         // SwitchButton, ColorInput, etc. need to be initialized in the Popup to their current status
