@@ -13,15 +13,20 @@
         <table>
         <tbody>
         <tr>
-        <td><ColorInput :color=themeColor @selected="themeColorSelected($event)" @isChoosing="themeColorChoosing($event)" /></td>
-        <td><SwitchButton :isChecked=blurringState @switched="toggleBlurring($event)" /></td>
-        <td><SwitchButton :isChecked=avatarFaviconState @switched="toggleAvatarFavicon($event)" /></td>
-        <td>
-            <div class="sliderWithInfo">
-                <RangeSlider ref="soundMultiplier" :min=0 :max=40 :value=soundMultiplier @selected="soundMultiplierSelected($event)" @isChoosing="soundMultiplierChoosing($event)" />
-                <InfoArea :text=soundGain />
-            </div>
-        </td>
+            <td><ColorInput :color=themeColor @selected="themeColorSelected($event)" @isChoosing="themeColorChoosing($event)" /></td>
+            <td><SwitchButton :isChecked=blurringState @switched="toggleBlurring($event)" /></td>
+            <td><SwitchButton :isChecked=avatarFaviconState @switched="toggleAvatarFavicon($event)" /></td>
+        </tr>
+        <tr>
+            <td>
+                <div class="sliderWithInfo">
+                    <RangeSlider ref="soundMultiplier" :min=0 :max=40 :value=soundMultiplier @selected="soundMultiplierSelected($event)" @isChoosing="soundMultiplierChoosing($event)" />
+                    <InfoArea :text=soundGainInfo />
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td><TimeInput :timeInSeconds=openingDuration @selected="setOpeningDuration($event)"/></td>
         </tr>
         </tbody>
         </table>
@@ -43,13 +48,15 @@ import ColorInput from "./components/ColorInput.vue";
 import SwitchButton from "./components/SwitchButton.vue";
 import RangeSlider from "./components/RangeSlider.vue";
 import InfoArea from "./components/InfoArea.vue";
+import TimeInput from "./components/TimeInput.vue";
 export default {
     name: "MainPopup",
     components: {
         ColorInput,
         SwitchButton,
         RangeSlider,
-        InfoArea
+        InfoArea,
+        TimeInput
     },
     data() {
         return {
@@ -57,7 +64,8 @@ export default {
             avatarFaviconState: false,
             themeColor: "",
             soundMultiplier: 0,
-            soundGain: 1
+            soundGainInfo: 1,
+            openingDuration: 85 // 1:25 in seconds
         };
     },
     methods: {
@@ -86,10 +94,13 @@ export default {
             chrome.storage.sync.set({ avatarFavicon: status });
         },
         soundMultiplierChoosing(value){
-            this.soundGain = value / 10  + 1;
+            this.soundGainInfo = value / 10  + 1;
         },
         soundMultiplierSelected(value){
             chrome.storage.sync.set({ soundMultiplier: value });
+        },
+        setOpeningDuration(value){
+            chrome.storage.sync.set({ openingDuration: value });
         },
         // Internationalization
         i18n(message){
@@ -104,7 +115,8 @@ export default {
             this.blurringState = (await chrome.runtime.sendMessage({ type: "blurredThumbnails" })).message;
             this.avatarFaviconState = (await chrome.runtime.sendMessage({ type: "avatarFavicon" })).message;
             this.soundMultiplier = parseInt((await chrome.runtime.sendMessage({ type: "soundMultiplier" })).message);
-            this.soundGain = this.soundMultiplier / 10  + 1;
+            this.soundGainInfo = this.soundMultiplier / 10  + 1;
+            this.openingDuration = parseInt((await chrome.runtime.sendMessage({ type: "openingDuration" })).message);
         })();
     }
 };

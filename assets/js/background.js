@@ -15,6 +15,7 @@ function InitStorage() {
             blurredThumbnails: (result.blurredThumbnails === undefined) ? false : result.blurredThumbnails, // Blur episode thumbnails
             avatarFavicon: (result.avatarFavicon === undefined) ? false : result.avatarFavicon, // Use avatar as favicon
             soundMultiplier: (result.soundMultiplier === undefined) ? 10 : result.soundMultiplier,   // Increase video player's sound
+            openingDuration: (result.openingDuration === undefined) ? 85 : result.openingDuration,   // Opening duration to skip
         });
     });
 }
@@ -44,6 +45,9 @@ chrome.runtime.onMessage.addListener(
                 break;
             case "soundMultiplier":
                 chrome.storage.sync.get(['soundMultiplier'], (result) => { sendResponse({ message: result.soundMultiplier }); });
+                break;
+            case "openingDuration":
+                chrome.storage.sync.get(['openingDuration'], (result) => { sendResponse({ message: result.openingDuration }); });
                 break;
             default:
                 sendResponse({ message: null });    // If the request type is unknown, return null

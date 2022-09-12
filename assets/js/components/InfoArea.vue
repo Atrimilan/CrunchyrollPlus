@@ -1,5 +1,5 @@
 <template>
-    <textarea readonly :value="(this.text).toFixed(1)"></textarea>
+    <textarea readonly :value="this.text.toFixed(1)"></textarea>
 </template>
     
 <script>
@@ -7,7 +7,7 @@ export default {
     name: "InfoArea",
     props: {
         text: Number,
-    }
+    },
 };
 </script>
 
@@ -30,5 +30,9 @@ textarea {
     font-size: 14px;
     padding: 1.5px;
     text-align-last: center;
+    
+    &::selection {
+        background-color: #ff3b15;
+    }
 }
 </style>
