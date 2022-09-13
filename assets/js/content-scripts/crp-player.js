@@ -37,7 +37,7 @@ function ObserveVideoPlayer() {
 
                             LoadCrpTools(); // Load CrunchyrollPlus controls if controlsContainer has child nodes
 
-                            console.clear();
+          //                  console.clear();
                             console.log("%cCrunchyroll PLUS", `color: #f47521`);
 
                             ObserveControlsContainer(); // Start observing controls when vilosControlsContainer is loaded

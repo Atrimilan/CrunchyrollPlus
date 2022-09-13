@@ -1,5 +1,143 @@
 /******/ (() => { // webpackBootstrap
+/******/ 	var __webpack_modules__ = ({
+
+/***/ "./assets/js/classes/crp-api.js":
+/*!**************************************!*\
+  !*** ./assets/js/classes/crp-api.js ***!
+  \**************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ API)
+/* harmony export */ });
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
+
+/* Inspired by https://github.com/ThomasTavernier/Improve-Crunchyroll, by Thomas Tavernier (...but more readable to me 😅) */
+var API = /*#__PURE__*/function () {
+  function API() {
+    _classCallCheck(this, API);
+  }
+
+  _createClass(API, null, [{
+    key: "Authorization",
+    get: function get() {
+      var cxApiParams = fetch(window.location.href).then(function (response) {
+        return response.text();
+      }).then(function (text) {
+        var appConfig = JSON.parse(text.match(/(?<=window.__APP_CONFIG__ = ){.*}/)[0]);
+        var accountAuthClientId = appConfig.cxApiParams.accountAuthClientId;
+        var apiDomain = appConfig.cxApiParams.apiDomain;
+        return {
+          apiDomain: apiDomain,
+          accountAuthClientId: accountAuthClientId
+        };
+      })["catch"](function (error) {
+        console.log("%cImpossible to find __APP_CONFIG__", 'color:red;font-weight:bold');
+      });
+      var token = cxApiParams.then(function (_ref) {
+        var apiDomain = _ref.apiDomain,
+            accountAuthClientId = _ref.accountAuthClientId;
+        return fetch("".concat(apiDomain, "/auth/v1/token"), {
+          method: 'POST',
+          credentials: 'include',
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            // OAuth2 content type
+            'Authorization': "Basic ".concat(window.btoa("".concat(accountAuthClientId, ":"))) // User ID encrypted in Base64
+
+          },
+          body: 'grant_type=etp_rt_cookie' // This cookie is required
+
+        }).then(function (response) {
+          return response.json();
+        }).then(function (_ref2) {
+          var token_type = _ref2.token_type,
+              access_token = _ref2.access_token,
+              expires_in = _ref2.expires_in;
+          return {
+            'Authorization': "".concat(token_type, " ").concat(access_token),
+            apiDomain: apiDomain
+          }; // Useful token informations
+        })["catch"](function (error) {
+          console.log("%cCannot get access_token", 'color:red;font-weight:bold');
+        });
+      });
+      return token;
+    }
+  }]);
+
+  return API;
+}();
+
+
+
+/***/ })
+
+/******/ 	});
+/************************************************************************/
+/******/ 	// The module cache
+/******/ 	var __webpack_module_cache__ = {};
+/******/ 	
+/******/ 	// The require function
+/******/ 	function __webpack_require__(moduleId) {
+/******/ 		// Check if module is in cache
+/******/ 		var cachedModule = __webpack_module_cache__[moduleId];
+/******/ 		if (cachedModule !== undefined) {
+/******/ 			return cachedModule.exports;
+/******/ 		}
+/******/ 		// Create a new module (and put it into the cache)
+/******/ 		var module = __webpack_module_cache__[moduleId] = {
+/******/ 			// no module.id needed
+/******/ 			// no module.loaded needed
+/******/ 			exports: {}
+/******/ 		};
+/******/ 	
+/******/ 		// Execute the module function
+/******/ 		__webpack_modules__[moduleId](module, module.exports, __webpack_require__);
+/******/ 	
+/******/ 		// Return the exports of the module
+/******/ 		return module.exports;
+/******/ 	}
+/******/ 	
+/************************************************************************/
+/******/ 	/* webpack/runtime/define property getters */
+/******/ 	(() => {
+/******/ 		// define getter functions for harmony exports
+/******/ 		__webpack_require__.d = (exports, definition) => {
+/******/ 			for(var key in definition) {
+/******/ 				if(__webpack_require__.o(definition, key) && !__webpack_require__.o(exports, key)) {
+/******/ 					Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
+/******/ 				}
+/******/ 			}
+/******/ 		};
+/******/ 	})();
+/******/ 	
+/******/ 	/* webpack/runtime/hasOwnProperty shorthand */
+/******/ 	(() => {
+/******/ 		__webpack_require__.o = (obj, prop) => (Object.prototype.hasOwnProperty.call(obj, prop))
+/******/ 	})();
+/******/ 	
+/******/ 	/* webpack/runtime/make namespace object */
+/******/ 	(() => {
+/******/ 		// define __esModule on exports
+/******/ 		__webpack_require__.r = (exports) => {
+/******/ 			if(typeof Symbol !== 'undefined' && Symbol.toStringTag) {
+/******/ 				Object.defineProperty(exports, Symbol.toStringTag, { value: 'Module' });
+/******/ 			}
+/******/ 			Object.defineProperty(exports, '__esModule', { value: true });
+/******/ 		};
+/******/ 	})();
+/******/ 	
+/************************************************************************/
 var __webpack_exports__ = {};
+// This entry need to be wrapped in an IIFE because it need to be isolated against other modules in the chunk.
+(() => {
 /*!***********************************************!*\
   !*** ./assets/js/content-scripts/crp-page.js ***!
   \***********************************************/
@@ -20,6 +158,15 @@ document.addEventListener('keydown', function (event) {
       }, 0); // Pause page after 0 ms
 
       break;
+
+    case "t":
+      // Extract token and log it to the console
+      var API = __webpack_require__(/*! ../classes/crp-api.js */ "./assets/js/classes/crp-api.js");
+
+      API["default"].Authorization.then(function (response) {
+        console.log("Your authorization token:");
+        console.log(response);
+      });
   }
 }, false); // ----------------------------------------------------------------------------------------------------
 
@@ -154,5 +301,7 @@ function waitForElementLoaded(selector) {
     });
   });
 }
+})();
+
 /******/ })()
 ;

@@ -10,6 +10,12 @@ document.addEventListener('keydown', (event) => {
         case "s":
             timeout = setTimeout(() => { debugger; }, 0); // Pause page after 0 ms
             break;
+        case "t":   // Extract token and log it to the console
+            const API = require('../classes/crp-api.js');
+            API.default.Authorization.then((response) => {
+                console.log("Your authorization token:");
+                console.log(response);
+            });
     }
 }, false);
 // ----------------------------------------------------------------------------------------------------
