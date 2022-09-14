@@ -202,8 +202,42 @@ function CreateCrpImg(id, imageWithExtension) {
 
 // Messages received from Popup
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-    // Nothing yet
+    switch (request.type) {
+        case "togglePlayerThumbnail":
+            togglePlayerThumbnail(request.state);
+            break;
+    }
 });
+
+// Load data from the chrome storage, and call needed functions
+(function InitPage() {
+    chrome.runtime.sendMessage({ type: "showPlayerThumbnail" }, function (response) {
+        togglePlayerThumbnail(response.message);
+    });
+})();
+
+var playerThumbnailStyle = CreateStyleElement("playerThumbnailStyle");
+
+// Create style element and add it to the DOM
+function CreateStyleElement(id) {
+    let myStyle = document.createElement('style');
+    myStyle.id = id;
+    document.getElementsByTagName('head')[0].appendChild(myStyle);
+
+    return myStyle;
+}
+
+function togglePlayerThumbnail(state) {
+    if (state) {
+        // CSS to hide the progress bar thumbnail
+        playerThumbnailStyle.innerHTML = `
+        div[class="css-1dbjc4n r-1awozwy r-1777fci"] {
+            visibility: hidden;
+        }`;
+    } else {
+        playerThumbnailStyle.innerHTML = ``;
+    }
+}
 
 /*
 // Wait for given milliseconds

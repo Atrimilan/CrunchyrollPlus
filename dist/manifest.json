@@ -4,7 +4,7 @@
     "author": "Milan NICOLAS",
     "version": "1.0.0",
     "manifest_version": 3,
-    "default_locale" : "en",
+    "default_locale": "en",
     "icons": {
         "16": "./images/icons/crp_icon_16.png",
         "32": "./images/icons/crp_icon_32.png",
@@ -61,8 +61,12 @@
                 "images/*"
             ],
             "matches": [
-                "https://static.crunchyroll.com/*"
+                "https://static.crunchyroll.com/*",
+                "https://beta.crunchyroll.com/*"
             ]
         }
-    ]
+    ],
+    "content_security_policy": {
+        "extension_pages": "script-src 'self'; object-src 'self'"
+    }
 }

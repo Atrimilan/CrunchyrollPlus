@@ -28,6 +28,8 @@ function InitStorage() {
       // Set website theme color
       blurredThumbnails: result.blurredThumbnails === undefined ? false : result.blurredThumbnails,
       // Blur episode thumbnails
+      showPlayerThumbnail: result.blurredThumbnails === undefined ? true : result.showPlayerThumbnail,
+      // Progress bar thumbnail
       avatarFavicon: result.avatarFavicon === undefined ? false : result.avatarFavicon,
       // Use avatar as favicon
       soundMultiplier: result.soundMultiplier === undefined ? 10 : result.soundMultiplier,
@@ -73,6 +75,14 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
       chrome.storage.sync.get(['blurredThumbnails'], function (result) {
         sendResponse({
           message: result.blurredThumbnails
+        });
+      });
+      break;
+
+    case "showPlayerThumbnail":
+      chrome.storage.sync.get(['showPlayerThumbnail'], function (result) {
+        sendResponse({
+          message: result.showPlayerThumbnail
         });
       });
       break;

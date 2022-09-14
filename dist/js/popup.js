@@ -17496,6 +17496,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
   data: function data() {
     return {
       blurringState: false,
+      playerThumbnailState: true,
       avatarFaviconState: false,
       themeColor: "",
       soundMultiplier: 0,
@@ -17537,6 +17538,20 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 
       chrome.storage.sync.set({
         blurredThumbnails: status
+      });
+    },
+    togglePlayerThumbnail: function togglePlayerThumbnail(status) {
+      chrome.tabs.query({
+        active: true,
+        currentWindow: true
+      }, function (tabs) {
+        chrome.tabs.sendMessage(tabs[0].id, {
+          type: "togglePlayerThumbnail",
+          state: status
+        });
+      });
+      chrome.storage.sync.set({
+        showPlayerThumbnail: status
       });
     },
     toggleAvatarFavicon: function toggleAvatarFavicon(status) {
@@ -17597,32 +17612,39 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
               _this.blurringState = _context.sent.message;
               _context.next = 8;
               return chrome.runtime.sendMessage({
-                type: "avatarFavicon"
+                type: "showPlayerThumbnail"
               });
 
             case 8:
+              _this.playerThumbnailState = _context.sent.message;
+              _context.next = 11;
+              return chrome.runtime.sendMessage({
+                type: "avatarFavicon"
+              });
+
+            case 11:
               _this.avatarFaviconState = _context.sent.message;
               _context.t0 = parseInt;
-              _context.next = 12;
+              _context.next = 15;
               return chrome.runtime.sendMessage({
                 type: "soundMultiplier"
               });
 
-            case 12:
+            case 15:
               _context.t1 = _context.sent.message;
               _this.soundMultiplier = (0, _context.t0)(_context.t1);
               _this.soundGainInfo = _this.soundMultiplier / 10 + 1;
               _context.t2 = parseInt;
-              _context.next = 18;
+              _context.next = 21;
               return chrome.runtime.sendMessage({
                 type: "openingDuration"
               });
 
-            case 18:
+            case 21:
               _context.t3 = _context.sent.message;
               _this.openingDuration = (0, _context.t2)(_context.t3);
 
-            case 20:
+            case 23:
             case "end":
               return _context.stop();
           }
@@ -17840,11 +17862,24 @@ var _hoisted_4 = {
 var _hoisted_5 = {
   "class": "crp_text"
 };
-var _hoisted_6 = {
+
+var _hoisted_6 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)("Main theme color: ");
+
+var _hoisted_7 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)("Blur episode thumbnails: ");
+
+var _hoisted_8 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)("Use avatar as favicon: ");
+
+var _hoisted_9 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)("Hide progress bar thumbnail: ");
+
+var _hoisted_10 = {
   "class": "sliderWithInfo"
 };
 
-var _hoisted_7 = /*#__PURE__*/_withScopeId(function () {
+var _hoisted_11 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)(" Sound booster gain: ");
+
+var _hoisted_12 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)("Duration for opening skipper: ");
+
+var _hoisted_13 = /*#__PURE__*/_withScopeId(function () {
   return /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("footer", null, [/*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", {
     id: "footer-text"
   }, [/*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("a", {
@@ -17875,7 +17910,7 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
   /* TEXT */
   ), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("p", _hoisted_5, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($options.i18n("configuration")), 1
   /* TEXT */
-  ), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("table", null, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("tbody", null, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("tr", null, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", null, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_ColorInput, {
+  ), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("table", null, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("tbody", null, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("tr", null, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", null, [_hoisted_6, (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_ColorInput, {
     color: $data.themeColor,
     onSelected: _cache[0] || (_cache[0] = function ($event) {
       return $options.themeColorSelected($event);
@@ -17885,29 +17920,36 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
     })
   }, null, 8
   /* PROPS */
-  , ["color"])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", null, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_SwitchButton, {
+  , ["color"])])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("tr", null, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", null, [_hoisted_7, (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_SwitchButton, {
     isChecked: $data.blurringState,
     onSwitched: _cache[2] || (_cache[2] = function ($event) {
       return $options.toggleBlurring($event);
     })
   }, null, 8
   /* PROPS */
-  , ["isChecked"])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", null, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_SwitchButton, {
+  , ["isChecked"])])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("tr", null, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", null, [_hoisted_8, (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_SwitchButton, {
     isChecked: $data.avatarFaviconState,
     onSwitched: _cache[3] || (_cache[3] = function ($event) {
       return $options.toggleAvatarFavicon($event);
     })
   }, null, 8
   /* PROPS */
-  , ["isChecked"])])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("tr", null, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", null, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_6, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_RangeSlider, {
+  , ["isChecked"])])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("tr", null, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", null, [_hoisted_9, (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_SwitchButton, {
+    isChecked: $data.playerThumbnailState,
+    onSwitched: _cache[4] || (_cache[4] = function ($event) {
+      return $options.togglePlayerThumbnail($event);
+    })
+  }, null, 8
+  /* PROPS */
+  , ["isChecked"])])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("tr", null, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", null, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_10, [_hoisted_11, (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_RangeSlider, {
     ref: "soundMultiplier",
     min: 0,
     max: 40,
     value: $data.soundMultiplier,
-    onSelected: _cache[4] || (_cache[4] = function ($event) {
+    onSelected: _cache[5] || (_cache[5] = function ($event) {
       return $options.soundMultiplierSelected($event);
     }),
-    onIsChoosing: _cache[5] || (_cache[5] = function ($event) {
+    onIsChoosing: _cache[6] || (_cache[6] = function ($event) {
       return $options.soundMultiplierChoosing($event);
     })
   }, null, 8
@@ -17916,14 +17958,14 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
     text: $data.soundGainInfo
   }, null, 8
   /* PROPS */
-  , ["text"])])])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("tr", null, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", null, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_TimeInput, {
+  , ["text"])])])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("tr", null, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", null, [_hoisted_12, (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_TimeInput, {
     timeInSeconds: $data.openingDuration,
-    onSelected: _cache[6] || (_cache[6] = function ($event) {
+    onSelected: _cache[7] || (_cache[7] = function ($event) {
       return $options.setOpeningDuration($event);
     })
   }, null, 8
   /* PROPS */
-  , ["timeInSeconds"])])])])])]), _hoisted_7]);
+  , ["timeInSeconds"])])])])])]), _hoisted_13]);
 }
 
 /***/ }),

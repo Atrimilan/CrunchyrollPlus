@@ -213,8 +213,39 @@ function CreateCrpImg(id, imageWithExtension) {
 } // Messages received from Popup
 
 
-chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {// Nothing yet
-});
+chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
+  switch (request.type) {
+    case "togglePlayerThumbnail":
+      togglePlayerThumbnail(request.state);
+      break;
+  }
+}); // Load data from the chrome storage, and call needed functions
+
+(function InitPage() {
+  chrome.runtime.sendMessage({
+    type: "showPlayerThumbnail"
+  }, function (response) {
+    togglePlayerThumbnail(response.message);
+  });
+})();
+
+var playerThumbnailStyle = CreateStyleElement("playerThumbnailStyle"); // Create style element and add it to the DOM
+
+function CreateStyleElement(id) {
+  var myStyle = document.createElement('style');
+  myStyle.id = id;
+  document.getElementsByTagName('head')[0].appendChild(myStyle);
+  return myStyle;
+}
+
+function togglePlayerThumbnail(state) {
+  if (state) {
+    // CSS to hide the progress bar thumbnail
+    playerThumbnailStyle.innerHTML = "\n        div[class=\"css-1dbjc4n r-1awozwy r-1777fci\"] {\n            visibility: hidden;\n        }";
+  } else {
+    playerThumbnailStyle.innerHTML = "";
+  }
+}
 /*
 // Wait for given milliseconds
 // USE : delay(1000).then(() => { ... });
@@ -223,6 +254,7 @@ function delay(time) {
 }
 */
 // Change loading spinner color to the stored theme color
+
 
 var loadSpinner = document.querySelectorAll('div[data-testid="vilos-loading"] path');
 

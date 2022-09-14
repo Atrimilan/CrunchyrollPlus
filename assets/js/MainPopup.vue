@@ -13,20 +13,32 @@
         <table>
         <tbody>
         <tr>
-            <td><ColorInput :color=themeColor @selected="themeColorSelected($event)" @isChoosing="themeColorChoosing($event)" /></td>
-            <td><SwitchButton :isChecked=blurringState @switched="toggleBlurring($event)" /></td>
-            <td><SwitchButton :isChecked=avatarFaviconState @switched="toggleAvatarFavicon($event)" /></td>
+            <td>Main theme color: <ColorInput :color=themeColor @selected="themeColorSelected($event)" @isChoosing="themeColorChoosing($event)" /></td>
         </tr>
+
         <tr>
-            <td>
+            <td>Blur episode thumbnails: <SwitchButton :isChecked=blurringState @switched="toggleBlurring($event)" /></td>
+        </tr>
+
+        <tr>
+            <td>Use avatar as favicon: <SwitchButton :isChecked=avatarFaviconState @switched="toggleAvatarFavicon($event)" /></td>
+        </tr>
+
+        <tr>
+            <td>Hide progress bar thumbnail: <SwitchButton :isChecked=playerThumbnailState @switched="togglePlayerThumbnail($event)" /></td>
+        </tr>
+
+        <tr>
+            <td> 
                 <div class="sliderWithInfo">
-                    <RangeSlider ref="soundMultiplier" :min=0 :max=40 :value=soundMultiplier @selected="soundMultiplierSelected($event)" @isChoosing="soundMultiplierChoosing($event)" />
+                    Sound booster gain: <RangeSlider ref="soundMultiplier" :min=0 :max=40 :value=soundMultiplier @selected="soundMultiplierSelected($event)" @isChoosing="soundMultiplierChoosing($event)" />
                     <InfoArea :text=soundGainInfo />
                 </div>
             </td>
         </tr>
+
         <tr>
-            <td><TimeInput :timeInSeconds=openingDuration @selected="setOpeningDuration($event)"/></td>
+            <td>Duration for opening skipper: <TimeInput :timeInSeconds=openingDuration @selected="setOpeningDuration($event)"/></td>
         </tr>
         </tbody>
         </table>
@@ -61,6 +73,7 @@ export default {
     data() {
         return {
             blurringState: false,
+            playerThumbnailState: true,
             avatarFaviconState: false,
             themeColor: "",
             soundMultiplier: 0,
@@ -86,6 +99,12 @@ export default {
             });
             // And save status to chrome storage
             chrome.storage.sync.set({ blurredThumbnails: status });
+        },
+        togglePlayerThumbnail(status) {
+            chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
+                chrome.tabs.sendMessage(tabs[0].id, {type: "togglePlayerThumbnail", state: status});
+            });
+            chrome.storage.sync.set({ showPlayerThumbnail: status });
         },
         toggleAvatarFavicon(status) {
             chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
@@ -113,6 +132,7 @@ export default {
         (async () => {
             this.themeColor = (await chrome.runtime.sendMessage({ type: "themeColor" })).message;
             this.blurringState = (await chrome.runtime.sendMessage({ type: "blurredThumbnails" })).message;
+            this.playerThumbnailState = (await chrome.runtime.sendMessage({ type: "showPlayerThumbnail" })).message;
             this.avatarFaviconState = (await chrome.runtime.sendMessage({ type: "avatarFavicon" })).message;
             this.soundMultiplier = parseInt((await chrome.runtime.sendMessage({ type: "soundMultiplier" })).message);
             this.soundGainInfo = this.soundMultiplier / 10  + 1;
