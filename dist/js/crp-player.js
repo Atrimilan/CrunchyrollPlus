@@ -240,10 +240,10 @@ function CreateStyleElement(id) {
 
 function togglePlayerThumbnail(state) {
   if (state) {
+    playerThumbnailStyle.innerHTML = "";
+  } else {
     // CSS to hide the progress bar thumbnail
     playerThumbnailStyle.innerHTML = "\n        div[class=\"css-1dbjc4n r-1awozwy r-1777fci\"] {\n            visibility: hidden;\n        }";
-  } else {
-    playerThumbnailStyle.innerHTML = "";
   }
 }
 /*

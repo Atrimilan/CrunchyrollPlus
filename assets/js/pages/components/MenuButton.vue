@@ -89,7 +89,7 @@ $ease: 0.4s ease;
     }
 
     &#settings {
-        background-image: linear-gradient(45deg, #ff00b7, #ff2e66);
+        background-image: linear-gradient(45deg, #ff00b7, #ff6766);
         &:hover {
             box-shadow: 0px 0px 10px 3px #ff1592;   // Affected by the filter!
         }

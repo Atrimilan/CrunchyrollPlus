@@ -12,11 +12,11 @@ function InitStorage() {
             moveForwardTime: (result.moveForwardTime === undefined) ? 5 : result.moveForwardTime,   // Time to move forward
             moveBackwardTime: (result.moveBackwardTime === undefined) ? 5 : result.moveBackwardTime,    // Time to move backward
             themeColor: (result.themeColor === undefined) ? "#f47521" : result.themeColor,  // Set website theme color
-            blurredThumbnails: (result.blurredThumbnails === undefined) ? false : result.blurredThumbnails, // Blur episode thumbnails
+            blurredThumbnails: (result.blurredThumbnails === undefined) ? true : result.blurredThumbnails, // Blur episode thumbnails
             showPlayerThumbnail: (result.blurredThumbnails === undefined) ? true : result.showPlayerThumbnail,  // Progress bar thumbnail
             avatarFavicon: (result.avatarFavicon === undefined) ? false : result.avatarFavicon, // Use avatar as favicon
             soundMultiplier: (result.soundMultiplier === undefined) ? 10 : result.soundMultiplier,   // Increase video player's sound
-            openingDuration: (result.openingDuration === undefined) ? 85 : result.openingDuration,   // Opening duration to skip
+            openingDuration: (result.openingDuration === undefined) ? 85 : result.openingDuration,   // Opening duration to skip (1:25 here)
         });
     });
 }

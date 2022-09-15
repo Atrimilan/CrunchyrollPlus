@@ -26,7 +26,7 @@ function InitStorage() {
       // Time to move backward
       themeColor: result.themeColor === undefined ? "#f47521" : result.themeColor,
       // Set website theme color
-      blurredThumbnails: result.blurredThumbnails === undefined ? false : result.blurredThumbnails,
+      blurredThumbnails: result.blurredThumbnails === undefined ? true : result.blurredThumbnails,
       // Blur episode thumbnails
       showPlayerThumbnail: result.blurredThumbnails === undefined ? true : result.showPlayerThumbnail,
       // Progress bar thumbnail
@@ -34,7 +34,7 @@ function InitStorage() {
       // Use avatar as favicon
       soundMultiplier: result.soundMultiplier === undefined ? 10 : result.soundMultiplier,
       // Increase video player's sound
-      openingDuration: result.openingDuration === undefined ? 85 : result.openingDuration // Opening duration to skip
+      openingDuration: result.openingDuration === undefined ? 85 : result.openingDuration // Opening duration to skip (1:25 here)
 
     });
   });

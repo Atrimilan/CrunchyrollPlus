@@ -2,7 +2,7 @@
     <div class="app">
         <header>
             <Transition name="fade">
-                <BackButton v-if="pageToShow != 'home'" @back="openPage('home')" class="backButton" />
+                <BackButton v-if="pageToShow != 'home'" :title="i18n(`menuButton_${pageToShow}`)" @back="openPage('home')" class="backButton" />
                 <div class="logos" v-else>
                     <img src="images/icons/crp_icon_128.png" alt="CrunchyrollPlus icon" class="icon" />
                     <img src="images/icons/crp_logo_512.png" alt="CrunchyrollPlus logo" class="logo" />
@@ -14,6 +14,7 @@
             <Transition :name="pageToShow === 'home' ? 'slide-right' : 'slide-left'" >
                 <Home v-if="pageToShow === 'home'" @pageSelected="openPage($event)"/>
                 <General v-else-if="pageToShow === 'general'"/>
+                <Player v-else-if="pageToShow === 'player'"/>
             </Transition>
         </div>
     
@@ -30,22 +31,24 @@
 <script>
 import Home from "./pages/Home.vue";
 import General from "./pages/General.vue";
+import Player from "./pages/Player.vue";
 import BackButton from "./pages/components/BackButton.vue";
 export default {
     name: "Popup",
     components: {
         Home,
         General,
+        Player,
         BackButton
     },
     data() {
         return {
-            pageToShow: "home"
+            pageToShow: "home",
         };
     },
     methods: {
-        // Internationalization
         i18n(message){
+            // Internationalization
             return chrome.i18n.getMessage(message);
         },
         openPage(page){
