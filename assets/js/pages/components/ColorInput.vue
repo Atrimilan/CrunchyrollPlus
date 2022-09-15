@@ -1,5 +1,5 @@
 <template>
-    <input type="color" v-model="color" @input="notifyIsChoosing($event)" @change="notifySelected($event)" />
+    <input type="color" v-model="currentColor" @input="notifyIsChoosing($event)" @change="notifySelected($event)" />
 </template>
 
 <script>
@@ -7,6 +7,11 @@ export default {
     name: "ColorInput",
     props: {
         color: String,
+    },
+    data(){
+        return {
+            currentColor: "#f47521",    // Default color
+        }
     },
     methods: {
         notifyIsChoosing(color) {
@@ -16,6 +21,12 @@ export default {
             this.$emit("selected", color.target.value);
         },
     },
+    watch: {
+        // Value needs to be watched, because it is asynchronously updated from the MainPopup
+        color: function(val, oldVal) {
+            this.currentColor = val;
+        }
+    }
 };
 </script>
 

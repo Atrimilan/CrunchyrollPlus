@@ -1,56 +1,37 @@
 <template>
-<div class="popup">
-    <header>
-        <img src="images/icons/crp_icon_128.png" alt="CrunchyrollPlus icon" class="icon" />
-        <img src="images/icons/crp_logo_512.png" alt="CrunchyrollPlus logo" class="logo" />
-    </header>
+<div class="general">
+    <table>
+    <tbody>
+    <tr>
+        <td>Main theme color: <ColorInput :color=themeColor @selected="themeColorSelected($event)" @isChoosing="themeColorChoosing($event)" /></td>
+    </tr>
 
-    
-    <div class="wrapper">
-        <h1 class="crp_h1">{{ i18n("Hello") }}</h1>
-        <p class="crp_text">{{ i18n("configuration") }}</p>
-        
-        <table>
-        <tbody>
-        <tr>
-            <td>Main theme color: <ColorInput :color=themeColor @selected="themeColorSelected($event)" @isChoosing="themeColorChoosing($event)" /></td>
-        </tr>
+    <tr>
+        <td>Blur episode thumbnails: <SwitchButton :isChecked=blurringState @switched="toggleBlurring($event)" /></td>
+    </tr>
 
-        <tr>
-            <td>Blur episode thumbnails: <SwitchButton :isChecked=blurringState @switched="toggleBlurring($event)" /></td>
-        </tr>
+    <tr>
+        <td>Use avatar as favicon: <SwitchButton :isChecked=avatarFaviconState @switched="toggleAvatarFavicon($event)" /></td>
+    </tr>
 
-        <tr>
-            <td>Use avatar as favicon: <SwitchButton :isChecked=avatarFaviconState @switched="toggleAvatarFavicon($event)" /></td>
-        </tr>
+    <tr>
+        <td>Hide progress bar thumbnail: <SwitchButton :isChecked=playerThumbnailState @switched="togglePlayerThumbnail($event)" /></td>
+    </tr>
 
-        <tr>
-            <td>Hide progress bar thumbnail: <SwitchButton :isChecked=playerThumbnailState @switched="togglePlayerThumbnail($event)" /></td>
-        </tr>
+    <tr>
+        <td> 
+            <div class="sliderWithInfo">
+                Sound booster gain: <RangeSlider ref="soundMultiplier" :min=0 :max=40 :value=soundMultiplier @selected="soundMultiplierSelected($event)" @isChoosing="soundMultiplierChoosing($event)" />
+                <InfoArea :text=soundGainInfo />
+            </div>
+        </td>
+    </tr>
 
-        <tr>
-            <td> 
-                <div class="sliderWithInfo">
-                    Sound booster gain: <RangeSlider ref="soundMultiplier" :min=0 :max=40 :value=soundMultiplier @selected="soundMultiplierSelected($event)" @isChoosing="soundMultiplierChoosing($event)" />
-                    <InfoArea :text=soundGainInfo />
-                </div>
-            </td>
-        </tr>
-
-        <tr>
-            <td>Duration for opening skipper: <TimeInput :timeInSeconds=openingDuration @selected="setOpeningDuration($event)"/></td>
-        </tr>
-        </tbody>
-        </table>
-        
-    </div>
-
-    <footer>
-        <div id="footer-text">
-            <a id="github-link" target="_blank" href="https://github.com/Atrimilan/CrunchyrollPlus">GitHub</a>
-            <a id="author" target="_blank" href="https://github.com/Atrimilan/CrunchyrollPlus">Milan NICOLAS</a>
-        </div>
-    </footer>
+    <tr>
+        <td>Duration for opening skipper: <TimeInput :timeInSeconds=openingDuration @selected="setOpeningDuration($event)"/></td>
+    </tr>
+    </tbody>
+    </table>
 </div>
 </template>
 
@@ -62,7 +43,7 @@ import RangeSlider from "./components/RangeSlider.vue";
 import InfoArea from "./components/InfoArea.vue";
 import TimeInput from "./components/TimeInput.vue";
 export default {
-    name: "MainPopup",
+    name: "General",
     components: {
         ColorInput,
         SwitchButton,
@@ -143,6 +124,11 @@ export default {
 </script>
 
 <style scoped lang="scss">
+.general {
+    position: absolute; // For better transitions in Popup.vue
+    width: 96%;         // it won't need "mode='out-in', entering and leaving can happen at the same time
+}
+
 .sliderWithInfo {
     width: fit-content;
     > * {

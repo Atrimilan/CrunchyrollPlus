@@ -6,6 +6,7 @@ body {
   height: 500px;
   width: 300px;
   position: relative;
+  display: block;
   margin: 0;
 }
 
@@ -21,7 +22,14 @@ body {
   font-size: 22px;
 }
 
-.wrapper {
+.test {
+  display: block;
+  height: 20px;
+  width: 20px;
+  background-color: whitesmoke;
+}
+
+.content {
   // Prevent user from selecting text
   -moz-user-select: none; // Firefox
   -webkit-user-select: none; // Chrome, Safari, Opera from version 15
@@ -32,11 +40,30 @@ body {
 }
 
 header {
+  height: 52px;
   text-align: center;
   background-color: #23252b;
   border-bottom: 1px solid #141519;
-  > * {
+
+  * {
     margin: 1%;
+  }
+  
+  display: flex;
+  align-items: center;
+
+  .backButton {
+    float: left;
+    width: 20%;
+  }
+  
+  .logos {
+    .icon {
+      width: 15%;
+    }
+    .logo {
+      width: 75%;
+    }
   }
 }
 
@@ -64,12 +91,4 @@ footer {
 #github-link:hover,
 #author:hover {
   color: #a0a0a0;
-}
-
-.icon {
-  width: 15%;
-}
-
-.logo {
-  width: 75%;
 }

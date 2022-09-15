@@ -1,5 +1,20 @@
 {
-    "extDescription": { "message": "Enhance your Crunchyroll experience with the Crunchyroll Plus extension" },
-    "hello": { "message": "Hello !" },
-    "configuration": { "message": "Configure Crunchyroll below:" }
+    "extDescription": {
+        "message": "Enhance your Crunchyroll experience with the Crunchyroll Plus extension"
+    },
+    "hello": {
+        "message": "Hello !"
+    },
+    "configuration": {
+        "message": "Configure Crunchyroll below:"
+    },
+    "menuButton_general": {
+        "message": "General"
+    },
+    "menuButton_player": {
+        "message": "Video Player"
+    },
+    "menuButton_settings": {
+        "message": "Settings"
+    }
 }
