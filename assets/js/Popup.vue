@@ -15,6 +15,7 @@
                 <Home v-if="pageToShow === 'home'" @pageSelected="openPage($event)"/>
                 <General v-else-if="pageToShow === 'general'"/>
                 <Player v-else-if="pageToShow === 'player'"/>
+                <Settings v-else-if="pageToShow === 'settings'"/>
             </Transition>
         </div>
     
@@ -32,6 +33,7 @@
 import Home from "./pages/Home.vue";
 import General from "./pages/General.vue";
 import Player from "./pages/Player.vue";
+import Settings from "./pages/Settings.vue";
 import BackButton from "./pages/components/BackButton.vue";
 export default {
     name: "Popup",
@@ -39,7 +41,8 @@ export default {
         Home,
         General,
         Player,
-        BackButton
+        BackButton,
+        Settings
     },
     data() {
         return {

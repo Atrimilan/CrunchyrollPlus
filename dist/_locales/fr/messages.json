@@ -10,5 +10,26 @@
     },
     "menuButton_settings": {
         "message": "Paramètres"
+    },
+    "generalItem_themeColor": {
+        "message": "Couleur du thème Crunchyroll"
+    },
+    "generalItem_blurring": {
+        "message": "Flouter les vignettes"
+    },
+    "generalItem_avatarFavicon": {
+        "message": "Avatar en tant que favicon"
+    },
+    "playerItem_playerThumbnail": {
+        "message": "Vignette sur la barre de lecture"
+    },
+    "playerItem_soundMultiplier": {
+        "message": "Gain du booster"
+    },
+    "playerItem_openingDuration": {
+        "message": "Durée des openings"
+    },
+    "settingsItem_reset": {
+        "message": "Réinitialiser Crunchyroll Plus"
     }
 }

@@ -1,0 +1,47 @@
+.item {
+    & > * {
+        margin: 0;
+    }
+
+    .content {
+        height: 50px;
+        width: 100%;
+        background: #161920;
+        box-shadow: 0px 3px 4px 0px #16161b;
+
+        .text,
+        .tool {
+            height: 100%;
+            display: flex; // Centering
+            align-items: center; // contents
+            margin: 0 10px;
+        }
+
+        .text {
+            float: left;
+            max-width: 80%;
+        }
+        .tool {
+            float: right;
+        }
+    }
+
+    .separator {
+        margin: 0 0 2% 0;
+        height: 2px;
+        background: #2a2e35;
+        .highlighter {
+            height: 100%;
+            width: 100%;
+            background-image: linear-gradient(45deg, #ff00b7, #ff6766);
+            opacity: 0;
+            transition: opacity 0.3s ease-out; // Transition of the gradient thanks to opacity
+        }
+    }
+
+    &:hover {
+        .separator .highlighter {
+            opacity: 1;
+        }
+    }
+}

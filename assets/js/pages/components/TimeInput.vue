@@ -94,7 +94,7 @@ div {
             text-align: left;
         }
         &::-webkit-inner-spin-button {
-            -webkit-appearance: none;
+            appearance: none;
         }
         &::selection {
             background-color: #ff3b15;

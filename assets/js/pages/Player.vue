@@ -1,25 +1,27 @@
 <template>
 <div class="player">
-    <table>
-    <tbody>
-    <tr>
-        <td><span class="crp_text">Show progress bar thumbnail: </span><SwitchButton :isChecked=playerThumbnailState @switched="togglePlayerThumbnail($event)" /></td>
-    </tr>
+    
+    <div class="item" v-for="item in listItems" :key="item.id">
+        <div class="content">
 
-    <tr>
-        <td> 
-            <div class="sliderWithInfo">
-                <span class="crp_text">Sound booster gain:</span> <RangeSlider ref="soundMultiplier" :min=0 :max=40 :value=soundMultiplier @selected="soundMultiplierSelected($event)" @isChoosing="soundMultiplierChoosing($event)" />
-                <InfoArea :text=soundGainInfo />
+            <div class="text">
+                <p class="crp_text" :id=item.id>{{ i18n(`playerItem_${item.id}`) }}</p>
             </div>
-        </td>
-    </tr>
 
-    <tr>
-        <td><span class="crp_text">Duration for opening skipper:</span> <TimeInput :timeInSeconds=openingDuration @selected="setOpeningDuration($event)"/></td>
-    </tr>
-    </tbody>
-    </table>
+            <div class="tool">
+                <SwitchButton v-if="item.id==='playerThumbnail'" :isChecked=playerThumbnailState @switched="togglePlayerThumbnail($event)" />
+                <div v-else-if="item.id==='soundMultiplier'" class="sliderWithInfo">
+                    <RangeSlider ref="soundMultiplier" :min=0 :max=40 :value=soundMultiplier @selected="soundMultiplierSelected($event)" @isChoosing="soundMultiplierChoosing($event)" />
+                    <InfoArea :text=soundGainInfo />
+                </div>
+                <TimeInput v-else-if="item.id==='openingDuration'" :timeInSeconds=openingDuration @selected="setOpeningDuration($event)"/>
+            </div>
+            
+        </div>
+        <div class="separator">
+            <div class="highlighter"></div>
+        </div>
+    </div>
 </div>
 </template>
 
@@ -39,6 +41,11 @@ export default {
     },
     data() {
         return {
+            listItems: [
+                { id: "playerThumbnail" },
+                { id: "soundMultiplier" },
+                { id: "openingDuration" },
+            ],
             playerThumbnailState: true,
             soundMultiplier: 0,
             soundGainInfo: 1,
@@ -46,6 +53,9 @@ export default {
         };
     },
     methods: {
+        i18n(message) {
+            return chrome.i18n.getMessage(message);
+        },
         togglePlayerThumbnail(status) {
             chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
                 chrome.tabs.sendMessage(tabs[0].id, {type: "togglePlayerThumbnail", state: status});
@@ -76,9 +86,12 @@ export default {
 </script>
 
 <style scoped lang="scss">
+    
+@import "../../sass/list-items.scss";
+
 .player {
-    position: absolute; // For better transitions in Popup.vue
-    width: 96%;         // it won't need "mode='out-in', entering and leaving can happen at the same time
+    position: absolute; // For better transitions (won't need "mode='out-in', entering/leaving can happen at the same time)
+    width: 96%;
 }
 
 .sliderWithInfo {

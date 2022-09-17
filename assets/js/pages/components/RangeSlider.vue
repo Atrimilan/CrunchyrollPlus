@@ -42,21 +42,21 @@ export default {
 input[type="range"] {
     background: #32353c;  // Default background until it is updated by the script
     & {
-        -webkit-appearance: none;
-        width: 100px;
+        appearance: none;
+        width: 70px;
         height: 10px;
         border-radius: 50px;
     }
     &::-webkit-slider-runnable-track {
         height: 10px;
-        -webkit-appearance: none;
+        appearance: none;
     }
     &::-webkit-slider-thumb {
         width: 20px;
         height: 20px;
         margin-top: -5px;
         border-radius: 50%;
-        -webkit-appearance: none;
+        appearance: none;
         cursor: pointer;
         background: whitesmoke;
         box-shadow: 0 0 2px black;

@@ -32,7 +32,7 @@ export default {
 
 <style scoped lang="scss">
     .home {
-        position: absolute; // For better transitions in Popup.vue
-        width: 96%;         // it won't need "mode='out-in', entering and leaving can happen at the same time
+        position: absolute; // For better transitions (won't need "mode='out-in', entering/leaving can happen at the same time)
+        width: 96%;
     }
 </style>

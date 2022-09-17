@@ -1,20 +1,25 @@
 <template>
 <div class="general">
-    <table>
-    <tbody class=".crp_text">
-    <tr>
-        <td><span class="crp_text">Main theme color:</span> <ColorInput :color=themeColor @selected="themeColorSelected($event)" @isChoosing="themeColorChoosing($event)" /></td>
-    </tr>
 
-    <tr>
-        <td><span class="crp_text">Blur episode thumbnails:</span> <SwitchButton :isChecked=blurringState @switched="toggleBlurring($event)" /></td>
-    </tr>
+    <div class="item" v-for="item in listItems" :key="item.id">
+        <div class="content">
 
-    <tr>
-        <td><span class="crp_text">Use avatar as favicon:</span> <SwitchButton :isChecked=avatarFaviconState @switched="toggleAvatarFavicon($event)" /></td>
-    </tr>
-    </tbody>
-    </table>
+            <div class="text">
+                <p class="crp_text">{{ i18n(`generalItem_${item.id}`) }}</p>
+            </div>
+
+            <div class="tool">
+                <ColorInput v-if="item.id==='themeColor'" :color=themeColor @selected="themeColorSelected($event)" @isChoosing="themeColorChoosing($event)" />
+                <SwitchButton v-else-if="item.id==='blurring'" :isChecked=blurringState @switched="toggleBlurring($event)" />
+                <SwitchButton v-else-if="item.id==='avatarFavicon'" :isChecked=avatarFaviconState @switched="toggleAvatarFavicon($event)" />
+            </div>
+            
+        </div>
+        <div class="separator">
+            <div class="highlighter"></div>
+        </div>
+    </div>
+
 </div>
 </template>
 
@@ -22,20 +27,29 @@
 <script>
 import ColorInput from "./components/ColorInput.vue";
 import SwitchButton from "./components/SwitchButton.vue";
+
 export default {
     name: "General",
     components: {
         ColorInput,
-        SwitchButton,
+        SwitchButton
     },
     data() {
         return {
+            listItems: [
+                { id: "themeColor" },
+                { id: "blurring" },
+                { id: "avatarFavicon" },
+            ],
             blurringState: false,
             avatarFaviconState: false,
             themeColor: ""
         };
     },
     methods: {
+        i18n(message) {
+            return chrome.i18n.getMessage(message);
+        },
         themeColorChoosing(color){
             // Show changes dynamically, without saving to chrome storage
             chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
@@ -74,8 +88,11 @@ export default {
 </script>
 
 <style scoped lang="scss">
+
+@import "../../sass/list-items.scss";
+
 .general {
-    position: absolute; // For better transitions in Popup.vue
-    width: 96%;         // it won't need "mode='out-in', entering and leaving can happen at the same time
+    position: absolute; // For better transitions (won't need "mode='out-in', entering/leaving can happen at the same time)
+    width: 96%;
 }
 </style>
