@@ -1,7 +1,6 @@
 
 chrome.runtime.onInstalled.addListener(() => {
     chrome.storage.sync.get((result) => { console.log(result); });  // Log existing storage data to the console
-    //ResetStorage();
     InitStorage();
 });
 
@@ -23,6 +22,7 @@ function InitStorage() {
 
 function ResetStorage() {
     chrome.storage.sync.clear();
+    InitStorage();
 }
 
 // Listen for messages from popup or content-script, and return the corresponding result
@@ -52,6 +52,10 @@ chrome.runtime.onMessage.addListener(
                 break;
             case "openingDuration":
                 chrome.storage.sync.get(['openingDuration'], (result) => { sendResponse({ message: result.openingDuration }); });
+                break;
+            case "resetConfig":
+                ResetStorage();
+                console.log("CLEAR");
                 break;
             default:
                 sendResponse({ message: null });    // If the request type is unknown, return null

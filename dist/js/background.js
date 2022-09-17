@@ -11,7 +11,6 @@ chrome.runtime.onInstalled.addListener(function () {
   chrome.storage.sync.get(function (result) {
     console.log(result);
   }); // Log existing storage data to the console
-  //ResetStorage();
 
   InitStorage();
 }); // Initialize default storage settings
@@ -42,6 +41,7 @@ function InitStorage() {
 
 function ResetStorage() {
   chrome.storage.sync.clear();
+  InitStorage();
 } // Listen for messages from popup or content-script, and return the corresponding result
 
 
@@ -109,6 +109,11 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
           message: result.openingDuration
         });
       });
+      break;
+
+    case "resetConfig":
+      ResetStorage();
+      console.log("CLEAR");
       break;
 
     default:

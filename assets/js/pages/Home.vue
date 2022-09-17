@@ -1,5 +1,5 @@
 <template>
-    <div class="home">
+    <div class="crp-page">
         <div v-for="menuButton in menuButtons" :key="menuButton.id">
             <MenuButton :buttonId="menuButton.id" :buttonValue="i18n(menuButton.value)" :buttonIcon="menuButton.icon" @buttonClick="$emit('pageSelected', $event)"/>
         </div>
@@ -31,8 +31,8 @@ export default {
 </script>
 
 <style scoped lang="scss">
-    .home {
-        position: absolute; // For better transitions (won't need "mode='out-in', entering/leaving can happen at the same time)
-        width: 96%;
-    }
+.crp-page {
+    width: 96%;
+    margin: 2%;
+}
 </style>

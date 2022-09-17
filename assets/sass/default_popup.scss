@@ -25,14 +25,19 @@ body {
   font-size: 14px;
 }
 
+.crp-page {
+  position: absolute; // For better transitions (won't need "mode='out-in' anymore, entering/leaving can happen at the same time)
+  width: 100%;
+
+  height: 81%; // These values are really random for now, when a size is set in px, the page rendering is larger than expected...
+}
+
 .content {
   // Prevent user from selecting text
   -moz-user-select: none; // Firefox
   -webkit-user-select: none; // Chrome, Safari, Opera from version 15
   -ms-user-select: none; // Internet Explorer from version 10 and Edge
   user-select: none; // Standard property
-
-  margin: 2%;
 }
 
 header {
@@ -40,11 +45,12 @@ header {
   text-align: center;
   background-color: #23252b;
   border-bottom: 1px solid #141519;
+  margin-bottom: 2%;
 
   * {
     margin: 1%;
   }
-  
+
   display: flex;
   align-items: center;
 
@@ -52,7 +58,7 @@ header {
     float: left;
     width: 20%;
   }
-  
+
   .logos {
     .icon {
       width: 15%;

@@ -1,4 +1,6 @@
 .item {
+    margin: 0 2%;
+
     & > * {
         margin: 0;
     }
@@ -43,5 +45,24 @@
         .separator .highlighter {
             opacity: 1;
         }
+    }
+}
+
+.crp-page {
+    overflow-x: hidden;
+    overflow-y: auto; // Show scrollbar if too many items
+
+    &::-webkit-scrollbar {
+        width: 8px;
+    }
+    &::-webkit-scrollbar-track {
+        border-radius: 10px;
+    }
+    &::-webkit-scrollbar-thumb {
+        border-radius: 10px;
+        background-image: linear-gradient(45deg, #d92400dd, #ff6648dd);
+    }
+    &::-webkit-scrollbar-thumb:active {
+        background-image: linear-gradient(45deg, #d92400, #ff6648);
     }
 }

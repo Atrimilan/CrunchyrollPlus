@@ -17844,6 +17844,12 @@ __webpack_require__.r(__webpack_exports__);
   methods: {
     i18n: function i18n(message) {
       return chrome.i18n.getMessage(message);
+    },
+    resetConfig: function resetConfig() {
+      // Reset all Crunchyroll Plus customizations
+      chrome.runtime.sendMessage({
+        type: "resetConfig"
+      });
     }
   }
 });
@@ -18243,7 +18249,7 @@ var _withScopeId = function _withScopeId(n) {
 };
 
 var _hoisted_1 = {
-  "class": "general"
+  "class": "crp-page"
 };
 var _hoisted_2 = {
   "class": "content"
@@ -18332,7 +18338,7 @@ var _withScopeId = function _withScopeId(n) {
 };
 
 var _hoisted_1 = {
-  "class": "home"
+  "class": "crp-page"
 };
 function render(_ctx, _cache, $props, $setup, $data, $options) {
   var _component_MenuButton = (0,vue__WEBPACK_IMPORTED_MODULE_0__.resolveComponent)("MenuButton");
@@ -18375,7 +18381,7 @@ var _withScopeId = function _withScopeId(n) {
 };
 
 var _hoisted_1 = {
-  "class": "player"
+  "class": "crp-page"
 };
 var _hoisted_2 = {
   "class": "content"
@@ -18480,7 +18486,7 @@ var _withScopeId = function _withScopeId(n) {
 };
 
 var _hoisted_1 = {
-  "class": "settings"
+  "class": "crp-page"
 };
 var _hoisted_2 = {
   "class": "content"
@@ -18516,7 +18522,10 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
     /* TEXT */
     )]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_5, [item.id === 'reset' ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createBlock)(_component_SimpleButton, {
       key: 0,
-      image: "images/miscellaneous/bin.svg"
+      image: "images/miscellaneous/bin.svg",
+      onOnClick: _cache[0] || (_cache[0] = function ($event) {
+        return $options.resetConfig();
+      })
     })) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true)])]), _hoisted_6]);
   }), 128
   /* KEYED_FRAGMENT */
@@ -18730,18 +18739,20 @@ var _withScopeId = function _withScopeId(n) {
   return (0,vue__WEBPACK_IMPORTED_MODULE_0__.pushScopeId)("data-v-f52e5f4c"), n = n(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.popScopeId)(), n;
 };
 
-var _hoisted_1 = {
-  "class": "button"
-};
-var _hoisted_2 = ["src"];
+var _hoisted_1 = ["src"];
 function render(_ctx, _cache, $props, $setup, $data, $options) {
-  return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", _hoisted_1, [$props.image !== '' ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("img", {
+  return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", {
+    "class": "button",
+    onClick: _cache[0] || (_cache[0] = function ($event) {
+      return _ctx.$emit('onClick');
+    })
+  }, [$props.image !== '' ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("img", {
     key: 0,
     draggable: "false",
     src: $data.src
   }, null, 8
   /* PROPS */
-  , _hoisted_2)) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true)]);
+  , _hoisted_1)) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true)]);
 }
 
 /***/ }),
@@ -18894,7 +18905,7 @@ __webpack_require__.r(__webpack_exports__);
 
 var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_0___default()(function(i){return i[1]});
 // Module
-___CSS_LOADER_EXPORT___.push([module.id, ".item > *[data-v-5ba84fa5] {\n  margin: 0;\n}\n.item .content[data-v-5ba84fa5] {\n  height: 50px;\n  width: 100%;\n  background: #161920;\n  box-shadow: 0px 3px 4px 0px #16161b;\n}\n.item .content .text[data-v-5ba84fa5],\n.item .content .tool[data-v-5ba84fa5] {\n  height: 100%;\n  display: flex;\n  align-items: center;\n  margin: 0 10px;\n}\n.item .content .text[data-v-5ba84fa5] {\n  float: left;\n  max-width: 80%;\n}\n.item .content .tool[data-v-5ba84fa5] {\n  float: right;\n}\n.item .separator[data-v-5ba84fa5] {\n  margin: 0 0 2% 0;\n  height: 2px;\n  background: #2a2e35;\n}\n.item .separator .highlighter[data-v-5ba84fa5] {\n  height: 100%;\n  width: 100%;\n  background-image: linear-gradient(45deg, #ff00b7, #ff6766);\n  opacity: 0;\n  transition: opacity 0.3s ease-out;\n}\n.item:hover .separator .highlighter[data-v-5ba84fa5] {\n  opacity: 1;\n}\n.general[data-v-5ba84fa5] {\n  position: absolute;\n  width: 96%;\n}", ""]);
+___CSS_LOADER_EXPORT___.push([module.id, ".item[data-v-5ba84fa5] {\n  margin: 0 2%;\n}\n.item > *[data-v-5ba84fa5] {\n  margin: 0;\n}\n.item .content[data-v-5ba84fa5] {\n  height: 50px;\n  width: 100%;\n  background: #161920;\n  box-shadow: 0px 3px 4px 0px #16161b;\n}\n.item .content .text[data-v-5ba84fa5],\n.item .content .tool[data-v-5ba84fa5] {\n  height: 100%;\n  display: flex;\n  align-items: center;\n  margin: 0 10px;\n}\n.item .content .text[data-v-5ba84fa5] {\n  float: left;\n  max-width: 80%;\n}\n.item .content .tool[data-v-5ba84fa5] {\n  float: right;\n}\n.item .separator[data-v-5ba84fa5] {\n  margin: 0 0 2% 0;\n  height: 2px;\n  background: #2a2e35;\n}\n.item .separator .highlighter[data-v-5ba84fa5] {\n  height: 100%;\n  width: 100%;\n  background-image: linear-gradient(45deg, #ff00b7, #ff6766);\n  opacity: 0;\n  transition: opacity 0.3s ease-out;\n}\n.item:hover .separator .highlighter[data-v-5ba84fa5] {\n  opacity: 1;\n}\n.crp-page[data-v-5ba84fa5] {\n  overflow-x: hidden;\n  overflow-y: auto;\n}\n.crp-page[data-v-5ba84fa5]::-webkit-scrollbar {\n  width: 8px;\n}\n.crp-page[data-v-5ba84fa5]::-webkit-scrollbar-track {\n  border-radius: 10px;\n}\n.crp-page[data-v-5ba84fa5]::-webkit-scrollbar-thumb {\n  border-radius: 10px;\n  background-image: linear-gradient(45deg, rgba(217, 36, 0, 0.8666666667), rgba(255, 102, 72, 0.8666666667));\n}\n.crp-page[data-v-5ba84fa5]::-webkit-scrollbar-thumb:active {\n  background-image: linear-gradient(45deg, #d92400, #ff6648);\n}", ""]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -18917,7 +18928,7 @@ __webpack_require__.r(__webpack_exports__);
 
 var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_0___default()(function(i){return i[1]});
 // Module
-___CSS_LOADER_EXPORT___.push([module.id, ".home[data-v-a2955c1c] {\n  position: absolute;\n  width: 96%;\n}", ""]);
+___CSS_LOADER_EXPORT___.push([module.id, ".crp-page[data-v-a2955c1c] {\n  width: 96%;\n  margin: 2%;\n}", ""]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -18940,7 +18951,7 @@ __webpack_require__.r(__webpack_exports__);
 
 var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_0___default()(function(i){return i[1]});
 // Module
-___CSS_LOADER_EXPORT___.push([module.id, ".item > *[data-v-5d179434] {\n  margin: 0;\n}\n.item .content[data-v-5d179434] {\n  height: 50px;\n  width: 100%;\n  background: #161920;\n  box-shadow: 0px 3px 4px 0px #16161b;\n}\n.item .content .text[data-v-5d179434],\n.item .content .tool[data-v-5d179434] {\n  height: 100%;\n  display: flex;\n  align-items: center;\n  margin: 0 10px;\n}\n.item .content .text[data-v-5d179434] {\n  float: left;\n  max-width: 80%;\n}\n.item .content .tool[data-v-5d179434] {\n  float: right;\n}\n.item .separator[data-v-5d179434] {\n  margin: 0 0 2% 0;\n  height: 2px;\n  background: #2a2e35;\n}\n.item .separator .highlighter[data-v-5d179434] {\n  height: 100%;\n  width: 100%;\n  background-image: linear-gradient(45deg, #ff00b7, #ff6766);\n  opacity: 0;\n  transition: opacity 0.3s ease-out;\n}\n.item:hover .separator .highlighter[data-v-5d179434] {\n  opacity: 1;\n}\n.player[data-v-5d179434] {\n  position: absolute;\n  width: 96%;\n}\n.sliderWithInfo[data-v-5d179434] {\n  width: -webkit-fit-content;\n  width: -moz-fit-content;\n  width: fit-content;\n}\n.sliderWithInfo > *[data-v-5d179434] {\n  display: inline-block;\n  vertical-align: middle;\n}\n.sliderWithInfo[data-v-5d179434] textarea {\n  margin-left: 5px;\n}", ""]);
+___CSS_LOADER_EXPORT___.push([module.id, ".item[data-v-5d179434] {\n  margin: 0 2%;\n}\n.item > *[data-v-5d179434] {\n  margin: 0;\n}\n.item .content[data-v-5d179434] {\n  height: 50px;\n  width: 100%;\n  background: #161920;\n  box-shadow: 0px 3px 4px 0px #16161b;\n}\n.item .content .text[data-v-5d179434],\n.item .content .tool[data-v-5d179434] {\n  height: 100%;\n  display: flex;\n  align-items: center;\n  margin: 0 10px;\n}\n.item .content .text[data-v-5d179434] {\n  float: left;\n  max-width: 80%;\n}\n.item .content .tool[data-v-5d179434] {\n  float: right;\n}\n.item .separator[data-v-5d179434] {\n  margin: 0 0 2% 0;\n  height: 2px;\n  background: #2a2e35;\n}\n.item .separator .highlighter[data-v-5d179434] {\n  height: 100%;\n  width: 100%;\n  background-image: linear-gradient(45deg, #ff00b7, #ff6766);\n  opacity: 0;\n  transition: opacity 0.3s ease-out;\n}\n.item:hover .separator .highlighter[data-v-5d179434] {\n  opacity: 1;\n}\n.crp-page[data-v-5d179434] {\n  overflow-x: hidden;\n  overflow-y: auto;\n}\n.crp-page[data-v-5d179434]::-webkit-scrollbar {\n  width: 8px;\n}\n.crp-page[data-v-5d179434]::-webkit-scrollbar-track {\n  border-radius: 10px;\n}\n.crp-page[data-v-5d179434]::-webkit-scrollbar-thumb {\n  border-radius: 10px;\n  background-image: linear-gradient(45deg, rgba(217, 36, 0, 0.8666666667), rgba(255, 102, 72, 0.8666666667));\n}\n.crp-page[data-v-5d179434]::-webkit-scrollbar-thumb:active {\n  background-image: linear-gradient(45deg, #d92400, #ff6648);\n}\n.sliderWithInfo[data-v-5d179434] {\n  width: -webkit-fit-content;\n  width: -moz-fit-content;\n  width: fit-content;\n}\n.sliderWithInfo > *[data-v-5d179434] {\n  display: inline-block;\n  vertical-align: middle;\n}\n.sliderWithInfo[data-v-5d179434] textarea {\n  margin-left: 5px;\n}", ""]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -18963,7 +18974,7 @@ __webpack_require__.r(__webpack_exports__);
 
 var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_0___default()(function(i){return i[1]});
 // Module
-___CSS_LOADER_EXPORT___.push([module.id, ".item > *[data-v-394b3c94] {\n  margin: 0;\n}\n.item .content[data-v-394b3c94] {\n  height: 50px;\n  width: 100%;\n  background: #161920;\n  box-shadow: 0px 3px 4px 0px #16161b;\n}\n.item .content .text[data-v-394b3c94],\n.item .content .tool[data-v-394b3c94] {\n  height: 100%;\n  display: flex;\n  align-items: center;\n  margin: 0 10px;\n}\n.item .content .text[data-v-394b3c94] {\n  float: left;\n  max-width: 80%;\n}\n.item .content .tool[data-v-394b3c94] {\n  float: right;\n}\n.item .separator[data-v-394b3c94] {\n  margin: 0 0 2% 0;\n  height: 2px;\n  background: #2a2e35;\n}\n.item .separator .highlighter[data-v-394b3c94] {\n  height: 100%;\n  width: 100%;\n  background-image: linear-gradient(45deg, #ff00b7, #ff6766);\n  opacity: 0;\n  transition: opacity 0.3s ease-out;\n}\n.item:hover .separator .highlighter[data-v-394b3c94] {\n  opacity: 1;\n}\n.settings[data-v-394b3c94] {\n  position: absolute;\n  width: 96%;\n}", ""]);
+___CSS_LOADER_EXPORT___.push([module.id, ".item[data-v-394b3c94] {\n  margin: 0 2%;\n}\n.item > *[data-v-394b3c94] {\n  margin: 0;\n}\n.item .content[data-v-394b3c94] {\n  height: 50px;\n  width: 100%;\n  background: #161920;\n  box-shadow: 0px 3px 4px 0px #16161b;\n}\n.item .content .text[data-v-394b3c94],\n.item .content .tool[data-v-394b3c94] {\n  height: 100%;\n  display: flex;\n  align-items: center;\n  margin: 0 10px;\n}\n.item .content .text[data-v-394b3c94] {\n  float: left;\n  max-width: 80%;\n}\n.item .content .tool[data-v-394b3c94] {\n  float: right;\n}\n.item .separator[data-v-394b3c94] {\n  margin: 0 0 2% 0;\n  height: 2px;\n  background: #2a2e35;\n}\n.item .separator .highlighter[data-v-394b3c94] {\n  height: 100%;\n  width: 100%;\n  background-image: linear-gradient(45deg, #ff00b7, #ff6766);\n  opacity: 0;\n  transition: opacity 0.3s ease-out;\n}\n.item:hover .separator .highlighter[data-v-394b3c94] {\n  opacity: 1;\n}\n.crp-page[data-v-394b3c94] {\n  overflow-x: hidden;\n  overflow-y: auto;\n}\n.crp-page[data-v-394b3c94]::-webkit-scrollbar {\n  width: 8px;\n}\n.crp-page[data-v-394b3c94]::-webkit-scrollbar-track {\n  border-radius: 10px;\n}\n.crp-page[data-v-394b3c94]::-webkit-scrollbar-thumb {\n  border-radius: 10px;\n  background-image: linear-gradient(45deg, rgba(217, 36, 0, 0.8666666667), rgba(255, 102, 72, 0.8666666667));\n}\n.crp-page[data-v-394b3c94]::-webkit-scrollbar-thumb:active {\n  background-image: linear-gradient(45deg, #d92400, #ff6648);\n}", ""]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -19124,7 +19135,7 @@ __webpack_require__.r(__webpack_exports__);
 
 var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_0___default()(function(i){return i[1]});
 // Module
-___CSS_LOADER_EXPORT___.push([module.id, ".switch[data-v-1b6cdb5c] {\n  position: relative;\n  display: inline-block;\n  width: 40px;\n  height: 20px;\n}\n.switch input[data-v-1b6cdb5c] {\n  opacity: 0;\n  width: 0;\n  height: 0;\n}\n.switch input:checked + .slider[data-v-1b6cdb5c] {\n  background-color: #ff3b15;\n}\n.switch input:checked + .slider[data-v-1b6cdb5c]::before {\n  filter: drop-shadow(0px 0px 2px #9d250e);\n  transform: translateX(20px);\n}\n.switch .slider[data-v-1b6cdb5c] {\n  position: absolute;\n  cursor: pointer;\n  top: 0;\n  left: 0;\n  right: 0;\n  bottom: 0;\n  background-color: #32353c;\n  border-radius: 50px;\n  transition: 0.3s;\n}\n.switch .slider[data-v-1b6cdb5c]::before {\n  border-radius: 50%;\n  position: absolute;\n  content: \"\";\n  height: 16px;\n  width: 16px;\n  left: 2px;\n  bottom: 2.5px;\n  background-color: whitesmoke;\n  filter: drop-shadow(0px 0px 2px #131416);\n  transition: 0.3s;\n}", ""]);
+___CSS_LOADER_EXPORT___.push([module.id, ".switch[data-v-1b6cdb5c] {\n  position: relative;\n  display: inline-block;\n  width: 40px;\n  height: 20px;\n}\n.switch input[data-v-1b6cdb5c] {\n  opacity: 0;\n  width: 0;\n  height: 0;\n}\n.switch input:checked + .slider[data-v-1b6cdb5c] {\n  background-color: #ff3b15;\n}\n.switch input:checked + .slider[data-v-1b6cdb5c]::before {\n  filter: drop-shadow(0px 0px 2px #9d250e);\n  transform: translateX(20px);\n}\n.switch .slider[data-v-1b6cdb5c] {\n  position: absolute;\n  cursor: pointer;\n  top: 0;\n  left: 0;\n  right: 0;\n  bottom: 0;\n  background-color: #32353c;\n  border-radius: 50px;\n  transition: 0.3s;\n}\n.switch .slider[data-v-1b6cdb5c]::before {\n  border-radius: 50%;\n  position: absolute;\n  content: \"\";\n  height: 15px;\n  width: 15px;\n  left: 2px;\n  bottom: 2.5px;\n  background-color: whitesmoke;\n  filter: drop-shadow(0px 0px 2px #131416);\n  transition: 0.3s;\n}", ""]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 

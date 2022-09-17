@@ -1,6 +1,6 @@
 <template>
-    <div class="button">
-        <img v-if="image !== ''" draggable="false" :src="src" />
+    <div class="button" @click="$emit('onClick')">
+        <img v-if="image !== ''" draggable="false" :src="src"/>
     </div>
 </template>
 

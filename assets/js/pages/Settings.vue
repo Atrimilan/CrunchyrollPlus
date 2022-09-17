@@ -1,5 +1,5 @@
 <template>
-    <div class="settings">
+    <div class="crp-page">
     
         <div class="item" v-for="item in listItems" :key="item.id">
             <div class="content">
@@ -9,7 +9,7 @@
                 </div>
     
                 <div class="tool">
-                    <SimpleButton v-if="item.id==='reset'" image="images/miscellaneous/bin.svg" />
+                    <SimpleButton v-if="item.id==='reset'" image="images/miscellaneous/bin.svg" @onClick=resetConfig() />
                 </div>
                 
             </div>
@@ -41,15 +41,16 @@ export default {
         i18n(message) {
             return chrome.i18n.getMessage(message);
         },
+        resetConfig(){
+            // Reset all Crunchyroll Plus customizations
+            chrome.runtime.sendMessage({ type: "resetConfig" });
+        }
     }
 };
 </script>
 
 <style scoped lang="scss">
+
 @import "../../sass/list-items.scss";
 
-.settings {
-    position: absolute; // For better transitions (won't need "mode='out-in', entering/leaving can happen at the same time)
-    width: 96%;
-}
 </style>

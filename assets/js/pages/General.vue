@@ -1,5 +1,5 @@
 <template>
-<div class="general">
+<div class="crp-page">
 
     <div class="item" v-for="item in listItems" :key="item.id">
         <div class="content">
@@ -91,8 +91,4 @@ export default {
 
 @import "../../sass/list-items.scss";
 
-.general {
-    position: absolute; // For better transitions (won't need "mode='out-in', entering/leaving can happen at the same time)
-    width: 96%;
-}
 </style>

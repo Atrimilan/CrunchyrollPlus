@@ -64,8 +64,8 @@ export default {
             border-radius: 50%;
             position: absolute;
             content: "";
-            height: 16px;
-            width: 16px;
+            height: 15px;
+            width: 15px;
             left: 2px;
             bottom: 2.5px;
             background-color: whitesmoke;
