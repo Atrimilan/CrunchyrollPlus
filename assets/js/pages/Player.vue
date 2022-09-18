@@ -12,7 +12,7 @@
                 <SwitchButton v-if="item.id==='playerThumbnail'" :isChecked=playerThumbnailState @switched="togglePlayerThumbnail($event)" />
                 <div v-else-if="item.id==='soundMultiplier'" class="sliderWithInfo">
                     <RangeSlider ref="soundMultiplier" :min=0 :max=40 :value=soundMultiplier @selected="soundMultiplierSelected($event)" @isChoosing="soundMultiplierChoosing($event)" />
-                    <InfoArea :text=soundGainInfo />
+                    <InfoArea :text="soundGainInfo.toFixed(1)" />
                 </div>
                 <TimeInput v-else-if="item.id==='openingDuration'" :timeInSeconds=openingDuration @selected="setOpeningDuration($event)"/>
             </div>

@@ -88,10 +88,17 @@ $ease: 0.4s ease;
         }
     }
 
-    &#settings {
-        background-image: linear-gradient(45deg, #ff00b7, #ff6766);
+    // Special buttons individual modifications
+    &#advanced {
+        background-image: linear-gradient(45deg, #fb00ff, #ff6766);
         &:hover {
-            box-shadow: 0px 0px 10px 3px #ff1592;   // Affected by the filter!
+            box-shadow: 0px 0px 10px 3px #f646d2;   // Affected by the filter!
+        }
+    }
+    &#settings {
+        background-image: linear-gradient(45deg, #47a6ff, #66ffa3);
+        &:hover {
+            box-shadow: 0px 0px 10px 3px #2efffc;   // Affected by the filter!
         }
     }
 }

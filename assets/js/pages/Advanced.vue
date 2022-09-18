@@ -9,8 +9,7 @@
                 </div>
     
                 <div class="tool">
-                    <SimpleButton v-if="item.id==='reset'" image="images/miscellaneous/bin.svg" @onClick=resetConfig() />
-                    <InfoArea v-if="item.id==='version'" text="1.0.0" :width=55 />
+                    <!-- ... -->
                 </div>
                 
             </div>
@@ -24,30 +23,23 @@
 
 
 <script>
-import SimpleButton from "./components/SimpleButton.vue";
-import InfoArea from "./components/InfoArea.vue";
-
 export default {
     name: "General",
     components: {
-        SimpleButton,
-        InfoArea
+        /* ... */
     },
     data() {
         return {
             listItems: [
-                { id: "reset" },
-                { id: "version" },
+                { id: null },
+                { id: null },
+                { id: null },
             ],
         };
     },
     methods: {
         i18n(message) {
             return chrome.i18n.getMessage(message);
-        },
-        resetConfig(){
-            // Reset all Crunchyroll Plus customizations
-            chrome.runtime.sendMessage({ type: "resetConfig" });
         }
     }
 };

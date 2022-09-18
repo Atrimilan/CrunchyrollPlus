@@ -25,24 +25,28 @@ var API = /*#__PURE__*/function () {
   }
 
   _createClass(API, null, [{
-    key: "Authorization",
+    key: "TOKEN",
     get: function get() {
       var cxApiParams = fetch(window.location.href).then(function (response) {
         return response.text();
       }).then(function (text) {
+        var initialState = JSON.parse(text.match(/(?<=window.__INITIAL_STATE__ = ){.*}/)[0]);
+        var locale = initialState.localization.locale;
         var appConfig = JSON.parse(text.match(/(?<=window.__APP_CONFIG__ = ){.*}/)[0]);
         var accountAuthClientId = appConfig.cxApiParams.accountAuthClientId;
         var apiDomain = appConfig.cxApiParams.apiDomain;
         return {
           apiDomain: apiDomain,
-          accountAuthClientId: accountAuthClientId
+          accountAuthClientId: accountAuthClientId,
+          locale: locale
         };
       })["catch"](function (error) {
-        console.log("%cImpossible to find __APP_CONFIG__", 'color:red;font-weight:bold');
+        console.log("%cCannot get cxApiParams", 'color:red;font-weight:bold');
       });
       var token = cxApiParams.then(function (_ref) {
         var apiDomain = _ref.apiDomain,
-            accountAuthClientId = _ref.accountAuthClientId;
+            accountAuthClientId = _ref.accountAuthClientId,
+            locale = _ref.locale;
         return fetch("".concat(apiDomain, "/auth/v1/token"), {
           method: 'POST',
           credentials: 'include',
@@ -62,13 +66,51 @@ var API = /*#__PURE__*/function () {
               expires_in = _ref2.expires_in;
           return {
             'Authorization': "".concat(token_type, " ").concat(access_token),
-            apiDomain: apiDomain
-          }; // Useful token informations
+            apiDomain: apiDomain,
+            locale: locale
+          };
         })["catch"](function (error) {
           console.log("%cCannot get access_token", 'color:red;font-weight:bold');
         });
       });
       return token;
+    }
+  }, {
+    key: "CMS",
+    get: function get() {
+      var cms = this.TOKEN.then(function (_ref3) {
+        var Authorization = _ref3.Authorization,
+            apiDomain = _ref3.apiDomain,
+            locale = _ref3.locale;
+        return fetch("".concat(apiDomain, "/index/v2"), {
+          headers: {
+            Authorization: Authorization
+          }
+        }).then(function (response) {
+          return response.json();
+        }).then(function (_ref4) {
+          var _ref4$cms_beta = _ref4.cms_beta,
+              bucket = _ref4$cms_beta.bucket,
+              signature = _ref4$cms_beta.signature,
+              policy = _ref4$cms_beta.policy,
+              key_pair_id = _ref4$cms_beta.key_pair_id;
+          return {
+            apiDomain: apiDomain,
+            bucket: bucket,
+            searchParams: {
+              locale: locale,
+              Signature: signature,
+              Policy: policy,
+              'Key-Pair-Id': key_pair_id
+            }
+          };
+        })["catch"](function (error) {
+          console.log("%cCannot get cms_beta", 'color:red;font-weight:bold');
+        });
+      }).then(function (response) {
+        return response;
+      });
+      return cms;
     }
   }]);
 
@@ -160,11 +202,10 @@ document.addEventListener('keydown', function (event) {
       break;
 
     case "t":
-      // Extract token and log it to the console
+      // Test API
       var API = __webpack_require__(/*! ../classes/crp-api.js */ "./assets/js/classes/crp-api.js");
 
-      API["default"].Authorization.then(function (response) {
-        console.log("Your authorization token:");
+      API["default"].CMS.then(function (response) {
         console.log(response);
       });
   }

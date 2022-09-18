@@ -8,6 +8,9 @@
     "menuButton_player": {
         "message": "Lecteur Vidéo"
     },
+    "menuButton_advanced": {
+        "message": "Outils avancées"
+    },
     "menuButton_settings": {
         "message": "Paramètres"
     },
@@ -31,5 +34,8 @@
     },
     "settingsItem_reset": {
         "message": "Réinitialiser Crunchyroll Plus"
+    },
+    "settingsItem_version": {
+        "message": "Version de l'extension"
     }
 }

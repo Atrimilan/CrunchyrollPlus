@@ -1,13 +1,14 @@
 <template>
-    <textarea readonly :value="this.text.toFixed(1)"></textarea>
+    <textarea :style="width !== null ? `width: ${width}px;` : ''" readonly :value="text"></textarea>
 </template>
     
 <script>
 export default {
     name: "InfoArea",
     props: {
-        text: Number,
-    },
+        text: String,
+        width: Number,  // Optional
+    }
 };
 </script>
 
@@ -15,7 +16,7 @@ export default {
 textarea {
     display: block;
     box-sizing: border-box;
-    width: 40px;
+    width: 40px; 
     height: 20px;
     resize: none;
     overflow: hidden;

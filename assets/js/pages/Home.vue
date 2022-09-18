@@ -18,6 +18,7 @@ export default {
             menuButtons: [
                 { id: "general", value: "menuButton_general", icon: "crunchyroll-icon.svg" },   // Value must be the i18n identifier
                 { id: "player", value: "menuButton_player", icon: "player.svg" },
+                { id: "advanced", value: "menuButton_advanced", icon: "boostArrow.svg" },
                 { id: "settings", value: "menuButton_settings", icon: "gear.svg" },
             ],
         };
