@@ -41,18 +41,24 @@ function ObserveVideoPlayer() {
     childList: true,
     subtree: false
   };
-  var playerObserver = new MutationObserver(function (mutations) {
+  playerObserver = new MutationObserver(function (mutations) {
     mutations.forEach(function (mutation) {
       if (mutation.type == 'childList') {
         if (mutation.addedNodes.length > 0) {
           Array.from(mutation.addedNodes).map(function (node) {
             if (node.id == 'vilosControlsContainer') {
-              controlsContainer = node;
-              LoadCrpTools(); // Load CrunchyrollPlus controls if controlsContainer has child nodes
-              //                  console.clear();
+              controlsContainer = node; //                    console.clear();
 
-              console.log("%cCrunchyroll PLUS", "color: #f47521");
+              console.log("%cCrunchyroll PLUS", "color: #ea2600");
+              LoadCrpTools(); // Load CrunchyrollPlus controls if controlsContainer has child nodes
+
               ObserveControlsContainer(); // Start observing controls when vilosControlsContainer is loaded
+              // Opening skipper needs to be initialized from main page content-script to avoid CORS restrictions
+
+              chrome.runtime.sendMessage({
+                type: "initOpeningSkipper",
+                videoDuration: video.duration
+              });
             }
           });
         }

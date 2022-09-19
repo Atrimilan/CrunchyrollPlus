@@ -53,6 +53,11 @@ chrome.runtime.onMessage.addListener(
             case "openingDuration":
                 chrome.storage.sync.get(['openingDuration'], (result) => { sendResponse({ message: result.openingDuration }); });
                 break;
+            case "initOpeningSkipper":
+                chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
+                    chrome.tabs.sendMessage(tabs[0].id, {type: "initOpeningSkipper", videoDuration: request.videoDuration});
+                });
+                break;
             case "resetConfig":
                 ResetStorage();
                 break;

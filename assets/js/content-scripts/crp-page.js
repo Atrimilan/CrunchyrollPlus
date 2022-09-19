@@ -11,9 +11,12 @@ document.addEventListener('keydown', (event) => {
             timeout = setTimeout(() => { debugger; }, 0); // Pause page after 0 ms
             break;
         case "t":   // Test API
-            const API = require('../classes/crp-api.js');
-            API.default.CMS.then((response) => {
-                console.log(response);
+            chrome.runtime.sendMessage({ type: "openingDuration" }, function (response) {
+
+                const API = require('../classes/crp-api.js');
+                API.default.OPENINGS(response.message).then((response) => {
+                    console.log(response);
+                });
             });
     }
 }, false);
@@ -52,6 +55,9 @@ chrome.runtime.onMessage.addListener(
                 const API = require('../classes/crp-api.js');
                 API.default.SUBTITLES.then((subtitles) => { downloadFile(subtitles.url, `subtitles.${subtitles.format}`); });
                 break;
+            case "initOpeningSkipper":
+                InitOpeningSkipper(request.videoDuration);
+                break;
         }
     }
 );
@@ -67,7 +73,6 @@ chrome.runtime.onMessage.addListener(
     chrome.runtime.sendMessage({ type: "avatarFavicon" }, function (response) {
         toggleAvatarFavicon(response.message);
     });
-
 })();
 
 
@@ -199,4 +204,15 @@ function waitForElementLoaded(selector) {
 function downloadFile(url, filename) {
     chrome.runtime.sendMessage({ type: "downloadFile", url: url, filename: filename });
     // But format seems not working for security reasons
+}
+
+// Detect openings in the video
+function InitOpeningSkipper(videoDuration){
+    chrome.runtime.sendMessage({ type: "openingDuration" }, function (response) {
+
+        const API = require('../classes/crp-api.js');
+        API.default.OPENINGS(videoDuration, response.message).then((response) => {
+            console.log(response);
+        });
+    });
 }

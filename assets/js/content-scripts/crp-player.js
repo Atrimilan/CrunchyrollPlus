@@ -10,13 +10,13 @@
  * • Third one appears above the two previous ones when you hover over the video player, it's a vignette effect
  */
 
-let video = document.getElementById('player0');
+var video = document.getElementById('player0');
 
-let playerParent = null;
-let playerObserver = null;  // Observer
+var playerParent = null;
+var playerObserver = null;  // Observer
 
-let controlsContainer = null;   // Null for now, because the #vilosControlsContainer div is not loaded yet
-let controlsContainerObserver = null;   // Observer
+var controlsContainer = null;   // Null for now, because the #vilosControlsContainer div is not loaded yet
+var controlsContainerObserver = null;   // Observer
 
 ObserveVideoPlayer();
 
@@ -24,7 +24,7 @@ ObserveVideoPlayer();
 function ObserveVideoPlayer() {
     const config = { attributes: false, childList: true, subtree: false };
 
-    let playerObserver = new MutationObserver(function (mutations) {
+    playerObserver = new MutationObserver(function (mutations) {
 
         mutations.forEach(function (mutation) {
 
@@ -35,12 +35,15 @@ function ObserveVideoPlayer() {
                         if (node.id == 'vilosControlsContainer') {
                             controlsContainer = node;
 
+        //                    console.clear();
+                            console.log("%cCrunchyroll PLUS", `color: #ea2600`);
+                            
                             LoadCrpTools(); // Load CrunchyrollPlus controls if controlsContainer has child nodes
 
-          //                  console.clear();
-                            console.log("%cCrunchyroll PLUS", `color: #f47521`);
-
                             ObserveControlsContainer(); // Start observing controls when vilosControlsContainer is loaded
+                            
+                            // Opening skipper needs to be initialized from main page content-script to avoid CORS restrictions
+                            chrome.runtime.sendMessage({ type: "initOpeningSkipper", videoDuration: video.duration });
                         }
                     });
                 }
@@ -246,7 +249,6 @@ function delay(time) {
     return new Promise(resolve => setTimeout(resolve, time));
 }
 */
-
 
 // Change loading spinner color to the stored theme color
 var loadSpinner = document.querySelectorAll('div[data-testid="vilos-loading"] path');
