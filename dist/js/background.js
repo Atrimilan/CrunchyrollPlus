@@ -113,7 +113,13 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
 
     case "resetConfig":
       ResetStorage();
-      console.log("CLEAR");
+      break;
+
+    case "downloadFile":
+      chrome.downloads.download({
+        url: request.url,
+        filename: request.filename
+      });
       break;
 
     default:

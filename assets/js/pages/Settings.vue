@@ -28,7 +28,7 @@ import SimpleButton from "./components/SimpleButton.vue";
 import InfoArea from "./components/InfoArea.vue";
 
 export default {
-    name: "General",
+    name: "Settings",
     components: {
         SimpleButton,
         InfoArea

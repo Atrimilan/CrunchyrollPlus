@@ -14,7 +14,8 @@
     "permissions": [
         "storage",
         "activeTab",
-        "tabs"
+        "tabs",
+        "downloads"
     ],
     "content_scripts": [
         {

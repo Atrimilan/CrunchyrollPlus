@@ -5,11 +5,11 @@
             <div class="content">
     
                 <div class="text">
-                    <p class="crp_text">{{ i18n(`settingsItem_${item.id}`) }}</p>
+                    <p class="crp_text">{{ i18n(`advancedItem_${item.id}`) }}</p>
                 </div>
     
                 <div class="tool">
-                    <!-- ... -->
+                    <SimpleButton v-if="item.id==='downloadSubtitles'" image="" @onClick=downloadSubtitles() />
                 </div>
                 
             </div>
@@ -23,23 +23,27 @@
 
 
 <script>
+import SimpleButton from './components/SimpleButton.vue';
 export default {
-    name: "General",
+    name: "Advanced",
     components: {
-        /* ... */
+        SimpleButton
     },
     data() {
         return {
             listItems: [
-                { id: null },
-                { id: null },
-                { id: null },
+                { id: "downloadSubtitles" }
             ],
         };
     },
     methods: {
         i18n(message) {
             return chrome.i18n.getMessage(message);
+        },
+        downloadSubtitles() {
+            chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
+                chrome.tabs.sendMessage(tabs[0].id, {type: "downloadSubtitles" });  // Start download from page content-script
+            });
         }
     }
 };

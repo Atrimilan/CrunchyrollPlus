@@ -9,7 +9,7 @@
         "message": "Lecteur Vidéo"
     },
     "menuButton_advanced": {
-        "message": "Outils avancées"
+        "message": "Outils Avancés"
     },
     "menuButton_settings": {
         "message": "Paramètres"
@@ -18,7 +18,7 @@
         "message": "Couleur du thème Crunchyroll"
     },
     "generalItem_blurring": {
-        "message": "Flouter les vignettes"
+        "message": "Flouter les vignettes d'épisode"
     },
     "generalItem_avatarFavicon": {
         "message": "Avatar en tant que favicon"
@@ -37,5 +37,8 @@
     },
     "settingsItem_version": {
         "message": "Version de l'extension"
+    },
+    "advancedItem_downloadSubtitles": {
+        "message": "Télécharger les sous-titres"
     }
 }

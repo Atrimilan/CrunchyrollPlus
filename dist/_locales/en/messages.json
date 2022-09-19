@@ -9,7 +9,7 @@
         "message": "Video Player"
     },
     "menuButton_advanced": {
-        "message": "Advanced tools"
+        "message": "Advanced Tools"
     },
     "menuButton_settings": {
         "message": "Settings"
@@ -37,5 +37,8 @@
     },
     "settingsItem_version": {
         "message": "Extension version"
+    },
+    "advancedItem_downloadSubtitles": {
+        "message": "Download subtitles"
     }
 }

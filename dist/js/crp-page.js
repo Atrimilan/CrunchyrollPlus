@@ -112,6 +112,86 @@ var API = /*#__PURE__*/function () {
       });
       return cms;
     }
+  }, {
+    key: "EPISODE",
+    get: function get() {
+      var episodeData = this.CMS.then(function (_ref5) {
+        var apiDomain = _ref5.apiDomain,
+            bucket = _ref5.bucket,
+            sP = _ref5.searchParams;
+        var sp = window.location.pathname.split('/'); // Split "<locale>/watch/<EPISODEID>/"
+
+        var episodeId = sp[sp.length - 2]; // Extract the episode ID
+
+        return fetch("".concat(apiDomain, "/cms/v2").concat(bucket, "/objects/").concat(episodeId, "?locale=").concat(sP.locale, "&Signature=").concat(sP.Signature, "&Policy=").concat(sP.Policy, "&Key-Pair-Id=").concat(sP['Key-Pair-Id'])).then(function (response) {
+          return response.json();
+        }).then(function (_ref6) {
+          var items = _ref6.items;
+          return {
+            items: items[0],
+            apiDomain: apiDomain,
+            bucket: bucket,
+            sP: sP
+          };
+        })["catch"](function (error) {
+          console.log("%cCannot get current episode data", 'color:red;font-weight:bold');
+        });
+      }).then(function (response) {
+        return response;
+      });
+      return episodeData;
+    }
+  }, {
+    key: "STREAM",
+    get: function get() {
+      // We need to get the Episode first, to extract the Stream ID
+      var streamData = this.EPISODE.then(function (_ref7) {
+        var items = _ref7.items,
+            apiDomain = _ref7.apiDomain,
+            bucket = _ref7.bucket,
+            sP = _ref7.sP;
+
+        var sp2 = items.__links__.streams.href.split('/'); // Split ":/cms/v2/<bucket>/videos/<STREAMID>/streams
+
+
+        var streamId = sp2[sp2.length - 2]; // Extract the streamId ID
+
+        /* It would be nice to find the Stream ID in another way */
+
+        return fetch("".concat(apiDomain, "/cms/v2").concat(bucket, "/videos/").concat(streamId, "/streams?\n            locale=").concat(sP.locale, "&Signature=").concat(sP.Signature, "&Policy=").concat(sP.Policy, "&Key-Pair-Id=").concat(sP['Key-Pair-Id'])).then(function (response) {
+          return response.json();
+        }).then(function (response) {
+          return {
+            stream: response,
+            subtitleLocaleKey: sP.locale
+          };
+        })["catch"](function (error) {
+          console.log("%cCannot get current episode data", 'color:red;font-weight:bold');
+        });
+      }).then(function (response) {
+        return response;
+      });
+      return streamData;
+    }
+  }, {
+    key: "SUBTITLES",
+    get: function get() {
+      var subtitles = this.STREAM.then(function (_ref8) {
+        var stream = _ref8.stream,
+            subtitleLocaleKey = _ref8.subtitleLocaleKey;
+        return stream.subtitles[subtitleLocaleKey]; // Locale identifier is used as a JSON key ("subtitleLocaleKey" here)
+      }).then(function (_ref9) {
+        var format = _ref9.format,
+            locale = _ref9.locale,
+            url = _ref9.url;
+        return {
+          format: format,
+          locale: locale,
+          url: url
+        };
+      });
+      return subtitles;
+    }
   }]);
 
   return API;
@@ -237,6 +317,14 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
     case "toggleAvatarFavicon":
       toggleAvatarFavicon(request.state);
       break;
+
+    case "downloadSubtitles":
+      var API = __webpack_require__(/*! ../classes/crp-api.js */ "./assets/js/classes/crp-api.js");
+
+      API["default"].SUBTITLES.then(function (subtitles) {
+        downloadFile(subtitles.url, "subtitles.".concat(subtitles.format));
+      });
+      break;
   }
 }); // Load data from the chrome storage, and call needed functions
 
@@ -341,6 +429,15 @@ function waitForElementLoaded(selector) {
       subtree: true
     });
   });
+} // File can only be downloaded from the background script 
+
+
+function downloadFile(url, filename) {
+  chrome.runtime.sendMessage({
+    type: "downloadFile",
+    url: url,
+    filename: filename
+  }); // But format seems not working for security reasons
 }
 })();
 

@@ -48,6 +48,10 @@ chrome.runtime.onMessage.addListener(
             case "toggleAvatarFavicon":
                 toggleAvatarFavicon(request.state);
                 break;
+            case "downloadSubtitles":
+                const API = require('../classes/crp-api.js');
+                API.default.SUBTITLES.then((subtitles) => { downloadFile(subtitles.url, `subtitles.${subtitles.format}`); });
+                break;
         }
     }
 );
@@ -189,4 +193,10 @@ function waitForElementLoaded(selector) {
             subtree: true
         });
     });
+}
+
+// File can only be downloaded from the background script 
+function downloadFile(url, filename) {
+    chrome.runtime.sendMessage({ type: "downloadFile", url: url, filename: filename });
+    // But format seems not working for security reasons
 }

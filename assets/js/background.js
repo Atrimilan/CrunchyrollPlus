@@ -55,7 +55,9 @@ chrome.runtime.onMessage.addListener(
                 break;
             case "resetConfig":
                 ResetStorage();
-                console.log("CLEAR");
+                break;
+            case "downloadFile":
+                chrome.downloads.download({ url: request.url, filename: request.filename });
                 break;
             default:
                 sendResponse({ message: null });    // If the request type is unknown, return null
