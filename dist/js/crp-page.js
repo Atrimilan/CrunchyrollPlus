@@ -2891,8 +2891,10 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
       });
       break;
 
-    case "initOpeningSkipper":
-      InitOpeningSkipper(request.videoDuration);
+    case "getOpeningTimes":
+      //getOpeningTimes(request.videoDuration);
+      getOpeningTimes(request.videoDuration); //sendResponse({ message: null });
+
       break;
   }
 }); // Load data from the chrome storage, and call needed functions
@@ -2913,9 +2915,9 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
   }, function (response) {
     toggleAvatarFavicon(response.message);
   });
-})(); // ----------------------------------------------------------//
-// Functions called on page initialization and edit in Popup //
-// ----------------------------------------------------------//
+})(); // ---------------------------------------------------------- //
+// Functions called on page initialization and edit in Popup  //
+// ---------------------------------------------------------- //
 
 
 function toggleThumbnails(state) {
@@ -3010,14 +3012,19 @@ function downloadFile(url, filename) {
 } // Detect openings in the video
 
 
-function InitOpeningSkipper(videoDuration) {
-  chrome.runtime.sendMessage({
+function getOpeningTimes(videoDuration) {
+  var res = chrome.runtime.sendMessage({
     type: "openingDuration"
   }, function (response) {
     var API = __webpack_require__(/*! ../classes/crp-api.js */ "./assets/js/classes/crp-api.js");
 
     API["default"].OPENINGS(videoDuration, response.message).then(function (response) {
-      console.log(response);
+      // Send to background, then let crp-player handle openings skipper
+      chrome.runtime.sendMessage({
+        type: "definePlayerOpenings",
+        openingTimes: response
+      });
+      /* I didn't succeed, but it should be possible to send a response rather than creating a new request */
     });
   });
 }

@@ -33,3 +33,34 @@
   height: 100%;
   width: 100%;
 }
+
+.crpSkipper {
+  opacity: 0;
+  position: absolute;
+  right: 15px;
+  bottom: 100px;
+  padding: 10px 20px;
+  background-color: rgba(0, 0, 0, 0.5333333333);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  text-align: center;
+  display: flex;
+  flex-wrap: wrap;
+  overflow: hidden;
+  cursor: pointer;
+  transition: opacity 0.3s ease;
+}
+.crpSkipper p {
+  float: left;
+  margin: 0;
+  color: whitesmoke;
+  font-family: "Lato", Helvetica Neue, helvetica, sans-serif;
+}
+.crpSkipper p.crpSkipperText {
+  font-weight: 600;
+  font-size: 15px;
+  margin-right: 8px;
+}
+.crpSkipper p.crpSkipperTimer {
+  font-weight: 500;
+  font-size: 9px;
+}

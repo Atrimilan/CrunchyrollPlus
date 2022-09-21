@@ -17987,9 +17987,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   name: "InfoArea",
   props: {
-    text: String,
-    width: Number // Optional
-
+    text: String
   }
 });
 
@@ -18657,8 +18655,7 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
       })
     })) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true), item.id === 'version' ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createBlock)(_component_InfoArea, {
       key: 1,
-      text: "1.0.0",
-      width: 55
+      text: "1.0.0"
     })) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true)])]), _hoisted_6]);
   }), 128
   /* KEYED_FRAGMENT */
@@ -18754,20 +18751,10 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var vue__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! vue */ "./node_modules/vue/dist/vue.esm-bundler.js");
 
-
-var _withScopeId = function _withScopeId(n) {
-  return (0,vue__WEBPACK_IMPORTED_MODULE_0__.pushScopeId)("data-v-14cb729e"), n = n(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.popScopeId)(), n;
-};
-
-var _hoisted_1 = ["value"];
 function render(_ctx, _cache, $props, $setup, $data, $options) {
-  return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("textarea", {
-    style: (0,vue__WEBPACK_IMPORTED_MODULE_0__.normalizeStyle)($props.width !== null ? "width: ".concat($props.width, "px;") : ''),
-    readonly: "",
-    value: $props.text
-  }, null, 12
-  /* STYLE, PROPS */
-  , _hoisted_1);
+  return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", null, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("p", null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)($props.text), 1
+  /* TEXT */
+  )]);
 }
 
 /***/ }),
@@ -19200,7 +19187,7 @@ __webpack_require__.r(__webpack_exports__);
 
 var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_0___default()(function(i){return i[1]});
 // Module
-___CSS_LOADER_EXPORT___.push([module.id, "textarea[data-v-14cb729e] {\n  display: block;\n  box-sizing: border-box;\n  width: 40px;\n  height: 20px;\n  resize: none;\n  overflow: hidden;\n  border: 0;\n  outline: 0;\n  background: #32353c;\n  border-radius: 20px;\n  color: whitesmoke;\n  font-weight: bold;\n  font-family: monospace, monospace;\n  font-size: 14px;\n  padding: 1.5px;\n  -moz-text-align-last: center;\n       text-align-last: center;\n}\ntextarea[data-v-14cb729e]::-moz-selection {\n  background-color: #ff3b15;\n}\ntextarea[data-v-14cb729e]::selection {\n  background-color: #ff3b15;\n}", ""]);
+___CSS_LOADER_EXPORT___.push([module.id, "div[data-v-14cb729e] {\n  width: -webkit-fit-content;\n  width: -moz-fit-content;\n  width: fit-content;\n  border: 0;\n  outline: 0;\n  background: #32353c;\n  border-radius: 20px;\n}\np[data-v-14cb729e] {\n  margin: 0 5px;\n  display: block;\n  box-sizing: border-box;\n  height: 20px;\n  min-width: 30px;\n  color: whitesmoke;\n  font-weight: bold;\n  font-family: monospace, monospace;\n  font-size: 14px;\n  padding: 1.5px;\n  -moz-text-align-last: center;\n       text-align-last: center;\n}\np[data-v-14cb729e]::-moz-selection {\n  background-color: #ff3b15;\n}\np[data-v-14cb729e]::selection {\n  background-color: #ff3b15;\n}", ""]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 

@@ -35,15 +35,17 @@ function ObserveVideoPlayer() {
                         if (node.id == 'vilosControlsContainer') {
                             controlsContainer = node;
 
-        //                    console.clear();
+                            //console.clear();
                             console.log("%cCrunchyroll PLUS", `color: #ea2600`);
-                            
-                            LoadCrpTools(); // Load CrunchyrollPlus controls if controlsContainer has child nodes
 
+                            if (controlsContainer.firstChild.hasChildNodes()) {
+                                LoadCrpTools(); // Load CrunchyrollPlus controls if controlsContainer has child nodes
+                            }
                             ObserveControlsContainer(); // Start observing controls when vilosControlsContainer is loaded
-                            
-                            // Opening skipper needs to be initialized from main page content-script to avoid CORS restrictions
-                            chrome.runtime.sendMessage({ type: "initOpeningSkipper", videoDuration: video.duration });
+
+                            // Openings need to be detected from main page content-script
+                            // to avoid CORS restrictions when accessing subtitles links
+                            chrome.runtime.sendMessage({ type: "getOpeningTimes", videoDuration: video.duration });
                         }
                     });
                 }
@@ -65,6 +67,8 @@ function ObserveVideoPlayer() {
     }
 }
 
+var isMenuOpen = false;
+
 // Default Crunchyroll controls observer
 function ObserveControlsContainer() {
     const config = { attributes: false, childList: true, subtree: false };
@@ -72,9 +76,14 @@ function ObserveControlsContainer() {
     controlsContainerObserver = new MutationObserver(function (mutations) {
 
         mutations.forEach(function (mutation) {
-
             if (mutation.type == 'childList' && mutation.addedNodes.length > 0) {
-                LoadCrpTools(); // Load CrunchyrollPlus controls if controlsContainer has child nodes
+                if (mutation.addedNodes[0].hasChildNodes()) {
+                    isMenuOpen = true;
+                    LoadCrpTools();
+                } else {
+                    isMenuOpen = false;
+                    DestroyCrpTools();
+                }
             }
         });
     });
@@ -84,60 +93,66 @@ function ObserveControlsContainer() {
 // CrunchyrollPlus controls initializer
 function LoadCrpTools() {
 
-    if (controlsContainer.firstChild.hasChildNodes()) {
-        // Controls on the left of the player
-        let leftControls = controlsContainer.querySelector("[data-testid='vilos-play_pause_button']").parentNode.parentNode;
-        // let rightControls = controlsContainer.querySelector("#settingsControl").parentNode;
+    // Controls on the left of the player
+    var leftControls = controlsContainer.querySelector("[data-testid='vilos-play_pause_button']").parentNode.parentNode;
+    // var rightControls = controlsContainer.querySelector("#settingsControl").parentNode;
 
-        // Move backward button
-        let moveBackward = CreateCrpTool('moveBackward', ['crpTools', "r-1ozmr9b"], 'moveBackward.svg');
-        moveBackward.addEventListener("click", () => {
-            chrome.runtime.sendMessage({ type: "moveBackwardTime" }, function (response) {
-                video.currentTime -= ~~response.message;
+    // Move backward button
+    var moveBackward = CreateCrpTool('moveBackward', ['crpTools', "r-1ozmr9b"], 'moveBackward.svg');
+    moveBackward.addEventListener("click", () => {
+        chrome.runtime.sendMessage({ type: "moveBackwardTime" }, function (response) {
+            video.currentTime -= ~~response.message;
+        });
+    });
+
+    // Move forward button
+    var moveForward = CreateCrpTool('moveForward', ['crpTools', "r-1ozmr9b"], 'moveForward.svg');
+    moveForward.addEventListener("click", () => {
+        chrome.runtime.sendMessage({ type: "moveForwardTime" }, function (response) {
+            video.currentTime += ~~response.message;
+        });
+    });
+
+    // Sound booster button (https://developer.mozilla.org/en-US/docs/Web/API/AudioContext/createMediaElementSource)
+    var soundBooster = CreateCrpTool('soundBoosterOff', ['crpTools', "r-1ozmr9b"],
+        soundBoosterEnabled ? 'soundBoosterOn.svg' : 'soundBoosterOff.svg');
+    soundBooster.addEventListener("click", () => {
+        if (!soundBoosterInitialized) {
+            InitSoundBooster();
+        }
+        if (!soundBoosterEnabled) { // If disabled, boost gain with stored sound multiplier
+            chrome.runtime.sendMessage({ type: "soundMultiplier" }, function (response) {
+                gainNode.gain.value = 1 + response.message / 10;
+                soundBoosterEnabled = true;
+                soundBooster.firstChild.src = chrome.runtime.getURL(`images/controls/soundBoosterOn.svg`);
             });
-        });
+        }
+        else {  // If enabled, set gain value to 1
+            gainNode.gain.value = 1;
+            soundBoosterEnabled = false;
+            soundBooster.firstChild.src = chrome.runtime.getURL(`images/controls/soundBoosterOff.svg`);
+        }
+    });
 
-        // Move forward button
-        let moveForward = CreateCrpTool('moveForward', ['crpTools', "r-1ozmr9b"], 'moveForward.svg');
-        moveForward.addEventListener("click", () => {
-            chrome.runtime.sendMessage({ type: "moveForwardTime" }, function (response) {
-                video.currentTime += ~~response.message;
-            });
-        });
+    // Append all CrunchyrollPlus controls
+    leftControls.appendChild(moveBackward);
+    leftControls.appendChild(moveForward);
+    leftControls.appendChild(soundBooster);
 
-        // Sound booster button (https://developer.mozilla.org/en-US/docs/Web/API/AudioContext/createMediaElementSource)
-        let soundBooster = CreateCrpTool('soundBoosterOff', ['crpTools', "r-1ozmr9b"],
-            soundBoosterEnabled ? 'soundBoosterOn.svg' : 'soundBoosterOff.svg');
-        soundBooster.addEventListener("click", () => {
-            if (!soundBoosterInitialized) {
-                InitSoundBooster();
-            }
-            if (!soundBoosterEnabled) { // If disabled, boost gain with stored sound multiplier
-                chrome.runtime.sendMessage({ type: "soundMultiplier" }, function (response) {
-                    gainNode.gain.value = 1 + response.message / 10;
-                    soundBoosterEnabled = true;
-                    soundBooster.firstChild.src = chrome.runtime.getURL(`images/controls/soundBoosterOn.svg`);
-                });
-            }
-            else {  // If enabled, set gain value to 1
-                gainNode.gain.value = 1;
-                soundBoosterEnabled = false;
-                soundBooster.firstChild.src = chrome.runtime.getURL(`images/controls/soundBoosterOff.svg`);
-            }
-        });
+    openingSkippersVisible(true);
 
-        // Append all CrunchyrollPlus controls
-        leftControls.appendChild(moveBackward);
-        leftControls.appendChild(moveForward);
-        leftControls.appendChild(soundBooster);
+    // Change playbar color to the stored theme color
+    chrome.runtime.sendMessage({ type: "themeColor" }, function (response) {
+        if (!!response.message) {
+            changePlayBarColor(response.message);
+        }
+    });
+}
 
-        // Change playbar color to the stored theme color
-        chrome.runtime.sendMessage({ type: "themeColor" }, function (response) {
-            if (!!response.message) {
-                changePlayBarColor(response.message);
-            }
-        });
-    }
+// CRP controls destroyer
+function DestroyCrpTools() {
+
+    openingSkippersVisible(false);
 }
 
 var soundBoosterInitialized = false, soundBoosterEnabled = false;
@@ -157,21 +172,21 @@ function InitSoundBooster() {
 // Change the playbar color (watched time bar and reticle)
 function changePlayBarColor(themeColor) {
 
-    let playerPointer = document.querySelector('div[data-testid="vilos-knob"]');
+    var playerPointer = document.querySelector('div[data-testid="vilos-knob"]');
     playerPointer.style.visibility = "hidden";
 
-    let crpPointer = document.createElement('div');
+    var crpPointer = document.createElement('div');
     crpPointer.id = "crpPointer";
     crpPointer.style.backgroundColor = themeColor;
 
     playerPointer.appendChild(crpPointer);
 
 
-    let watchedTime = document.querySelector('div[data-testid="vilos-scrub_bar"]').children[0].children[0].children[0]
+    var watchedTime = document.querySelector('div[data-testid="vilos-scrub_bar"]').children[0].children[0].children[0]
         .children[1].children[0].children[0];  // They should hire someone to add ids wherever they are missing !
     watchedTime.style.visibility = "hidden";
 
-    let crpWatchedTime = document.createElement('div');
+    var crpWatchedTime = document.createElement('div');
     crpWatchedTime.id = "crpWatchedTime";
     crpWatchedTime.style.backgroundColor = themeColor;
 
@@ -183,7 +198,7 @@ function changePlayBarColor(themeColor) {
 
 // Create a default CrunchyrollPlus control
 function CreateCrpTool(id, classList, imageWithExtension) {
-    let crpTool = document.createElement("button");
+    var crpTool = document.createElement("button");
     crpTool.classList.add(...classList);
     crpTool.id = id;
     crpTool.appendChild(CreateCrpImg(`${id}Img`, imageWithExtension));
@@ -197,7 +212,7 @@ function CreateCrpTool(id, classList, imageWithExtension) {
 
 // Create an image (for a CrunchyrollPlus control)
 function CreateCrpImg(id, imageWithExtension) {
-    let crpImg = document.createElement('img');
+    var crpImg = document.createElement('img');
     crpImg.id = id;
     crpImg.src = chrome.runtime.getURL(`images/controls/${imageWithExtension}`);    // Requires web_accessible_resources in the manifest
     return crpImg;
@@ -208,6 +223,9 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     switch (request.type) {
         case "togglePlayerThumbnail":
             togglePlayerThumbnail(request.state);
+            break;
+        case "definePlayerOpenings":
+            startListeningVideoPlayer(request.openingTimes);
             break;
     }
 });
@@ -223,7 +241,7 @@ var playerThumbnailStyle = CreateStyleElement("playerThumbnailStyle");
 
 // Create style element and add it to the DOM
 function CreateStyleElement(id) {
-    let myStyle = document.createElement('style');
+    var myStyle = document.createElement('style');
     myStyle.id = id;
     document.getElementsByTagName('head')[0].appendChild(myStyle);
 
@@ -242,13 +260,11 @@ function togglePlayerThumbnail(state) {
     }
 }
 
-/*
 // Wait for given milliseconds
 // USE : delay(1000).then(() => { ... });
-function delay(time) {
+/*function delay(time) {
     return new Promise(resolve => setTimeout(resolve, time));
-}
-*/
+}*/
 
 // Change loading spinner color to the stored theme color
 var loadSpinner = document.querySelectorAll('div[data-testid="vilos-loading"] path');
@@ -261,3 +277,114 @@ var loadSpinner = document.querySelectorAll('div[data-testid="vilos-loading"] pa
         }
     });
 })();
+
+
+// ----------------------------- //
+//  Opening skippers management  //
+// ----------------------------- //
+
+// Create a skipper button and start detecting openings in the episode
+// (when the time between 2 subtitles is long enough for an opening)
+function createOpeningSkippers() {
+    const opDuration = new Date(openingDuration * 1000).toISOString().substring(14, 19);    // Convert seconds to mm:ss
+
+    openingList.forEach((op, index) => {
+        var crpSkipper = document.createElement('div');
+        crpSkipper.id = "crpSkipper_" + index;
+        crpSkipper.className = "crpSkipper";
+        crpSkipper.style.visibility = 'collapse';
+
+        var crpSkipperText = document.createElement('p');
+        crpSkipperText.innerText = 'SKIP OPENING';
+        crpSkipperText.className = "crpSkipperText";
+
+        var crpSkipperTimer = document.createElement('p');
+        crpSkipperTimer.id = "crpSkipperTimer_" + index;
+        crpSkipperTimer.className = "crpSkipperTimer";
+        crpSkipperTimer.innerText = `(${opDuration})`;
+
+        crpSkipper.appendChild(crpSkipperText);
+        crpSkipper.appendChild(crpSkipperTimer);
+        controlsContainer.parentNode.appendChild(crpSkipper);   // Not to the body, because it's not displayed in fullscreen
+
+        crpSkipper.addEventListener('mouseover', () => { crpSkipper.style.opacity = 1; });   // On hover, don't hide the skipper
+        crpSkipper.addEventListener('mouseout', () => { });
+        crpSkipper.addEventListener('click', () => { video.currentTime += ~~skipperTimer; });   // On click, skip the opening
+
+        op.skipperId = crpSkipper.id;
+        op.skipperTimerId = crpSkipperTimer.id;
+        op.handler = "none";
+    });
+}
+
+var openingList = null;
+var openingDuration = 90;   // Default value, but will be replaced asynchronously
+var skipperTimer = 90;
+
+// Listen to the video player timeupdate, and display the opening skipper if it is the right time
+async function startListeningVideoPlayer(openings) {
+    openingList = openings; // Now used as a global variable
+
+    openingDuration = (await chrome.runtime.sendMessage({ type: "openingDuration" })).message;
+
+    createOpeningSkippers();    // Create buttons
+
+    video.addEventListener("timeupdate", async function () {
+        var currentTime = Math.round(this.currentTime);
+
+        openingList.forEach((op) => {
+            var crpSkipper = document.getElementById(op.skipperId);
+
+            // If an opening is playing
+            if (currentTime >= op.start && currentTime < op.end) {
+
+                // Update skipper timer
+                skipperTimer = op.end - currentTime > openingDuration ? openingDuration : op.end - currentTime;
+                var skipperTimerMMSS = new Date(skipperTimer * 1000).toISOString().substring(14, 19);   // Convert seconds to mm:ss
+                document.getElementById(op.skipperTimerId).innerHTML = `(${skipperTimerMMSS})`;
+
+                if (op.handler === "none") {    // If not handled yet
+                    op.handler = "autoTimeout";                 // Handle it
+                    crpSkipper.style.visibility = "visible";    // Display the skipper
+                    crpSkipper.style.opacity = 1;
+
+                    var timeLeft = (op.end - currentTime) * 1000;       // Define a timeout of 4 seconds, or less if the time
+                    var timeout = (timeLeft > 4000) ? 4000 : timeLeft;  // to the end of the opening is reached before
+
+                    setTimeout(() => {
+                        op.handler = "mouseMovements";    // Change handler, and hide/show the skipper wether the controls are
+                        crpSkipper.style.opacity = isMenuOpen ? 1 : 0;  // displayed or not at this moment 
+                    }, timeout);
+                }
+            }
+            // If no opening is playing, collapse the skipper
+            else if (currentTime >= op.end || currentTime < op.start && op.handler !== "none") {
+                op.handler = "none";                        // No more handler
+                crpSkipper.style.opacity = 0;
+
+                // Collapse the button when the opening is not playing
+                setTimeout(() => { crpSkipper.style.visibility = 'collapse'; }, 300);   // Timeout of 0.3s for opacity transition
+            }
+        });
+    }, false);
+}
+
+// Called on mouse moved (when controls are shown/hidden to be exact)
+function openingSkippersVisible(state) {
+    if (openingList !== null) { // Do not execute if openings hasn't been detected yet
+
+        openingList.forEach((op) => {
+            var crpSkipper = document.getElementById(op.skipperId);
+
+            // Opening is playing
+            if (op.handler === "mouseMovements") {
+                crpSkipper.style.opacity = state ? 1 : 0;
+            }
+            // Opening is not playing
+            else if (op.handler === "none") {
+                crpSkipper.style.opacity = 0;
+                setTimeout(() => { crpSkipper.style.visibility = 'collapse'; }, 300);   // Timeout of 0.3s for opacity transition
+            }
+        });
+    }
+}

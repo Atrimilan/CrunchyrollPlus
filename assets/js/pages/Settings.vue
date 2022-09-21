@@ -10,7 +10,7 @@
     
                 <div class="tool">
                     <SimpleButton v-if="item.id==='reset'" image="images/miscellaneous/bin.svg" @onClick=resetConfig() />
-                    <InfoArea v-if="item.id==='version'" text="1.0.0" :width=55 />
+                    <InfoArea v-if="item.id==='version'" text="1.0.0" />
                 </div>
                 
             </div>
