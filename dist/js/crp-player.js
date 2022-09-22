@@ -315,7 +315,7 @@ function createOpeningSkippers() {
     crpSkipper.className = "crpSkipper";
     crpSkipper.style.visibility = 'collapse';
     var crpSkipperText = document.createElement('p');
-    crpSkipperText.innerText = 'SKIP OPENING';
+    crpSkipperText.innerText = chrome.i18n.getMessage("player_openingSkipper");
     crpSkipperText.className = "crpSkipperText";
     var crpSkipperTimer = document.createElement('p');
     crpSkipperTimer.id = "crpSkipperTimer_" + index;

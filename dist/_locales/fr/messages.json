@@ -40,5 +40,8 @@
     },
     "advancedItem_downloadSubtitles": {
         "message": "Télécharger les sous-titres"
+    },
+    "player_openingSkipper": {
+        "message": "PASSER LE GÉNÉRIQUE"
     }
 }

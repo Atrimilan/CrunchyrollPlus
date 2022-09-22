@@ -40,5 +40,8 @@
     },
     "advancedItem_downloadSubtitles": {
         "message": "Download subtitles"
+    },
+    "player_openingSkipper": {
+        "message": "SKIP OPENING"
     }
 }

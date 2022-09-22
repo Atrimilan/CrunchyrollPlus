@@ -64,3 +64,7 @@
   font-weight: 500;
   font-size: 9px;
 }
+
+div[data-testid=skipButton] {
+  display: none;
+}

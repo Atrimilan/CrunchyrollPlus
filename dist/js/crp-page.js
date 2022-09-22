@@ -394,8 +394,8 @@ var API = /*#__PURE__*/function () {
 
                       if (startSeconds - prevEndSeconds >= openingDuration) {
                         openings.push({
-                          "start": prevEndSeconds,
-                          "end": startSeconds,
+                          "start": prevEndSeconds + 1,
+                          "end": startSeconds - 1,
                           "start_full": prevEnd,
                           "end_full": value.Start
                         });

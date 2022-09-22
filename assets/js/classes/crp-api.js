@@ -164,7 +164,7 @@ export default class API {
                                         const startSeconds = toSeconds(value.Start);
 
                                         if ((startSeconds - prevEndSeconds) >= openingDuration) {
-                                            openings.push({ "start": prevEndSeconds, "end": startSeconds, "start_full": prevEnd, "end_full": value.Start });
+                                            openings.push({ "start": prevEndSeconds + 1, "end": startSeconds - 1, "start_full": prevEnd, "end_full": value.Start });
                                             console.log("Opening detected from " + prevEnd + " to " + value.Start + ", duration : " + (startSeconds - prevEndSeconds) + "s");
                                         }
                                         prevEnd = value.End;

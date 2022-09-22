@@ -70,3 +70,8 @@
         }
     }
 }
+
+// Hide the not-working-very-well-yet-but-still-have-been-added-one-day-after-mine Crunchyroll skipper
+div[data-testid="skipButton"]{
+    display: none;
+}
