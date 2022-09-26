@@ -56,9 +56,7 @@ chrome.runtime.onMessage.addListener(
                 API.default.SUBTITLES.then((subtitles) => { downloadFile(subtitles.url, `subtitles.${subtitles.format}`); });
                 break;
             case "getOpeningTimes":
-                //getOpeningTimes(request.videoDuration);
                 getOpeningTimes(request.videoDuration);
-                //sendResponse({ message: null });
                 break;
         }
     }

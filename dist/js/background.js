@@ -33,7 +33,9 @@ function InitStorage() {
       // Use avatar as favicon
       soundMultiplier: result.soundMultiplier === undefined ? 10 : result.soundMultiplier,
       // Increase video player's sound
-      openingDuration: result.openingDuration === undefined ? 85 : result.openingDuration // Opening duration to skip (1:25 here)
+      crpOpeningSkipper: result.crpOpeningSkipper === undefined ? true : result.crpOpeningSkipper,
+      // Use CRP opening skipper
+      openingDuration: result.openingDuration === undefined ? 90 : result.openingDuration // Opening duration to skip (1:30 here)
 
     });
   });
@@ -99,6 +101,14 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
       chrome.storage.sync.get(['soundMultiplier'], function (result) {
         sendResponse({
           message: result.soundMultiplier
+        });
+      });
+      break;
+
+    case "crpOpeningSkipper":
+      chrome.storage.sync.get(['crpOpeningSkipper'], function (result) {
+        sendResponse({
+          message: result.crpOpeningSkipper
         });
       });
       break;

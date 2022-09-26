@@ -1,7 +1,7 @@
 <template>
 <div class="crp-page">
 
-    <div class="item" v-for="item in listItems" :key="item.id">
+    <div v-for="item in listItems" :key="item.id" :class="['item', item.locker]" :id="item.id">
         <div class="content">
 
             <div class="text">

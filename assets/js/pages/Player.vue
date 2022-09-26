@@ -1,7 +1,7 @@
 <template>
 <div class="crp-page">
     
-    <div class="item" v-for="item in listItems" :key="item.id">
+    <div v-for="item in listItems" :key="item.id" :class="['item', item.locker]" :id="item.id">
         <div class="content">
 
             <div class="text">
@@ -14,6 +14,7 @@
                     <RangeSlider ref="soundMultiplier" :min=0 :max=40 :value=soundMultiplier @selected="soundMultiplierSelected($event)" @isChoosing="soundMultiplierChoosing($event)" />
                     <InfoArea :text="soundGainInfo.toFixed(1)" />
                 </div>
+                <SwitchButton v-if="item.id==='crpOpeningSkipper'" :isChecked=crpOpeningSkipper @switched="toggleCRPSKipper($event)" />
                 <TimeInput v-else-if="item.id==='openingDuration'" :timeInSeconds=openingDuration @selected="setOpeningDuration($event)"/>
             </div>
             
@@ -44,12 +45,14 @@ export default {
             listItems: [
                 { id: "playerThumbnail" },
                 { id: "soundMultiplier" },
+                { id: "crpOpeningSkipper" },
                 { id: "openingDuration" },
             ],
             playerThumbnailState: true,
             soundMultiplier: 0,
             soundGainInfo: 1,
-            openingDuration: 85 // 1:25 in seconds
+            crpOpeningSkipper: true,
+            openingDuration: 90 // 1:30 in seconds
         };
     },
     methods: {
@@ -68,6 +71,10 @@ export default {
         soundMultiplierSelected(value){
             chrome.storage.sync.set({ soundMultiplier: value });
         },
+        toggleCRPSKipper(status) {
+            this.crpOpeningSkipper = status;
+            chrome.storage.sync.set({ crpOpeningSkipper: status });
+        },
         setOpeningDuration(value){
             chrome.storage.sync.set({ openingDuration: value });
         }
@@ -79,8 +86,19 @@ export default {
             this.playerThumbnailState = (await chrome.runtime.sendMessage({ type: "showPlayerThumbnail" })).message;
             this.soundMultiplier = parseInt((await chrome.runtime.sendMessage({ type: "soundMultiplier" })).message);
             this.soundGainInfo = this.soundMultiplier / 10  + 1;
+            this.crpOpeningSkipper = (await chrome.runtime.sendMessage({ type: "crpOpeningSkipper" })).message;
             this.openingDuration = parseInt((await chrome.runtime.sendMessage({ type: "openingDuration" })).message);
         })();
+    },
+    watch: {
+        crpOpeningSkipper: function(val) {
+            // Enable openingDuration list item
+            this.listItems.forEach(item => {
+                if (item.id === "openingDuration") {
+                    item.locker = val ? "" : "locked";
+                }
+            });
+        }
     }
 };
 </script>

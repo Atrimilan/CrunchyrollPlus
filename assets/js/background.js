@@ -15,7 +15,8 @@ function InitStorage() {
             showPlayerThumbnail: (result.blurredThumbnails === undefined) ? true : result.showPlayerThumbnail,  // Progress bar thumbnail
             avatarFavicon: (result.avatarFavicon === undefined) ? false : result.avatarFavicon, // Use avatar as favicon
             soundMultiplier: (result.soundMultiplier === undefined) ? 10 : result.soundMultiplier,   // Increase video player's sound
-            openingDuration: (result.openingDuration === undefined) ? 85 : result.openingDuration,   // Opening duration to skip (1:25 here)
+            crpOpeningSkipper: (result.crpOpeningSkipper === undefined) ? true : result.crpOpeningSkipper,  // Use CRP opening skipper
+            openingDuration: (result.openingDuration === undefined) ? 90 : result.openingDuration,   // Opening duration to skip (1:30 here)
         });
     });
 }
@@ -49,6 +50,9 @@ chrome.runtime.onMessage.addListener(
                 break;
             case "soundMultiplier":
                 chrome.storage.sync.get(['soundMultiplier'], (result) => { sendResponse({ message: result.soundMultiplier }); });
+                break;
+            case "crpOpeningSkipper":
+                chrome.storage.sync.get(['crpOpeningSkipper'], (result) => { sendResponse({ message: result.crpOpeningSkipper }); });
                 break;
             case "openingDuration":
                 chrome.storage.sync.get(['openingDuration'], (result) => { sendResponse({ message: result.openingDuration }); });

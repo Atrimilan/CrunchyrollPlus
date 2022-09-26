@@ -29,6 +29,9 @@
     "playerItem_soundMultiplier": {
         "message": "Gain du booster"
     },
+    "playerItem_crpOpeningSkipper": {
+        "message": "Utiliser le skipper d'opening CRP"
+    },
     "playerItem_openingDuration": {
         "message": "Durée des openings"
     },

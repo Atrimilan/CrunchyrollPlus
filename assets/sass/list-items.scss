@@ -46,6 +46,12 @@
             opacity: 1;
         }
     }
+    
+    // Disable item if "locked" property is set
+    &.locked {
+        opacity: 0.5;
+        pointer-events: none;
+    }
 }
 
 .crp-page {

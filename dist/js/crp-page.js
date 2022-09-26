@@ -2892,9 +2892,7 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
       break;
 
     case "getOpeningTimes":
-      //getOpeningTimes(request.videoDuration);
-      getOpeningTimes(request.videoDuration); //sendResponse({ message: null });
-
+      getOpeningTimes(request.videoDuration);
       break;
   }
 }); // Load data from the chrome storage, and call needed functions

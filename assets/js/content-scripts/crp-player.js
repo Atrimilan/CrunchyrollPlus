@@ -43,9 +43,7 @@ function ObserveVideoPlayer() {
                             }
                             ObserveControlsContainer(); // Start observing controls when vilosControlsContainer is loaded
 
-                            // Openings need to be detected from main page content-script
-                            // to avoid CORS restrictions when accessing subtitles links
-                            chrome.runtime.sendMessage({ type: "getOpeningTimes", videoDuration: video.duration });
+                            InitOpeningSkipper();
                         }
                     });
                 }
@@ -282,6 +280,27 @@ var loadSpinner = document.querySelectorAll('div[data-testid="vilos-loading"] pa
 // ----------------------------- //
 //  Opening skippers management  //
 // ----------------------------- //
+
+async function InitOpeningSkipper() {
+    // Check if CRP skipper is enabled first
+    const crpSkipper = (await chrome.runtime.sendMessage({ type: "openingDuration" })).message;
+    if (crpSkipper) {
+
+        // Openings need to be detected from main page content-script
+        // to avoid CORS restrictions when accessing subtitles links
+        chrome.runtime.sendMessage({ type: "getOpeningTimes", videoDuration: video.duration });
+
+        // Hide default opening skipper
+        var defaultSkipper = CreateStyleElement("hideDefaultSkipper");
+        defaultSkipper.innerHTML = `
+        div[data-testid="skipButton"] {
+            display: none;
+        }
+        #skipButton {
+            display: none;
+        }`;
+    };
+}
 
 // Create a skipper button and start detecting openings in the episode
 // (when the time between 2 subtitles is long enough for an opening)

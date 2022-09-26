@@ -64,13 +64,8 @@ function ObserveVideoPlayer() {
               }
 
               ObserveControlsContainer(); // Start observing controls when vilosControlsContainer is loaded
-              // Openings need to be detected from main page content-script
-              // to avoid CORS restrictions when accessing subtitles links
 
-              chrome.runtime.sendMessage({
-                type: "getOpeningTimes",
-                videoDuration: video.duration
-              });
+              InitOpeningSkipper();
             }
           });
         }
@@ -302,9 +297,52 @@ var loadSpinner = document.querySelectorAll('div[data-testid="vilos-loading"] pa
 })(); // ----------------------------- //
 //  Opening skippers management  //
 // ----------------------------- //
-// Create a skipper button and start detecting openings in the episode
+
+
+function InitOpeningSkipper() {
+  return _InitOpeningSkipper.apply(this, arguments);
+} // Create a skipper button and start detecting openings in the episode
 // (when the time between 2 subtitles is long enough for an opening)
 
+
+function _InitOpeningSkipper() {
+  _InitOpeningSkipper = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee() {
+    var crpSkipper, defaultSkipper;
+    return _regeneratorRuntime().wrap(function _callee$(_context) {
+      while (1) {
+        switch (_context.prev = _context.next) {
+          case 0:
+            _context.next = 2;
+            return chrome.runtime.sendMessage({
+              type: "openingDuration"
+            });
+
+          case 2:
+            crpSkipper = _context.sent.message;
+
+            if (crpSkipper) {
+              // Openings need to be detected from main page content-script
+              // to avoid CORS restrictions when accessing subtitles links
+              chrome.runtime.sendMessage({
+                type: "getOpeningTimes",
+                videoDuration: video.duration
+              }); // Hide default opening skipper
+
+              defaultSkipper = CreateStyleElement("hideDefaultSkipper");
+              defaultSkipper.innerHTML = "\n        div[data-testid=\"skipButton\"] {\n            display: none;\n        }\n        #skipButton {\n            display: none;\n        }";
+            }
+
+            ;
+
+          case 5:
+          case "end":
+            return _context.stop();
+        }
+      }
+    }, _callee);
+  }));
+  return _InitOpeningSkipper.apply(this, arguments);
+}
 
 function createOpeningSkippers() {
   var opDuration = new Date(openingDuration * 1000).toISOString().substring(14, 19); // Convert seconds to mm:ss
@@ -351,27 +389,27 @@ function startListeningVideoPlayer(_x) {
 
 
 function _startListeningVideoPlayer() {
-  _startListeningVideoPlayer = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee2(openings) {
-    return _regeneratorRuntime().wrap(function _callee2$(_context2) {
+  _startListeningVideoPlayer = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee3(openings) {
+    return _regeneratorRuntime().wrap(function _callee3$(_context3) {
       while (1) {
-        switch (_context2.prev = _context2.next) {
+        switch (_context3.prev = _context3.next) {
           case 0:
             openingList = openings; // Now used as a global variable
 
-            _context2.next = 3;
+            _context3.next = 3;
             return chrome.runtime.sendMessage({
               type: "openingDuration"
             });
 
           case 3:
-            openingDuration = _context2.sent.message;
+            openingDuration = _context3.sent.message;
             createOpeningSkippers(); // Create buttons
 
-            video.addEventListener("timeupdate", /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee() {
+            video.addEventListener("timeupdate", /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee2() {
               var currentTime;
-              return _regeneratorRuntime().wrap(function _callee$(_context) {
+              return _regeneratorRuntime().wrap(function _callee2$(_context2) {
                 while (1) {
-                  switch (_context.prev = _context.next) {
+                  switch (_context2.prev = _context2.next) {
                     case 0:
                       currentTime = Math.round(this.currentTime);
                       openingList.forEach(function (op) {
@@ -415,18 +453,18 @@ function _startListeningVideoPlayer() {
 
                     case 2:
                     case "end":
-                      return _context.stop();
+                      return _context2.stop();
                   }
                 }
-              }, _callee, this);
+              }, _callee2, this);
             })), false);
 
           case 6:
           case "end":
-            return _context2.stop();
+            return _context3.stop();
         }
       }
-    }, _callee2);
+    }, _callee3);
   }));
   return _startListeningVideoPlayer.apply(this, arguments);
 }

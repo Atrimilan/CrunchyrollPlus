@@ -29,8 +29,11 @@
     "playerItem_soundMultiplier": {
         "message": "Sound booster gain"
     },
+    "playerItem_crpOpeningSkipper": {
+        "message": "Toggle CRP opening skipper"
+    },
     "playerItem_openingDuration": {
-        "message": "Duration of openings"
+        "message": "Opening duration"
     },
     "settingsItem_reset": {
         "message": "Reset Crunchyroll Plus settings"
