@@ -32,7 +32,7 @@ export default class API {
                 })
                 .catch((error) => console.log("%cCannot get access_token", 'color:red;font-weight:bold'));
         });
-
+        
         return token;
     }
 
@@ -192,15 +192,15 @@ export default class API {
             }
         }).catch(error => console.log("%cSubtitles cannot be parsed or language is not available", 'color:red;font-weight:bold'));
 
-        function toSeconds(hh_mm_ss) {
-            const split = hh_mm_ss.split('.')[0].split(":");
-            return (split[0] * 3600 + split[1] * 60 + (+split[2]));
-        }
-
-        function toHHMMSS(seconds) {
-            return new Date(seconds * 1000).toISOString().substring(14, 19);
-        }
-
         return openings;
     }
+}
+
+function toSeconds(hh_mm_ss) {
+    const split = hh_mm_ss.split('.')[0].split(":");
+    return (split[0] * 3600 + split[1] * 60 + (+split[2]));
+}
+
+function toHHMMSS(seconds) {
+    return new Date(seconds * 1000).toISOString().substring(14, 19);
 }

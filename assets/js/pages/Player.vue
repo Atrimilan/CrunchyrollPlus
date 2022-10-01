@@ -28,6 +28,8 @@
 
 
 <script>
+import MessageSender from '../classes/message-api.js';
+    
 import SwitchButton from "./components/SwitchButton.vue";
 import RangeSlider from "./components/RangeSlider.vue";
 import InfoArea from "./components/InfoArea.vue";
@@ -83,11 +85,12 @@ export default {
         // Components need to be initialized in the Popup to their current status
         // They must be initialized asynchronously, <input> are not updated if the result is not awaited
         (async () => {
-            this.playerThumbnailState = (await chrome.runtime.sendMessage({ type: "showPlayerThumbnail" })).message;
-            this.soundMultiplier = parseInt((await chrome.runtime.sendMessage({ type: "soundMultiplier" })).message);
+            //this.playerThumbnailState = (await chrome.runtime.sendMessage({ type: "showPlayerThumbnail" })).message;
+            this.playerThumbnailState = await MessageSender.getStorage("showPlayerThumbnail");
+            this.soundMultiplier = parseInt(await MessageSender.getStorage("soundMultiplier"));
             this.soundGainInfo = this.soundMultiplier / 10  + 1;
-            this.crpOpeningSkipper = (await chrome.runtime.sendMessage({ type: "crpOpeningSkipper" })).message;
-            this.openingDuration = parseInt((await chrome.runtime.sendMessage({ type: "openingDuration" })).message);
+            this.crpOpeningSkipper = await MessageSender.getStorage("crpOpeningSkipper");
+            this.openingDuration = parseInt(await MessageSender.getStorage("openingDuration"));
         })();
     },
     watch: {

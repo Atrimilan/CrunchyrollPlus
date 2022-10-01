@@ -1,5 +1,8 @@
+import MessageAPI from '../classes/message-api.js';
+import API from '../classes/crp-api.js';
+
 // Keyboard input events listener
-document.addEventListener('keydown', (event) => {
+document.addEventListener('keydown', async (event) => {
     var name = event.key;
     var code = event.code;
 
@@ -11,13 +14,9 @@ document.addEventListener('keydown', (event) => {
             timeout = setTimeout(() => { debugger; }, 0); // Pause page after 0 ms
             break;
         case "t":   // Test API
-            chrome.runtime.sendMessage({ type: "openingDuration" }, function (response) {
-
-                const API = require('../classes/crp-api.js');
-                API.default.OPENINGS(response.message).then((response) => {
-                    console.log(response);
-                });
-            });
+            const openingDuration = await MessageAPI.getStorage("openingDuration");
+            const res = await API.OPENINGS(1420, openingDuration);
+            console.log(res);
     }
 }, false);
 // ----------------------------------------------------------------------------------------------------
@@ -37,11 +36,12 @@ function CreateStyleElement(id) {
     return myStyle;
 }
 
-// Messages received from Popup
 chrome.runtime.onMessage.addListener(
     function (request, sender, sendResponse) {
 
-        switch (request.type) {
+        const { type, parameters } = request;
+
+        switch (type) {
             case "toggleThumbnails":
                 toggleThumbnails(request.state);
                 break;
@@ -52,27 +52,32 @@ chrome.runtime.onMessage.addListener(
                 toggleAvatarFavicon(request.state);
                 break;
             case "downloadSubtitles":
-                const API = require('../classes/crp-api.js');
-                API.default.SUBTITLES.then((subtitles) => { downloadFile(subtitles.url, `subtitles.${subtitles.format}`); });
+                API.SUBTITLES.then((subtitles) => { downloadFile(subtitles.url, `subtitles.${subtitles.format}`); });
                 break;
             case "getOpeningTimes":
                 getOpeningTimes(request.videoDuration);
+                break;
+
+            case "multiply":
+                sendResponse({ response: (parameters.a * parameters.b) });
+                break;
+            case "divide":
+                sendResponse({ response: (parameters.a / parameters.b) });
                 break;
         }
     }
 );
 
 // Load data from the chrome storage, and call needed functions
-(function InitPage() {
-    chrome.runtime.sendMessage({ type: "blurredThumbnails" }, function (response) {
-        toggleThumbnails(response.message);
-    });
-    chrome.runtime.sendMessage({ type: "themeColor" }, function (response) {
-        themeColorUpdate(response.message);
-    });
-    chrome.runtime.sendMessage({ type: "avatarFavicon" }, function (response) {
-        toggleAvatarFavicon(response.message);
-    });
+(async function InitPage() {
+    const blurredThumbnails = await MessageAPI.getStorage("blurredThumbnails");
+    toggleThumbnails(blurredThumbnails);
+
+    const themeColor = await MessageAPI.getStorage("themeColor");
+    themeColorUpdate(themeColor);
+
+    const avatarFavicon = await MessageAPI.getStorage("avatarFavicon");
+    toggleAvatarFavicon(avatarFavicon);
 })();
 
 
@@ -202,21 +207,20 @@ function waitForElementLoaded(selector) {
 
 // File can only be downloaded from the background script 
 function downloadFile(url, filename) {
-    chrome.runtime.sendMessage({ type: "downloadFile", url: url, filename: filename });
+    chrome.runtime.sendMessage({ action: "downloadFile", url: url, filename: filename });
     // But format seems not working for security reasons
 }
 
 // Detect openings in the video
-function getOpeningTimes(videoDuration) {
-    const res = chrome.runtime.sendMessage({ type: "openingDuration" }, (response) => {
+async function getOpeningTimes(videoDuration) {
 
-        const API = require('../classes/crp-api.js');
-        API.default.OPENINGS(videoDuration, response.message).then((response) => {
+    const openingDuration = await MessageAPI.getStorage("openingDuration");
 
-            // Send to background, then let crp-player handle openings skipper
-            chrome.runtime.sendMessage({ type: "definePlayerOpenings", openingTimes: response });
+    API.OPENINGS(videoDuration, openingDuration).then((response) => {
 
-            /* I didn't succeed, but it should be possible to send a response rather than creating a new request */
-        });
+        // Send to background, then let crp-player handle openings skipper
+        chrome.runtime.sendMessage({ action: "definePlayerOpenings", openingTimes: response });
+
+        /* I didn't succeed, but it should be possible to send a response rather than creating a new request */
     });
 }

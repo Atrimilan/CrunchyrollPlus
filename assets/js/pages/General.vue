@@ -25,6 +25,8 @@
 
 
 <script>
+import MessageSender from '../classes/message-api.js';
+    
 import ColorInput from "./components/ColorInput.vue";
 import SwitchButton from "./components/SwitchButton.vue";
 
@@ -79,9 +81,9 @@ export default {
         // Components need to be initialized in the Popup to their current status
         // They must be initialized asynchronously, <input> are not updated if the result is not awaited
         (async () => {
-            this.themeColor = (await chrome.runtime.sendMessage({ type: "themeColor" })).message;
-            this.blurringState = (await chrome.runtime.sendMessage({ type: "blurredThumbnails" })).message;
-            this.avatarFaviconState = (await chrome.runtime.sendMessage({ type: "avatarFavicon" })).message;
+            this.themeColor = await MessageSender.getStorage("themeColor");
+            this.blurringState = await MessageSender.getStorage("blurredThumbnails");
+            this.avatarFaviconState = await MessageSender.getStorage("avatarFavicon");
         })();
     }
 };

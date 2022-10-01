@@ -1,4 +1,3 @@
-
 /*
  * Notes about the default Crunchyroll video player [id: velocity-controls-package]
  *
@@ -9,6 +8,9 @@
  *   - It is not visible until you hover over the video player
  * • Third one appears above the two previous ones when you hover over the video player, it's a vignette effect
  */
+
+import PlayerTool from '../classes/player-tool.js';
+import MessageAPI from '../classes/message-api.js';
 
 var video = document.getElementById('player0');
 
@@ -42,6 +44,9 @@ function ObserveVideoPlayer() {
                                 LoadCrpTools(); // Load CrunchyrollPlus controls if controlsContainer has child nodes
                             }
                             ObserveControlsContainer(); // Start observing controls when vilosControlsContainer is loaded
+
+/****************/ sendToPageTest("multiply", { a: 5, b: 2 }); /****************/
+/****************/ sendToPageTest("divide", { a: 3, b: 6 }); /****************/
 
                             InitOpeningSkipper();
                         }
@@ -89,41 +94,39 @@ function ObserveControlsContainer() {
 }
 
 // CrunchyrollPlus controls initializer
-function LoadCrpTools() {
+async function LoadCrpTools() {
 
     // Controls on the left of the player
-    var leftControls = controlsContainer.querySelector("[data-testid='vilos-play_pause_button']").parentNode.parentNode;
-    // var rightControls = controlsContainer.querySelector("#settingsControl").parentNode;
+    const leftControls = controlsContainer.querySelector("[data-testid='vilos-play_pause_button']").parentNode.parentNode;
+    // const rightControls = controlsContainer.querySelector("#settingsControl").parentNode;
+
+    const toolClasses = ['crpTools', "r-1ozmr9b"];
 
     // Move backward button
-    var moveBackward = CreateCrpTool('moveBackward', ['crpTools', "r-1ozmr9b"], 'moveBackward.svg');
-    moveBackward.addEventListener("click", () => {
-        chrome.runtime.sendMessage({ type: "moveBackwardTime" }, function (response) {
-            video.currentTime -= ~~response.message;
-        });
-    });
+    var moveBackward = new PlayerTool('moveBackward', toolClasses, 'moveBackward.svg').tool;
+    leftControls.appendChild(moveBackward);
+    const moveBackwardTime = await MessageAPI.getStorage('moveBackwardTime');
+    moveBackward.addEventListener("click", () => { video.currentTime -= ~~moveBackwardTime; });
 
     // Move forward button
-    var moveForward = CreateCrpTool('moveForward', ['crpTools', "r-1ozmr9b"], 'moveForward.svg');
-    moveForward.addEventListener("click", () => {
-        chrome.runtime.sendMessage({ type: "moveForwardTime" }, function (response) {
-            video.currentTime += ~~response.message;
-        });
-    });
+    var moveForward = new PlayerTool('moveForward', toolClasses, 'moveForward.svg').tool;
+    leftControls.appendChild(moveForward);
+    const moveForwardTime = await MessageAPI.getStorage('moveForwardTime');
+    moveForward.addEventListener("click", () => { video.currentTime += ~~moveForwardTime; });
 
     // Sound booster button (https://developer.mozilla.org/en-US/docs/Web/API/AudioContext/createMediaElementSource)
-    var soundBooster = CreateCrpTool('soundBoosterOff', ['crpTools', "r-1ozmr9b"],
-        soundBoosterEnabled ? 'soundBoosterOn.svg' : 'soundBoosterOff.svg');
+    var soundBooster = new PlayerTool('soundBoosterOff', toolClasses,
+        soundBoosterEnabled ? 'soundBoosterOn.svg' : 'soundBoosterOff.svg').tool;
+    leftControls.appendChild(soundBooster);
+    const soundMultiplier = await MessageAPI.getStorage('soundMultiplier');
     soundBooster.addEventListener("click", () => {
         if (!soundBoosterInitialized) {
             InitSoundBooster();
         }
         if (!soundBoosterEnabled) { // If disabled, boost gain with stored sound multiplier
-            chrome.runtime.sendMessage({ type: "soundMultiplier" }, function (response) {
-                gainNode.gain.value = 1 + response.message / 10;
-                soundBoosterEnabled = true;
-                soundBooster.firstChild.src = chrome.runtime.getURL(`images/controls/soundBoosterOn.svg`);
-            });
+            gainNode.gain.value = 1 + soundMultiplier / 10;
+            soundBoosterEnabled = true;
+            soundBooster.firstChild.src = chrome.runtime.getURL(`images/controls/soundBoosterOn.svg`);
         }
         else {  // If enabled, set gain value to 1
             gainNode.gain.value = 1;
@@ -132,24 +135,17 @@ function LoadCrpTools() {
         }
     });
 
-    // Append all CrunchyrollPlus controls
-    leftControls.appendChild(moveBackward);
-    leftControls.appendChild(moveForward);
-    leftControls.appendChild(soundBooster);
-
     openingSkippersVisible(true);
 
     // Change playbar color to the stored theme color
-    chrome.runtime.sendMessage({ type: "themeColor" }, function (response) {
-        if (!!response.message) {
-            changePlayBarColor(response.message);
-        }
-    });
+    const themeColor = await MessageAPI.getStorage('themeColor');
+    if (!!themeColor) { // Not null
+        changePlayBarColor(themeColor);
+    }
 }
 
 // CRP controls destroyer
 function DestroyCrpTools() {
-
     openingSkippersVisible(false);
 }
 
@@ -193,7 +189,7 @@ function changePlayBarColor(themeColor) {
     // playerPointer and watchedTime "style" properties cannot be changed because it is automatically updated by the player
     // This is why child nodes are created, while their parent's visibility is set to "hidden"
 }
-
+/*
 // Create a default CrunchyrollPlus control
 function CreateCrpTool(id, classList, imageWithExtension) {
     var crpTool = document.createElement("button");
@@ -214,11 +210,14 @@ function CreateCrpImg(id, imageWithExtension) {
     crpImg.id = id;
     crpImg.src = chrome.runtime.getURL(`images/controls/${imageWithExtension}`);    // Requires web_accessible_resources in the manifest
     return crpImg;
-}
+}*/
 
 // Messages received from Popup
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-    switch (request.type) {
+
+    const { type, parameters } = request;
+
+    switch (type) {
         case "togglePlayerThumbnail":
             togglePlayerThumbnail(request.state);
             break;
@@ -230,7 +229,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
 // Load data from the chrome storage, and call needed functions
 (function InitPage() {
-    chrome.runtime.sendMessage({ type: "showPlayerThumbnail" }, function (response) {
+    chrome.runtime.sendMessage({ action: "showPlayerThumbnail" }, function (response) {
         togglePlayerThumbnail(response.message);
     });
 })();
@@ -267,7 +266,7 @@ function togglePlayerThumbnail(state) {
 // Change loading spinner color to the stored theme color
 var loadSpinner = document.querySelectorAll('div[data-testid="vilos-loading"] path');
 (function setLoadingSpinnerColor() {
-    chrome.runtime.sendMessage({ type: "themeColor" }, function (response) {
+    chrome.runtime.sendMessage({ action: "themeColor" }, function (response) {
         if (!!response.message) {
             loadSpinner.forEach(element => {
                 element.style.stroke = response.message;
@@ -283,12 +282,12 @@ var loadSpinner = document.querySelectorAll('div[data-testid="vilos-loading"] pa
 
 async function InitOpeningSkipper() {
     // Check if CRP skipper is enabled first
-    const crpSkipper = (await chrome.runtime.sendMessage({ type: "openingDuration" })).message;
-    if (crpSkipper) {
+    const crpSkipper = await MessageAPI.getStorage("crpOpeningSkipper");
 
+    if (crpSkipper) {
         // Openings need to be detected from main page content-script
         // to avoid CORS restrictions when accessing subtitles links
-        chrome.runtime.sendMessage({ type: "getOpeningTimes", videoDuration: video.duration });
+        chrome.runtime.sendMessage({ action: "getOpeningTimes", videoDuration: video.duration });
 
         // Hide default opening skipper
         var defaultSkipper = CreateStyleElement("hideDefaultSkipper");
@@ -344,7 +343,7 @@ var skipperTimer = 90;
 async function startListeningVideoPlayer(openings) {
     openingList = openings; // Now used as a global variable
 
-    openingDuration = (await chrome.runtime.sendMessage({ type: "openingDuration" })).message;
+    openingDuration = await MessageAPI.getStorage("openingDuration");
 
     createOpeningSkippers();    // Create buttons
 
@@ -360,6 +359,7 @@ async function startListeningVideoPlayer(openings) {
                 // Update skipper timer
                 skipperTimer = op.end - currentTime > openingDuration ? openingDuration : op.end - currentTime;
                 var skipperTimerMMSS = new Date(skipperTimer * 1000).toISOString().substring(14, 19);   // Convert seconds to mm:ss
+
                 document.getElementById(op.skipperTimerId).innerHTML = `(${skipperTimerMMSS})`;
 
                 if (op.handler === "none") {    // If not handled yet
@@ -400,10 +400,17 @@ function openingSkippersVisible(state) {
                 crpSkipper.style.opacity = state ? 1 : 0;
             }
             // Opening is not playing
-            else if (op.handler === "none") {
-                crpSkipper.style.opacity = 0;
-                setTimeout(() => { crpSkipper.style.visibility = 'collapse'; }, 300);   // Timeout of 0.3s for opacity transition
-            }
+            /*    else if (op.handler === "none") {
+                    crpSkipper.style.opacity = 0;
+                    setTimeout(() => { crpSkipper.style.visibility = 'collapse'; }, 300);   // Timeout of 0.3s for opacity transition
+                }*/
         });
     }
+}
+
+async function sendToPageTest(type, parameters) {
+    const response = await MessageAPI.sendToContentScripts(type, parameters);
+    console.log("- Send To Page Test -");
+    console.log(type + " , " + [parameters].toString());
+    console.log("result: " + response);
 }
