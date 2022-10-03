@@ -17,6 +17,7 @@ async function InitStorage() {
         'soundMultiplier': (result.soundMultiplier === undefined) ? 10 : result.soundMultiplier,   // Increase video player's sound
         'crpOpeningSkipper': (result.crpOpeningSkipper === undefined) ? true : result.crpOpeningSkipper,  // Use CRP opening skipper
         'openingDuration': (result.openingDuration === undefined) ? 90 : result.openingDuration,   // Opening duration to skip (1:30 here)
+        'crpSkipper': (result.crpSkipper === undefined) ? { enabled: true, openingDuration: 90 } : result.crpSkipper,
     });
 }
 
@@ -32,14 +33,23 @@ chrome.runtime.onMessage.addListener(
         const { action, type, parameters } = request;
 
         switch (action) {
+
+            // Generic functions from message-api.js
             case "getStorage":
                 chrome.storage.sync.get([type], (result) => { sendResponse({ response: result[type] }) });
                 break;
             case "sendToContentScripts":
-                chrome.tabs.query({ active: true, currentWindow: true }, async function (tabs) {
-                    const response = (await chrome.tabs.sendMessage(tabs[0].id, { type, parameters })).response;
-                    sendResponse({ response });
+                chrome.tabs.query({ active: true, currentWindow: true }, async (tabs) => {
+                    sendResponse(await chrome.tabs.sendMessage(tabs[0].id, { type, parameters }));
                 });
+                break;
+
+            // Other specific actions
+            case "resetStorage":
+                ResetStorage();
+                break;
+            case "downloadFile":
+                chrome.downloads.download({ url, filename } = parameters);
                 break;
 
             case "getOpeningTimes":
@@ -52,15 +62,10 @@ chrome.runtime.onMessage.addListener(
                     chrome.tabs.sendMessage(tabs[0].id, { type: "definePlayerOpenings", openingTimes: request.openingTimes });
                 });
                 break;
-            case "resetConfig":
-                ResetStorage();
-                break;
-            case "downloadFile":
-                chrome.downloads.download({ url: request.url, filename: request.filename });
-                break;
+
             default:
                 sendResponse({ message: null });    // If the request type is unknown, return null
         }
-        return true;    // Must return true, otherwise "Unchecked runtime.lastError: The message port closed before a response was received."
+        return true;    // Tell Chrome that response is sent asynchronously
     }
 );

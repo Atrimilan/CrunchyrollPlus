@@ -57,8 +57,12 @@ function _InitStorage() {
               // Increase video player's sound
               'crpOpeningSkipper': result.crpOpeningSkipper === undefined ? true : result.crpOpeningSkipper,
               // Use CRP opening skipper
-              'openingDuration': result.openingDuration === undefined ? 90 : result.openingDuration // Opening duration to skip (1:30 here)
-
+              'openingDuration': result.openingDuration === undefined ? 90 : result.openingDuration,
+              // Opening duration to skip (1:30 here)
+              'crpSkipper': result.crpSkipper === undefined ? {
+                enabled: true,
+                openingDuration: 90
+              } : result.crpSkipper
             });
 
           case 4:
@@ -78,11 +82,14 @@ function ResetStorage() {
 
 
 chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
+  var _parameters;
+
   var action = request.action,
       type = request.type,
       parameters = request.parameters;
 
   switch (action) {
+    // Generic functions from message-api.js
     case "getStorage":
       chrome.storage.sync.get([type], function (result) {
         sendResponse({
@@ -97,24 +104,22 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
         currentWindow: true
       }, /*#__PURE__*/function () {
         var _ref = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee(tabs) {
-          var response;
           return _regeneratorRuntime().wrap(function _callee$(_context) {
             while (1) {
               switch (_context.prev = _context.next) {
                 case 0:
-                  _context.next = 2;
+                  _context.t0 = sendResponse;
+                  _context.next = 3;
                   return chrome.tabs.sendMessage(tabs[0].id, {
                     type: type,
                     parameters: parameters
                   });
 
-                case 2:
-                  response = _context.sent.response;
-                  sendResponse({
-                    response: response
-                  });
+                case 3:
+                  _context.t1 = _context.sent;
+                  (0, _context.t0)(_context.t1);
 
-                case 4:
+                case 5:
                 case "end":
                   return _context.stop();
               }
@@ -126,6 +131,15 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
           return _ref.apply(this, arguments);
         };
       }());
+      break;
+    // Other specific actions
+
+    case "resetStorage":
+      ResetStorage();
+      break;
+
+    case "downloadFile":
+      chrome.downloads.download((_parameters = parameters, url = _parameters.url, filename = _parameters.filename, _parameters));
       break;
 
     case "getOpeningTimes":
@@ -152,17 +166,6 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
       });
       break;
 
-    case "resetConfig":
-      ResetStorage();
-      break;
-
-    case "downloadFile":
-      chrome.downloads.download({
-        url: request.url,
-        filename: request.filename
-      });
-      break;
-
     default:
       sendResponse({
         message: null
@@ -170,7 +173,7 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
     // If the request type is unknown, return null
   }
 
-  return true; // Must return true, otherwise "Unchecked runtime.lastError: The message port closed before a response was received."
+  return true; // Tell Chrome that response is sent asynchronously
 });
 
 /***/ }),

@@ -11,6 +11,8 @@
 
 import PlayerTool from '../classes/player-tool.js';
 import MessageAPI from '../classes/message-api.js';
+import SkipperManager from '../classes/skipper-manager.js';
+
 
 var video = document.getElementById('player0');
 
@@ -45,10 +47,9 @@ function ObserveVideoPlayer() {
                             }
                             ObserveControlsContainer(); // Start observing controls when vilosControlsContainer is loaded
 
-/****************/ sendToPageTest("multiply", { a: 5, b: 2 }); /****************/
-/****************/ sendToPageTest("divide", { a: 3, b: 6 }); /****************/
-
-                            InitOpeningSkipper();
+                            // Init opening skippers through the Skipper Manager
+                            // (Skipper need to be appended to the parentNode to be displayed in fullscreen)
+                            SkipperManager.initOpeningSkipper(video, controlsContainer.parentNode);
                         }
                     });
                 }
@@ -135,18 +136,19 @@ async function LoadCrpTools() {
         }
     });
 
-    openingSkippersVisible(true);
+    SkipperManager.openingSkippersVisible(true);
 
     // Change playbar color to the stored theme color
     const themeColor = await MessageAPI.getStorage('themeColor');
-    if (!!themeColor) { // Not null
+    if (!!themeColor && isMenuOpen) {   // themeColor not null and menu is still open
         changePlayBarColor(themeColor);
+        changeVolumeSelectorColor(themeColor);
     }
 }
 
 // CRP controls destroyer
 function DestroyCrpTools() {
-    openingSkippersVisible(false);
+    SkipperManager.openingSkippersVisible(false);
 }
 
 var soundBoosterInitialized = false, soundBoosterEnabled = false;
@@ -170,11 +172,10 @@ function changePlayBarColor(themeColor) {
     playerPointer.style.visibility = "hidden";
 
     var crpPointer = document.createElement('div');
-    crpPointer.id = "crpPointer";
+    crpPointer.className = "crpKnob";
     crpPointer.style.backgroundColor = themeColor;
 
     playerPointer.appendChild(crpPointer);
-
 
     var watchedTime = document.querySelector('div[data-testid="vilos-scrub_bar"]').children[0].children[0].children[0]
         .children[1].children[0].children[0];  // They should hire someone to add ids wherever they are missing !
@@ -189,28 +190,30 @@ function changePlayBarColor(themeColor) {
     // playerPointer and watchedTime "style" properties cannot be changed because it is automatically updated by the player
     // This is why child nodes are created, while their parent's visibility is set to "hidden"
 }
-/*
-// Create a default CrunchyrollPlus control
-function CreateCrpTool(id, classList, imageWithExtension) {
-    var crpTool = document.createElement("button");
-    crpTool.classList.add(...classList);
-    crpTool.id = id;
-    crpTool.appendChild(CreateCrpImg(`${id}Img`, imageWithExtension));
 
-    crpTool.addEventListener("click", function (event) {
-        event.stopPropagation();    // Prevent click propagation (it would pause/resume the video)
+var volumeObserver = null;
+// Change the volume knob color
+// (Requires a MutationObserver because it is not initially loaded)
+function changeVolumeSelectorColor(themeColor) {
+    const volumeButton = controlsContainer.querySelector("[data-testid='vilos-volume_container']");
+    const config = { attributes: false, childList: true, subtree: false };
+
+    volumeObserver = new MutationObserver((mutations) => {
+        mutations.forEach((mutation) => {
+            if (mutation.type == 'childList' && mutation.addedNodes.length > 0) {
+                var knob = volumeButton.querySelector("[data-testid='vilos-knob']");
+                knob.style.visibility = "hidden";
+
+                var crpVolPointer = document.createElement('div');
+                crpVolPointer.className = "crpKnob";
+                crpVolPointer.style.backgroundColor = themeColor;
+
+                knob.appendChild(crpVolPointer);
+            }
+        });
     });
-
-    return crpTool;
+    volumeObserver.observe(volumeButton, config);
 }
-
-// Create an image (for a CrunchyrollPlus control)
-function CreateCrpImg(id, imageWithExtension) {
-    var crpImg = document.createElement('img');
-    crpImg.id = id;
-    crpImg.src = chrome.runtime.getURL(`images/controls/${imageWithExtension}`);    // Requires web_accessible_resources in the manifest
-    return crpImg;
-}*/
 
 // Messages received from Popup
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
@@ -219,12 +222,13 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
     switch (type) {
         case "togglePlayerThumbnail":
-            togglePlayerThumbnail(request.state);
+            togglePlayerThumbnail(parameters.state);
             break;
         case "definePlayerOpenings":
-            startListeningVideoPlayer(request.openingTimes);
+            //  startListeningVideoPlayer(request.openingTimes);
             break;
     }
+    return true;    // Tell Chrome that response is sent asynchronously
 });
 
 // Load data from the chrome storage, and call needed functions
@@ -234,10 +238,10 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     });
 })();
 
-var playerThumbnailStyle = CreateStyleElement("playerThumbnailStyle");
+var playerThumbnailStyle = createStyleElement("playerThumbnailStyle");
 
 // Create style element and add it to the DOM
-function CreateStyleElement(id) {
+function createStyleElement(id) {
     var myStyle = document.createElement('style');
     myStyle.id = id;
     document.getElementsByTagName('head')[0].appendChild(myStyle);
@@ -275,22 +279,21 @@ var loadSpinner = document.querySelectorAll('div[data-testid="vilos-loading"] pa
     });
 })();
 
-
 // ----------------------------- //
 //  Opening skippers management  //
 // ----------------------------- //
+/*
+var openingList = [];
+var crpSkipperList = [];
 
-async function InitOpeningSkipper() {
-    // Check if CRP skipper is enabled first
-    const crpSkipper = await MessageAPI.getStorage("crpOpeningSkipper");
+async function initOpeningSkipper() {
 
-    if (crpSkipper) {
-        // Openings need to be detected from main page content-script
-        // to avoid CORS restrictions when accessing subtitles links
-        chrome.runtime.sendMessage({ action: "getOpeningTimes", videoDuration: video.duration });
+    // Check if CRP skippers are enabled, and get the duration of an opening
+    var { enabled, openingDuration } = await MessageAPI.getStorage("crpSkipper");
 
+    if (enabled) {
         // Hide default opening skipper
-        var defaultSkipper = CreateStyleElement("hideDefaultSkipper");
+        var defaultSkipper = createStyleElement("hideDefaultSkipper");
         defaultSkipper.innerHTML = `
         div[data-testid="skipButton"] {
             display: none;
@@ -298,119 +301,89 @@ async function InitOpeningSkipper() {
         #skipButton {
             display: none;
         }`;
+
+        // Openings need to be detected from main page content-script to avoid CORS restrictions when accessing subtitles links
+        const opList = (await MessageAPI.sendToContentScripts("detectOpenings", { openingDuration, videoDuration: video.duration }));
+
+        // Create a new skipper for each opening
+        opList.forEach((op, index) => {
+            const skipper = new Skipper(index, controlsContainer.parentNode);
+            crpSkipperList.push(skipper.crpSkipper);
+
+            op.skipperId = skipper.crpSkipper.id;
+            op.skipperTimerId = skipper.timer.id;
+            op.handler = "none";
+        });
+
+        startListeningVideoPlayer(opList, openingDuration);
     };
 }
 
-// Create a skipper button and start detecting openings in the episode
-// (when the time between 2 subtitles is long enough for an opening)
-function createOpeningSkippers() {
-    const opDuration = new Date(openingDuration * 1000).toISOString().substring(14, 19);    // Convert seconds to mm:ss
-
-    openingList.forEach((op, index) => {
-        var crpSkipper = document.createElement('div');
-        crpSkipper.id = "crpSkipper_" + index;
-        crpSkipper.className = "crpSkipper";
-        crpSkipper.style.visibility = 'collapse';
-
-        var crpSkipperText = document.createElement('p');
-        crpSkipperText.innerText = chrome.i18n.getMessage("player_openingSkipper");
-        crpSkipperText.className = "crpSkipperText";
-
-        var crpSkipperTimer = document.createElement('p');
-        crpSkipperTimer.id = "crpSkipperTimer_" + index;
-        crpSkipperTimer.className = "crpSkipperTimer";
-        crpSkipperTimer.innerText = `(${opDuration})`;
-
-        crpSkipper.appendChild(crpSkipperText);
-        crpSkipper.appendChild(crpSkipperTimer);
-        controlsContainer.parentNode.appendChild(crpSkipper);   // Not to the body, because it's not displayed in fullscreen
-
-        crpSkipper.addEventListener('mouseover', () => { crpSkipper.style.opacity = 1; });   // On hover, don't hide the skipper
-        crpSkipper.addEventListener('mouseout', () => { });
-        crpSkipper.addEventListener('click', () => { video.currentTime += ~~skipperTimer; });   // On click, skip the opening
-
-        op.skipperId = crpSkipper.id;
-        op.skipperTimerId = crpSkipperTimer.id;
-        op.handler = "none";
-    });
-}
-
-var openingList = null;
-var openingDuration = 90;   // Default value, but will be replaced asynchronously
-var skipperTimer = 90;
-
 // Listen to the video player timeupdate, and display the opening skipper if it is the right time
-async function startListeningVideoPlayer(openings) {
+function startListeningVideoPlayer(openings, opDuration) {
     openingList = openings; // Now used as a global variable
+    var remainingTimeSec;
 
-    openingDuration = await MessageAPI.getStorage("openingDuration");
+    video.addEventListener("timeupdate", function () {
+        var time = Math.round(this.currentTime);
 
-    createOpeningSkippers();    // Create buttons
+        openingList.forEach((op, index) => {
+            const crpSkipper = crpSkipperList[index];   // Get Skipper
+            const { start, end, skipperTimerId } = op;  // Get OP data
 
-    video.addEventListener("timeupdate", async function () {
-        var currentTime = Math.round(this.currentTime);
+            if (time >= start && time < end) {  // If this opening is playing
+                remainingTimeSec = end - time > opDuration ? opDuration : end - time;
+                const remainingTime = new Date(remainingTimeSec * 1000).toISOString().substring(14, 19);
+                crpSkipper.querySelector('#' + skipperTimerId).innerText = `(${remainingTime})`;
 
-        openingList.forEach((op) => {
-            var crpSkipper = document.getElementById(op.skipperId);
-
-            // If an opening is playing
-            if (currentTime >= op.start && currentTime < op.end) {
-
-                // Update skipper timer
-                skipperTimer = op.end - currentTime > openingDuration ? openingDuration : op.end - currentTime;
-                var skipperTimerMMSS = new Date(skipperTimer * 1000).toISOString().substring(14, 19);   // Convert seconds to mm:ss
-
-                document.getElementById(op.skipperTimerId).innerHTML = `(${skipperTimerMMSS})`;
-
-                if (op.handler === "none") {    // If not handled yet
-                    op.handler = "autoTimeout";                 // Handle it
-                    crpSkipper.style.visibility = "visible";    // Display the skipper
-                    crpSkipper.style.opacity = 1;
-
-                    var timeLeft = (op.end - currentTime) * 1000;       // Define a timeout of 4 seconds, or less if the time
-                    var timeout = (timeLeft > 4000) ? 4000 : timeLeft;  // to the end of the opening is reached before
-
-                    setTimeout(() => {
-                        op.handler = "mouseMovements";    // Change handler, and hide/show the skipper wether the controls are
-                        crpSkipper.style.opacity = isMenuOpen ? 1 : 0;  // displayed or not at this moment 
-                    }, timeout);
-                }
+                if (op.handler === "none") { enableSkipper() }  // Enable if not handled yet
             }
-            // If no opening is playing, collapse the skipper
-            else if (currentTime >= op.end || currentTime < op.start && op.handler !== "none") {
-                op.handler = "none";                        // No more handler
-                crpSkipper.style.opacity = 0;
+            else if (op.handler !== "none") { disableSkipper() }// Disable if handled while opening has ended
 
-                // Collapse the button when the opening is not playing
-                setTimeout(() => { crpSkipper.style.visibility = 'collapse'; }, 300);   // Timeout of 0.3s for opacity transition
+
+            function enableSkipper() {
+                op.handler = "initializing";    // Prevent the skipper from being handled multiple times at once
+                crpSkipper.style.visibility = "visible";
+                crpSkipper.style.opacity = 1;   // Force the skipper to be displayed for a moment
+
+                addSkipperEvents(); // Skipper mouse events
+
+                const timeout = (((end - time) * 1000) > 4000) ? 4000 : ((end - time) * 1000);  // Timeout (max: 4s)
+                setTimeout(() => {
+                    crpSkipper.style.opacity = isMenuOpen ? 1 : 0;
+                    op.handler = "mouseMovements"; // Skipper is now handled by mouse movements
+                }, timeout);
+            }
+
+            function disableSkipper() {
+                op.handler = "none";    // Stop handling
+                coolCollapse(crpSkipper);
+            }
+
+            function addSkipperEvents() {
+                crpSkipper.addEventListener('click', () => { video.currentTime += ~~remainingTimeSec });    // Skip the opening
+                crpSkipper.addEventListener('mouseover', () => { crpSkipper.style.opacity = 1 });   // Don't hide on hover
             }
         });
     }, false);
 }
 
-// Called on mouse moved (when controls are shown/hidden to be exact)
+// Toggle skipper if an opening is playing
 function openingSkippersVisible(state) {
-    if (openingList !== null) { // Do not execute if openings hasn't been detected yet
+    openingList.forEach((op, index) => {
+        const crpSkipper = crpSkipperList[index];
 
-        openingList.forEach((op) => {
-            var crpSkipper = document.getElementById(op.skipperId);
-
-            // Opening is playing
-            if (op.handler === "mouseMovements") {
-                crpSkipper.style.opacity = state ? 1 : 0;
-            }
-            // Opening is not playing
-            /*    else if (op.handler === "none") {
-                    crpSkipper.style.opacity = 0;
-                    setTimeout(() => { crpSkipper.style.visibility = 'collapse'; }, 300);   // Timeout of 0.3s for opacity transition
-                }*/
-        });
-    }
+        if (op.handler === "mouseMovements") {
+            crpSkipper.style.opacity = state ? 1 : 0;
+        }
+        else if (op.handler === "none") {
+            coolCollapse(crpSkipper);
+        }
+    });
 }
 
-async function sendToPageTest(type, parameters) {
-    const response = await MessageAPI.sendToContentScripts(type, parameters);
-    console.log("- Send To Page Test -");
-    console.log(type + " , " + [parameters].toString());
-    console.log("result: " + response);
-}
+// Wait for opacity transition (0.3s), then collapse the visibility
+function coolCollapse(skipper){
+    skipper.style.opacity = 0;
+    setTimeout(() => { skipper.style.visibility = 'collapse'; }, 300);
+}*/

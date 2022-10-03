@@ -23,7 +23,7 @@
   height: 30px;
 }
 
-#crpPointer {
+.crpKnob {
   background-color: rgb(244, 117, 33);
   border-radius: 8px;
   box-shadow: rgba(0, 0, 0, 0.6) 0px 0px 4px;
@@ -42,7 +42,6 @@
 }
 
 .crpSkipper {
-  opacity: 0;
   position: absolute;
   right: 15px;
   bottom: 100px;
@@ -54,6 +53,8 @@
   flex-wrap: wrap;
   overflow: hidden;
   cursor: pointer;
+  visibility: "collapse";
+  opacity: 0;
   transition: opacity 0.3s ease;
 }
 .crpSkipper p {

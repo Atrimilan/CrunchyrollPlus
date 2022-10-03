@@ -55,16 +55,15 @@ chrome.runtime.onMessage.addListener(
                 API.SUBTITLES.then((subtitles) => { downloadFile(subtitles.url, `subtitles.${subtitles.format}`); });
                 break;
             case "getOpeningTimes":
-                getOpeningTimes(request.videoDuration);
+                getOpeningTimes(parameters.videoDuration);
+                sendResponse({ response: (parameters.videoDuration) });
                 break;
 
-            case "multiply":
-                sendResponse({ response: (parameters.a * parameters.b) });
-                break;
-            case "divide":
-                sendResponse({ response: (parameters.a / parameters.b) });
+            case "detectOpenings":
+                detectOpenings(parameters, sendResponse);   // Pass the sendResponse callback as parameter
                 break;
         }
+        return true;    // Tell Chrome that response is sent asynchronously
     }
 );
 
@@ -161,7 +160,7 @@ function toggleAvatarFavicon(state) {
     if (favicons == null) {
         favicons = document.querySelectorAll('link[rel][type="image/png"]')
     }
-
+    
     if (state) {
         // Init user avatar asynchronously
         if (userAvatar == null) {
@@ -205,15 +204,15 @@ function waitForElementLoaded(selector) {
     });
 }
 
-// File can only be downloaded from the background script 
+// File can only be downloaded from the background script
+// -> File format seems not working for security reasons
 function downloadFile(url, filename) {
-    chrome.runtime.sendMessage({ action: "downloadFile", url: url, filename: filename });
-    // But format seems not working for security reasons
+    MessageAPI.sendToBackground("downloadFile", { parameters: { url, filename } })
 }
 
 // Detect openings in the video
 async function getOpeningTimes(videoDuration) {
-
+    await console.log("getOpeningTimes", videoDuration);
     const openingDuration = await MessageAPI.getStorage("openingDuration");
 
     API.OPENINGS(videoDuration, openingDuration).then((response) => {
@@ -223,4 +222,10 @@ async function getOpeningTimes(videoDuration) {
 
         /* I didn't succeed, but it should be possible to send a response rather than creating a new request */
     });
+}
+
+
+async function detectOpenings({ openingDuration, videoDuration }, sendResponse) {
+    const openings = await API.OPENINGS(videoDuration, openingDuration);
+    sendResponse({ response: openings });
 }

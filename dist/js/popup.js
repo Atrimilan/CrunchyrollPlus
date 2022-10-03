@@ -17490,26 +17490,25 @@ var MessageAPI = /*#__PURE__*/function () {
     key: "getStorage",
     value: // Get synced storage from background
     function () {
-      var _getStorage = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee(type) {
+      var _getStorage = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee(valueToReturn) {
         return _regeneratorRuntime().wrap(function _callee$(_context) {
           while (1) {
             switch (_context.prev = _context.next) {
               case 0:
                 _context.next = 2;
-                return chrome.runtime.sendMessage({
-                  action: "getStorage",
-                  type: type
+                return this.sendToBackground("getStorage", {
+                  type: valueToReturn
                 });
 
               case 2:
-                return _context.abrupt("return", _context.sent.response);
+                return _context.abrupt("return", _context.sent);
 
               case 3:
               case "end":
                 return _context.stop();
             }
           }
-        }, _callee);
+        }, _callee, this);
       }));
 
       function getStorage(_x) {
@@ -17529,21 +17528,20 @@ var MessageAPI = /*#__PURE__*/function () {
             switch (_context2.prev = _context2.next) {
               case 0:
                 _context2.next = 2;
-                return chrome.runtime.sendMessage({
-                  action: "sendToContentScripts",
+                return this.sendToBackground("sendToContentScripts", {
                   type: type,
                   parameters: parameters
                 });
 
               case 2:
-                return _context2.abrupt("return", _context2.sent.response);
+                return _context2.abrupt("return", _context2.sent);
 
               case 3:
               case "end":
                 return _context2.stop();
             }
           }
-        }, _callee2);
+        }, _callee2, this);
       }));
 
       function sendToContentScripts(_x2, _x3) {
@@ -17551,6 +17549,42 @@ var MessageAPI = /*#__PURE__*/function () {
       }
 
       return sendToContentScripts;
+    }() // Send a message to the background script
+    // Type & Parameters are optional
+
+  }, {
+    key: "sendToBackground",
+    value: function () {
+      var _sendToBackground = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee3(action, _ref) {
+        var type, parameters;
+        return _regeneratorRuntime().wrap(function _callee3$(_context3) {
+          while (1) {
+            switch (_context3.prev = _context3.next) {
+              case 0:
+                type = _ref.type, parameters = _ref.parameters;
+                _context3.next = 3;
+                return chrome.runtime.sendMessage({
+                  action: action,
+                  type: type,
+                  parameters: parameters
+                });
+
+              case 3:
+                return _context3.abrupt("return", _context3.sent.response);
+
+              case 4:
+              case "end":
+                return _context3.stop();
+            }
+          }
+        }, _callee3);
+      }));
+
+      function sendToBackground(_x4, _x5) {
+        return _sendToBackground.apply(this, arguments);
+      }
+
+      return sendToBackground;
     }()
   }]);
 
@@ -17898,18 +17932,28 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       return chrome.i18n.getMessage(message);
     },
     togglePlayerThumbnail: function togglePlayerThumbnail(status) {
-      chrome.tabs.query({
-        active: true,
-        currentWindow: true
-      }, function (tabs) {
-        chrome.tabs.sendMessage(tabs[0].id, {
-          type: "togglePlayerThumbnail",
-          state: status
-        });
-      });
-      chrome.storage.sync.set({
-        showPlayerThumbnail: status
-      });
+      return _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee() {
+        return _regeneratorRuntime().wrap(function _callee$(_context) {
+          while (1) {
+            switch (_context.prev = _context.next) {
+              case 0:
+                _context.next = 2;
+                return _classes_message_api_js__WEBPACK_IMPORTED_MODULE_0__["default"].sendToContentScripts("togglePlayerThumbnail", {
+                  state: status
+                });
+
+              case 2:
+                chrome.storage.sync.set({
+                  showPlayerThumbnail: status
+                });
+
+              case 3:
+              case "end":
+                return _context.stop();
+            }
+          }
+        }, _callee);
+      }))();
     },
     soundMultiplierChoosing: function soundMultiplierChoosing(value) {
       this.soundGainInfo = value / 10 + 1;
@@ -17936,43 +17980,43 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 
     // Components need to be initialized in the Popup to their current status
     // They must be initialized asynchronously, <input> are not updated if the result is not awaited
-    _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee() {
-      return _regeneratorRuntime().wrap(function _callee$(_context) {
+    _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee2() {
+      return _regeneratorRuntime().wrap(function _callee2$(_context2) {
         while (1) {
-          switch (_context.prev = _context.next) {
+          switch (_context2.prev = _context2.next) {
             case 0:
-              _context.next = 2;
+              _context2.next = 2;
               return _classes_message_api_js__WEBPACK_IMPORTED_MODULE_0__["default"].getStorage("showPlayerThumbnail");
 
             case 2:
-              _this.playerThumbnailState = _context.sent;
-              _context.t0 = parseInt;
-              _context.next = 6;
+              _this.playerThumbnailState = _context2.sent;
+              _context2.t0 = parseInt;
+              _context2.next = 6;
               return _classes_message_api_js__WEBPACK_IMPORTED_MODULE_0__["default"].getStorage("soundMultiplier");
 
             case 6:
-              _context.t1 = _context.sent;
-              _this.soundMultiplier = (0, _context.t0)(_context.t1);
+              _context2.t1 = _context2.sent;
+              _this.soundMultiplier = (0, _context2.t0)(_context2.t1);
               _this.soundGainInfo = _this.soundMultiplier / 10 + 1;
-              _context.next = 11;
+              _context2.next = 11;
               return _classes_message_api_js__WEBPACK_IMPORTED_MODULE_0__["default"].getStorage("crpOpeningSkipper");
 
             case 11:
-              _this.crpOpeningSkipper = _context.sent;
-              _context.t2 = parseInt;
-              _context.next = 15;
+              _this.crpOpeningSkipper = _context2.sent;
+              _context2.t2 = parseInt;
+              _context2.next = 15;
               return _classes_message_api_js__WEBPACK_IMPORTED_MODULE_0__["default"].getStorage("openingDuration");
 
             case 15:
-              _context.t3 = _context.sent;
-              _this.openingDuration = (0, _context.t2)(_context.t3);
+              _context2.t3 = _context2.sent;
+              _this.openingDuration = (0, _context2.t2)(_context2.t3);
 
             case 17:
             case "end":
-              return _context.stop();
+              return _context2.stop();
           }
         }
-      }, _callee);
+      }, _callee2);
     }))();
   },
   watch: {
@@ -18025,7 +18069,7 @@ __webpack_require__.r(__webpack_exports__);
     resetConfig: function resetConfig() {
       // Reset all Crunchyroll Plus customizations
       chrome.runtime.sendMessage({
-        type: "resetConfig"
+        type: "resetStorage"
       });
     }
   }

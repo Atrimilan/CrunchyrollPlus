@@ -47,7 +47,7 @@ export default {
         },
         resetConfig(){
             // Reset all Crunchyroll Plus customizations
-            chrome.runtime.sendMessage({ type: "resetConfig" });
+            chrome.runtime.sendMessage({ type: "resetStorage" });
         }
     }
 };

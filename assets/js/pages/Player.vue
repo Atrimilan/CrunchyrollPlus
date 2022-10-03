@@ -61,10 +61,8 @@ export default {
         i18n(message) {
             return chrome.i18n.getMessage(message);
         },
-        togglePlayerThumbnail(status) {
-            chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
-                chrome.tabs.sendMessage(tabs[0].id, {type: "togglePlayerThumbnail", state: status});
-            });
+        async togglePlayerThumbnail(status) {
+            await MessageSender.sendToContentScripts("togglePlayerThumbnail", { state: status });
             chrome.storage.sync.set({ showPlayerThumbnail: status });
         },
         soundMultiplierChoosing(value){

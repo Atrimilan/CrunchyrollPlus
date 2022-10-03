@@ -487,26 +487,25 @@ var MessageAPI = /*#__PURE__*/function () {
     key: "getStorage",
     value: // Get synced storage from background
     function () {
-      var _getStorage = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee(type) {
+      var _getStorage = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee(valueToReturn) {
         return _regeneratorRuntime().wrap(function _callee$(_context) {
           while (1) {
             switch (_context.prev = _context.next) {
               case 0:
                 _context.next = 2;
-                return chrome.runtime.sendMessage({
-                  action: "getStorage",
-                  type: type
+                return this.sendToBackground("getStorage", {
+                  type: valueToReturn
                 });
 
               case 2:
-                return _context.abrupt("return", _context.sent.response);
+                return _context.abrupt("return", _context.sent);
 
               case 3:
               case "end":
                 return _context.stop();
             }
           }
-        }, _callee);
+        }, _callee, this);
       }));
 
       function getStorage(_x) {
@@ -526,21 +525,20 @@ var MessageAPI = /*#__PURE__*/function () {
             switch (_context2.prev = _context2.next) {
               case 0:
                 _context2.next = 2;
-                return chrome.runtime.sendMessage({
-                  action: "sendToContentScripts",
+                return this.sendToBackground("sendToContentScripts", {
                   type: type,
                   parameters: parameters
                 });
 
               case 2:
-                return _context2.abrupt("return", _context2.sent.response);
+                return _context2.abrupt("return", _context2.sent);
 
               case 3:
               case "end":
                 return _context2.stop();
             }
           }
-        }, _callee2);
+        }, _callee2, this);
       }));
 
       function sendToContentScripts(_x2, _x3) {
@@ -548,6 +546,42 @@ var MessageAPI = /*#__PURE__*/function () {
       }
 
       return sendToContentScripts;
+    }() // Send a message to the background script
+    // Type & Parameters are optional
+
+  }, {
+    key: "sendToBackground",
+    value: function () {
+      var _sendToBackground = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee3(action, _ref) {
+        var type, parameters;
+        return _regeneratorRuntime().wrap(function _callee3$(_context3) {
+          while (1) {
+            switch (_context3.prev = _context3.next) {
+              case 0:
+                type = _ref.type, parameters = _ref.parameters;
+                _context3.next = 3;
+                return chrome.runtime.sendMessage({
+                  action: action,
+                  type: type,
+                  parameters: parameters
+                });
+
+              case 3:
+                return _context3.abrupt("return", _context3.sent.response);
+
+              case 4:
+              case "end":
+                return _context3.stop();
+            }
+          }
+        }, _callee3);
+      }));
+
+      function sendToBackground(_x4, _x5) {
+        return _sendToBackground.apply(this, arguments);
+      }
+
+      return sendToBackground;
     }()
   }]);
 
@@ -3032,21 +3066,19 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
       break;
 
     case "getOpeningTimes":
-      getOpeningTimes(request.videoDuration);
-      break;
-
-    case "multiply":
+      getOpeningTimes(parameters.videoDuration);
       sendResponse({
-        response: parameters.a * parameters.b
+        response: parameters.videoDuration
       });
       break;
 
-    case "divide":
-      sendResponse({
-        response: parameters.a / parameters.b
-      });
+    case "detectOpenings":
+      detectOpenings(parameters, sendResponse); // Pass the sendResponse callback as parameter
+
       break;
   }
+
+  return true; // Tell Chrome that response is sent asynchronously
 }); // Load data from the chrome storage, and call needed functions
 
 (function () {
@@ -3172,15 +3204,17 @@ function waitForElementLoaded(selector) {
       subtree: true
     });
   });
-} // File can only be downloaded from the background script 
+} // File can only be downloaded from the background script
+// -> File format seems not working for security reasons
 
 
 function downloadFile(url, filename) {
-  chrome.runtime.sendMessage({
-    action: "downloadFile",
-    url: url,
-    filename: filename
-  }); // But format seems not working for security reasons
+  _classes_message_api_js__WEBPACK_IMPORTED_MODULE_0__["default"].sendToBackground("downloadFile", {
+    parameters: {
+      url: url,
+      filename: filename
+    }
+  });
 } // Detect openings in the video
 
 
@@ -3196,9 +3230,13 @@ function _getOpeningTimes() {
         switch (_context3.prev = _context3.next) {
           case 0:
             _context3.next = 2;
-            return _classes_message_api_js__WEBPACK_IMPORTED_MODULE_0__["default"].getStorage("openingDuration");
+            return console.log("getOpeningTimes", videoDuration);
 
           case 2:
+            _context3.next = 4;
+            return _classes_message_api_js__WEBPACK_IMPORTED_MODULE_0__["default"].getStorage("openingDuration");
+
+          case 4:
             openingDuration = _context3.sent;
             _classes_crp_api_js__WEBPACK_IMPORTED_MODULE_1__["default"].OPENINGS(videoDuration, openingDuration).then(function (response) {
               // Send to background, then let crp-player handle openings skipper
@@ -3209,7 +3247,7 @@ function _getOpeningTimes() {
               /* I didn't succeed, but it should be possible to send a response rather than creating a new request */
             });
 
-          case 4:
+          case 6:
           case "end":
             return _context3.stop();
         }
@@ -3217,6 +3255,37 @@ function _getOpeningTimes() {
     }, _callee3);
   }));
   return _getOpeningTimes.apply(this, arguments);
+}
+
+function detectOpenings(_x3, _x4) {
+  return _detectOpenings.apply(this, arguments);
+}
+
+function _detectOpenings() {
+  _detectOpenings = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee4(_ref2, sendResponse) {
+    var openingDuration, videoDuration, openings;
+    return _regeneratorRuntime().wrap(function _callee4$(_context4) {
+      while (1) {
+        switch (_context4.prev = _context4.next) {
+          case 0:
+            openingDuration = _ref2.openingDuration, videoDuration = _ref2.videoDuration;
+            _context4.next = 3;
+            return _classes_crp_api_js__WEBPACK_IMPORTED_MODULE_1__["default"].OPENINGS(videoDuration, openingDuration);
+
+          case 3:
+            openings = _context4.sent;
+            sendResponse({
+              response: openings
+            });
+
+          case 5:
+          case "end":
+            return _context4.stop();
+        }
+      }
+    }, _callee4);
+  }));
+  return _detectOpenings.apply(this, arguments);
 }
 })();
 
