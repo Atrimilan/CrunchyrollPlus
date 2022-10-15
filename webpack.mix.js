@@ -11,3 +11,5 @@ mix.setPublicPath('./')
     .options({
         processCssUrls: false
     });
+
+mix.disableNotifications();

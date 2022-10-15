@@ -17656,12 +17656,14 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
-/* harmony import */ var _components_SimpleButton_vue__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./components/SimpleButton.vue */ "./assets/js/pages/components/SimpleButton.vue");
+/* harmony import */ var _classes_message_api_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../classes/message-api.js */ "./assets/js/classes/message-api.js");
+/* harmony import */ var _components_SimpleButton_vue__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./components/SimpleButton.vue */ "./assets/js/pages/components/SimpleButton.vue");
+
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   name: "Advanced",
   components: {
-    SimpleButton: _components_SimpleButton_vue__WEBPACK_IMPORTED_MODULE_0__["default"]
+    SimpleButton: _components_SimpleButton_vue__WEBPACK_IMPORTED_MODULE_1__["default"]
   },
   data: function data() {
     return {
@@ -17675,14 +17677,7 @@ __webpack_require__.r(__webpack_exports__);
       return chrome.i18n.getMessage(message);
     },
     downloadSubtitles: function downloadSubtitles() {
-      chrome.tabs.query({
-        active: true,
-        currentWindow: true
-      }, function (tabs) {
-        chrome.tabs.sendMessage(tabs[0].id, {
-          type: "downloadSubtitles"
-        }); // Start download from page content-script
-      });
+      _classes_message_api_js__WEBPACK_IMPORTED_MODULE_0__["default"].sendToContentScripts("downloadSubtitles"); // Start download from page content-script
     }
   }
 });
@@ -17739,14 +17734,8 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
     },
     themeColorChoosing: function themeColorChoosing(color) {
       // Show changes dynamically, without saving to chrome storage
-      chrome.tabs.query({
-        active: true,
-        currentWindow: true
-      }, function (tabs) {
-        chrome.tabs.sendMessage(tabs[0].id, {
-          type: "themeColorUpdate",
-          themeColor: color
-        });
+      _classes_message_api_js__WEBPACK_IMPORTED_MODULE_0__["default"].sendToContentScripts("themeColorUpdate", {
+        themeColor: color
       });
     },
     themeColorSelected: function themeColorSelected(color) {
@@ -17757,29 +17746,17 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
     },
     toggleBlurring: function toggleBlurring(status) {
       // Toggle thumbnails blurring dynamically
-      chrome.tabs.query({
-        active: true,
-        currentWindow: true
-      }, function (tabs) {
-        chrome.tabs.sendMessage(tabs[0].id, {
-          type: "toggleThumbnails",
-          state: status
-        });
-      }); // And save status to chrome storage
-
+      // And save status to chrome storage
+      _classes_message_api_js__WEBPACK_IMPORTED_MODULE_0__["default"].sendToContentScripts("toggleThumbnails", {
+        state: status
+      });
       chrome.storage.sync.set({
         blurredThumbnails: status
       });
     },
     toggleAvatarFavicon: function toggleAvatarFavicon(status) {
-      chrome.tabs.query({
-        active: true,
-        currentWindow: true
-      }, function (tabs) {
-        chrome.tabs.sendMessage(tabs[0].id, {
-          type: "toggleAvatarFavicon",
-          state: status
-        });
+      _classes_message_api_js__WEBPACK_IMPORTED_MODULE_0__["default"].sendToContentScripts("toggleAvatarFavicon", {
+        state: status
       });
       chrome.storage.sync.set({
         avatarFavicon: status
@@ -17937,14 +17914,12 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
           while (1) {
             switch (_context.prev = _context.next) {
               case 0:
-                _context.next = 2;
-                return _classes_message_api_js__WEBPACK_IMPORTED_MODULE_0__["default"].sendToContentScripts("togglePlayerThumbnail", {
-                  state: status
-                });
-
-              case 2:
                 chrome.storage.sync.set({
                   showPlayerThumbnail: status
+                });
+                _context.next = 3;
+                return _classes_message_api_js__WEBPACK_IMPORTED_MODULE_0__["default"].sendToContentScripts("togglePlayerThumbnail", {
+                  state: status
                 });
 
               case 3:
@@ -18043,15 +18018,17 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
-/* harmony import */ var _components_SimpleButton_vue__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./components/SimpleButton.vue */ "./assets/js/pages/components/SimpleButton.vue");
-/* harmony import */ var _components_InfoArea_vue__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./components/InfoArea.vue */ "./assets/js/pages/components/InfoArea.vue");
+/* harmony import */ var _classes_message_api_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../classes/message-api.js */ "./assets/js/classes/message-api.js");
+/* harmony import */ var _components_SimpleButton_vue__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./components/SimpleButton.vue */ "./assets/js/pages/components/SimpleButton.vue");
+/* harmony import */ var _components_InfoArea_vue__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./components/InfoArea.vue */ "./assets/js/pages/components/InfoArea.vue");
+
 
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   name: "Settings",
   components: {
-    SimpleButton: _components_SimpleButton_vue__WEBPACK_IMPORTED_MODULE_0__["default"],
-    InfoArea: _components_InfoArea_vue__WEBPACK_IMPORTED_MODULE_1__["default"]
+    SimpleButton: _components_SimpleButton_vue__WEBPACK_IMPORTED_MODULE_1__["default"],
+    InfoArea: _components_InfoArea_vue__WEBPACK_IMPORTED_MODULE_2__["default"]
   },
   data: function data() {
     return {
@@ -18068,9 +18045,7 @@ __webpack_require__.r(__webpack_exports__);
     },
     resetConfig: function resetConfig() {
       // Reset all Crunchyroll Plus customizations
-      chrome.runtime.sendMessage({
-        type: "resetStorage"
-      });
+      _classes_message_api_js__WEBPACK_IMPORTED_MODULE_0__["default"].sendToBackground("resetStorage", {});
     }
   }
 });

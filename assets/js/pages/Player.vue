@@ -28,12 +28,12 @@
 
 
 <script>
-import MessageSender from '../classes/message-api.js';
-    
+import MessageAPI from '../classes/message-api.js';
 import SwitchButton from "./components/SwitchButton.vue";
 import RangeSlider from "./components/RangeSlider.vue";
 import InfoArea from "./components/InfoArea.vue";
 import TimeInput from "./components/TimeInput.vue";
+
 export default {
     name: "Player",
     components: {
@@ -62,8 +62,8 @@ export default {
             return chrome.i18n.getMessage(message);
         },
         async togglePlayerThumbnail(status) {
-            await MessageSender.sendToContentScripts("togglePlayerThumbnail", { state: status });
             chrome.storage.sync.set({ showPlayerThumbnail: status });
+            await MessageAPI.sendToContentScripts("togglePlayerThumbnail", { state: status });
         },
         soundMultiplierChoosing(value){
             this.soundGainInfo = value / 10  + 1;
@@ -84,11 +84,11 @@ export default {
         // They must be initialized asynchronously, <input> are not updated if the result is not awaited
         (async () => {
             //this.playerThumbnailState = (await chrome.runtime.sendMessage({ type: "showPlayerThumbnail" })).message;
-            this.playerThumbnailState = await MessageSender.getStorage("showPlayerThumbnail");
-            this.soundMultiplier = parseInt(await MessageSender.getStorage("soundMultiplier"));
+            this.playerThumbnailState = await MessageAPI.getStorage("showPlayerThumbnail");
+            this.soundMultiplier = parseInt(await MessageAPI.getStorage("soundMultiplier"));
             this.soundGainInfo = this.soundMultiplier / 10  + 1;
-            this.crpOpeningSkipper = await MessageSender.getStorage("crpOpeningSkipper");
-            this.openingDuration = parseInt(await MessageSender.getStorage("openingDuration"));
+            this.crpOpeningSkipper = await MessageAPI.getStorage("crpOpeningSkipper");
+            this.openingDuration = parseInt(await MessageAPI.getStorage("openingDuration"));
         })();
     },
     watch: {

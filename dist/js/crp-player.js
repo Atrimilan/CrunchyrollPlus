@@ -142,6 +142,147 @@ var MessageAPI = /*#__PURE__*/function () {
 
 /***/ }),
 
+/***/ "./assets/js/classes/page-style.js":
+/*!*****************************************!*\
+  !*** ./assets/js/classes/page-style.js ***!
+  \*****************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ PageStyle)
+/* harmony export */ });
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
+
+var PageStyle = /*#__PURE__*/function () {
+  function PageStyle() {
+    _classCallCheck(this, PageStyle);
+  }
+
+  _createClass(PageStyle, null, [{
+    key: "set",
+    value: function set(type, parameters) {
+      switch (type) {
+        case "updateThemeColor":
+          updateThemeColor(parameters.color);
+          break;
+
+        case "toggleThumbnails":
+          toggleThumbnails(parameters.state);
+          break;
+
+        case "toggleAvatarFavicon":
+          toggleAvatarFavicon(parameters.state);
+          break;
+
+        case "togglePlayerThumbnail":
+          togglePlayerThumbnail(parameters.state);
+          break;
+      }
+    }
+  }]);
+
+  return PageStyle;
+}();
+/*
+ * Create style element and add it to the DOM
+ */
+
+
+
+
+function createStyleElement(id) {
+  var myStyle = document.createElement('style');
+  myStyle.id = id;
+  document.getElementsByTagName('head')[0].appendChild(myStyle);
+  return myStyle;
+}
+
+var blurredThumbnailStyle = createStyleElement("blurredThumbnailStyle");
+
+function toggleThumbnails(state) {
+  // Blur/show episode thumbnails
+  blurredThumbnailStyle.innerHTML = state ? ".prev-next-episodes img,.episode-list img,.erc-up-next-section img {\n            filter: blur(20px);\n            -webkit-filter: blur(20px);\n            -moz-filter: blur(20px);\n            -o-filter: blur(20px);\n            -ms-filter: blur(20px);\n        }" : "";
+}
+
+var playerThumbnailStyle = createStyleElement("playerThumbnailStyle");
+
+function togglePlayerThumbnail(state) {
+  // Hide/show player thumbnail
+  playerThumbnailStyle.innerHTML = state ? "" : "div[class=\"css-1dbjc4n r-1awozwy r-1777fci\"] {\n            visibility: hidden;\n        }";
+}
+
+var themeColorStyle = createStyleElement("themeColorStyle");
+
+function updateThemeColor(color) {
+  themeColorStyle.innerHTML = ".erc-logo .logo-icon {\n        fill: ".concat(color, ";\n    }\n    ::selection,\n    .erc-current-media-info .show-title-link,\n    .info-tag--is-six--oJ2yw,\n    svg[data-t=\"loader-svg\"] > path,\n    .erc-user-menu-nav-item.state-active,\n    .navigation-link.state-active > span,\n    .erc-menu-item-title.state-active,\n    .submenu-item-title.state-active > h5,\n    .activate-device-nav-link > span,\n    .button--is-type-one-weak--KLvCX {\n        color: ").concat(color, ";\n    }\n    .progress-bar__progress--PhR3h,\n    .button--is-type-one--3uIzT,\n    .tabs-item--is-active--66UFY:after,\n    .carousel-tabs__tab--is-active--OWPNm > div:before {\n        background-color: ").concat(color, ";\n    }\n    .button--is-type-one--3uIzT:hover {\n        background-color: ").concat(increaseBrightness(color, 20), ";\n    }\n    .button--is-type-one-weak--KLvCX:hover {\n        color: ").concat(increaseBrightness(color, 20), ";\n    }"); // https://stackoverflow.com/a/33385707
+
+  function increaseBrightness(color, percent) {
+    var ctx = document.createElement('canvas').getContext('2d');
+    ctx.fillStyle = color;
+    ctx.fillRect(0, 0, 1, 1);
+    var color = ctx.getImageData(0, 0, 1, 1);
+    var r = color.data[0] + Math.floor(percent / 100 * 255);
+    var g = color.data[1] + Math.floor(percent / 100 * 255);
+    var b = color.data[2] + Math.floor(percent / 100 * 255);
+    return 'rgb(' + r + ',' + g + ',' + b + ')';
+  }
+}
+
+var favicons = null;
+var userAvatar = null;
+
+function toggleAvatarFavicon(state) {
+  // Set user avatar as favicon
+  if (state) {
+    if (userAvatar == null) {
+      favicons = document.querySelectorAll('link[rel][type="image/png"]');
+      waitForElement('div[class="erc-header-avatar"] img[class="content-image__image--7tGlg"]').then(function (myImg) {
+        userAvatar = myImg.src;
+      }); // Init user avatar image asynchronously
+    }
+
+    favicons.forEach(function (favicon) {
+      favicon.href = userAvatar;
+    });
+  } // Set default Crunchyroll favicon
+  else {
+    favicons.forEach(function (favicon) {
+      favicon.href = "https://static.crunchyroll.com/cxweb/assets/img/favicons/favicon-".concat(favicon.sizes, ".png");
+    });
+  }
+}
+/*
+ * Promise for document.querySelector(selector)
+ * https://stackoverflow.com/a/61511955
+ */
+
+
+function waitForElement(selector) {
+  return new Promise(function (resolve) {
+    if (document.querySelector(selector)) {
+      return resolve(document.querySelector(selector));
+    }
+
+    var observer = new MutationObserver(function () {
+      if (document.querySelector(selector)) {
+        resolve(document.querySelector(selector));
+        observer.disconnect();
+      }
+    });
+    observer.observe(document.body, {
+      childList: true,
+      subtree: true
+    });
+  });
+}
+
+/***/ }),
+
 /***/ "./assets/js/classes/player-tool.js":
 /*!******************************************!*\
   !*** ./assets/js/classes/player-tool.js ***!
@@ -170,12 +311,16 @@ function _defineProperties(target, props) { for (var i = 0; i < props.length; i+
 
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
 
-// New features for Crunchyroll video player
+// Add Crunchyroll video player buttons
 var tool;
 
 var PlayerTool = /*#__PURE__*/function () {
   function PlayerTool(name, classList, icon) {
     var _tool$classList;
+
+    var optional = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : {
+      size: 20
+    };
 
     _classCallCheck(this, PlayerTool);
 
@@ -184,7 +329,7 @@ var PlayerTool = /*#__PURE__*/function () {
 
     (_tool$classList = tool.classList).add.apply(_tool$classList, _toConsumableArray(classList));
 
-    tool.appendChild(createToolImg("".concat(name, "_img"), icon));
+    tool.appendChild(createToolImg("".concat(name, "_img"), icon, optional.size));
     tool.addEventListener("click", function (event) {
       event.stopPropagation(); // Prevent click propagation
     });
@@ -203,9 +348,11 @@ var PlayerTool = /*#__PURE__*/function () {
 
 ; // Create an icon for the button
 
-function createToolImg(id, icon) {
+function createToolImg(id, icon, size) {
   var img = document.createElement('img');
   img.id = id;
+  img.height = size; // Default 20px, but can be specified
+
   img.src = chrome.runtime.getURL("images/controls/".concat(icon)); // Requires web_accessible_resources in the manifest
 
   return img;
@@ -542,6 +689,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _classes_player_tool_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../classes/player-tool.js */ "./assets/js/classes/player-tool.js");
 /* harmony import */ var _classes_message_api_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../classes/message-api.js */ "./assets/js/classes/message-api.js");
 /* harmony import */ var _classes_skipper_manager_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../classes/skipper-manager.js */ "./assets/js/classes/skipper-manager.js");
+/* harmony import */ var _classes_page_style_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../classes/page-style.js */ "./assets/js/classes/page-style.js");
 function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
 
 function _regeneratorRuntime() { "use strict"; /*! regenerator-runtime -- Copyright (c) 2014-present, Facebook, Inc. -- license (MIT): https://github.com/facebook/regenerator/blob/main/LICENSE */ _regeneratorRuntime = function _regeneratorRuntime() { return exports; }; var exports = {}, Op = Object.prototype, hasOwn = Op.hasOwnProperty, $Symbol = "function" == typeof Symbol ? Symbol : {}, iteratorSymbol = $Symbol.iterator || "@@iterator", asyncIteratorSymbol = $Symbol.asyncIterator || "@@asyncIterator", toStringTagSymbol = $Symbol.toStringTag || "@@toStringTag"; function define(obj, key, value) { return Object.defineProperty(obj, key, { value: value, enumerable: !0, configurable: !0, writable: !0 }), obj[key]; } try { define({}, ""); } catch (err) { define = function define(obj, key, value) { return obj[key] = value; }; } function wrap(innerFn, outerFn, self, tryLocsList) { var protoGenerator = outerFn && outerFn.prototype instanceof Generator ? outerFn : Generator, generator = Object.create(protoGenerator.prototype), context = new Context(tryLocsList || []); return generator._invoke = function (innerFn, self, context) { var state = "suspendedStart"; return function (method, arg) { if ("executing" === state) throw new Error("Generator is already running"); if ("completed" === state) { if ("throw" === method) throw arg; return doneResult(); } for (context.method = method, context.arg = arg;;) { var delegate = context.delegate; if (delegate) { var delegateResult = maybeInvokeDelegate(delegate, context); if (delegateResult) { if (delegateResult === ContinueSentinel) continue; return delegateResult; } } if ("next" === context.method) context.sent = context._sent = context.arg;else if ("throw" === context.method) { if ("suspendedStart" === state) throw state = "completed", context.arg; context.dispatchException(context.arg); } else "return" === context.method && context.abrupt("return", context.arg); state = "executing"; var record = tryCatch(innerFn, self, context); if ("normal" === record.type) { if (state = context.done ? "completed" : "suspendedYield", record.arg === ContinueSentinel) continue; return { value: record.arg, done: context.done }; } "throw" === record.type && (state = "completed", context.method = "throw", context.arg = record.arg); } }; }(innerFn, self, context), generator; } function tryCatch(fn, obj, arg) { try { return { type: "normal", arg: fn.call(obj, arg) }; } catch (err) { return { type: "throw", arg: err }; } } exports.wrap = wrap; var ContinueSentinel = {}; function Generator() {} function GeneratorFunction() {} function GeneratorFunctionPrototype() {} var IteratorPrototype = {}; define(IteratorPrototype, iteratorSymbol, function () { return this; }); var getProto = Object.getPrototypeOf, NativeIteratorPrototype = getProto && getProto(getProto(values([]))); NativeIteratorPrototype && NativeIteratorPrototype !== Op && hasOwn.call(NativeIteratorPrototype, iteratorSymbol) && (IteratorPrototype = NativeIteratorPrototype); var Gp = GeneratorFunctionPrototype.prototype = Generator.prototype = Object.create(IteratorPrototype); function defineIteratorMethods(prototype) { ["next", "throw", "return"].forEach(function (method) { define(prototype, method, function (arg) { return this._invoke(method, arg); }); }); } function AsyncIterator(generator, PromiseImpl) { function invoke(method, arg, resolve, reject) { var record = tryCatch(generator[method], generator, arg); if ("throw" !== record.type) { var result = record.arg, value = result.value; return value && "object" == _typeof(value) && hasOwn.call(value, "__await") ? PromiseImpl.resolve(value.__await).then(function (value) { invoke("next", value, resolve, reject); }, function (err) { invoke("throw", err, resolve, reject); }) : PromiseImpl.resolve(value).then(function (unwrapped) { result.value = unwrapped, resolve(result); }, function (error) { return invoke("throw", error, resolve, reject); }); } reject(record.arg); } var previousPromise; this._invoke = function (method, arg) { function callInvokeWithMethodAndArg() { return new PromiseImpl(function (resolve, reject) { invoke(method, arg, resolve, reject); }); } return previousPromise = previousPromise ? previousPromise.then(callInvokeWithMethodAndArg, callInvokeWithMethodAndArg) : callInvokeWithMethodAndArg(); }; } function maybeInvokeDelegate(delegate, context) { var method = delegate.iterator[context.method]; if (undefined === method) { if (context.delegate = null, "throw" === context.method) { if (delegate.iterator["return"] && (context.method = "return", context.arg = undefined, maybeInvokeDelegate(delegate, context), "throw" === context.method)) return ContinueSentinel; context.method = "throw", context.arg = new TypeError("The iterator does not provide a 'throw' method"); } return ContinueSentinel; } var record = tryCatch(method, delegate.iterator, context.arg); if ("throw" === record.type) return context.method = "throw", context.arg = record.arg, context.delegate = null, ContinueSentinel; var info = record.arg; return info ? info.done ? (context[delegate.resultName] = info.value, context.next = delegate.nextLoc, "return" !== context.method && (context.method = "next", context.arg = undefined), context.delegate = null, ContinueSentinel) : info : (context.method = "throw", context.arg = new TypeError("iterator result is not an object"), context.delegate = null, ContinueSentinel); } function pushTryEntry(locs) { var entry = { tryLoc: locs[0] }; 1 in locs && (entry.catchLoc = locs[1]), 2 in locs && (entry.finallyLoc = locs[2], entry.afterLoc = locs[3]), this.tryEntries.push(entry); } function resetTryEntry(entry) { var record = entry.completion || {}; record.type = "normal", delete record.arg, entry.completion = record; } function Context(tryLocsList) { this.tryEntries = [{ tryLoc: "root" }], tryLocsList.forEach(pushTryEntry, this), this.reset(!0); } function values(iterable) { if (iterable) { var iteratorMethod = iterable[iteratorSymbol]; if (iteratorMethod) return iteratorMethod.call(iterable); if ("function" == typeof iterable.next) return iterable; if (!isNaN(iterable.length)) { var i = -1, next = function next() { for (; ++i < iterable.length;) { if (hasOwn.call(iterable, i)) return next.value = iterable[i], next.done = !1, next; } return next.value = undefined, next.done = !0, next; }; return next.next = next; } } return { next: doneResult }; } function doneResult() { return { value: undefined, done: !0 }; } return GeneratorFunction.prototype = GeneratorFunctionPrototype, define(Gp, "constructor", GeneratorFunctionPrototype), define(GeneratorFunctionPrototype, "constructor", GeneratorFunction), GeneratorFunction.displayName = define(GeneratorFunctionPrototype, toStringTagSymbol, "GeneratorFunction"), exports.isGeneratorFunction = function (genFun) { var ctor = "function" == typeof genFun && genFun.constructor; return !!ctor && (ctor === GeneratorFunction || "GeneratorFunction" === (ctor.displayName || ctor.name)); }, exports.mark = function (genFun) { return Object.setPrototypeOf ? Object.setPrototypeOf(genFun, GeneratorFunctionPrototype) : (genFun.__proto__ = GeneratorFunctionPrototype, define(genFun, toStringTagSymbol, "GeneratorFunction")), genFun.prototype = Object.create(Gp), genFun; }, exports.awrap = function (arg) { return { __await: arg }; }, defineIteratorMethods(AsyncIterator.prototype), define(AsyncIterator.prototype, asyncIteratorSymbol, function () { return this; }), exports.AsyncIterator = AsyncIterator, exports.async = function (innerFn, outerFn, self, tryLocsList, PromiseImpl) { void 0 === PromiseImpl && (PromiseImpl = Promise); var iter = new AsyncIterator(wrap(innerFn, outerFn, self, tryLocsList), PromiseImpl); return exports.isGeneratorFunction(outerFn) ? iter : iter.next().then(function (result) { return result.done ? result.value : iter.next(); }); }, defineIteratorMethods(Gp), define(Gp, toStringTagSymbol, "Generator"), define(Gp, iteratorSymbol, function () { return this; }), define(Gp, "toString", function () { return "[object Generator]"; }), exports.keys = function (object) { var keys = []; for (var key in object) { keys.push(key); } return keys.reverse(), function next() { for (; keys.length;) { var key = keys.pop(); if (key in object) return next.value = key, next.done = !1, next; } return next.done = !0, next; }; }, exports.values = values, Context.prototype = { constructor: Context, reset: function reset(skipTempReset) { if (this.prev = 0, this.next = 0, this.sent = this._sent = undefined, this.done = !1, this.delegate = null, this.method = "next", this.arg = undefined, this.tryEntries.forEach(resetTryEntry), !skipTempReset) for (var name in this) { "t" === name.charAt(0) && hasOwn.call(this, name) && !isNaN(+name.slice(1)) && (this[name] = undefined); } }, stop: function stop() { this.done = !0; var rootRecord = this.tryEntries[0].completion; if ("throw" === rootRecord.type) throw rootRecord.arg; return this.rval; }, dispatchException: function dispatchException(exception) { if (this.done) throw exception; var context = this; function handle(loc, caught) { return record.type = "throw", record.arg = exception, context.next = loc, caught && (context.method = "next", context.arg = undefined), !!caught; } for (var i = this.tryEntries.length - 1; i >= 0; --i) { var entry = this.tryEntries[i], record = entry.completion; if ("root" === entry.tryLoc) return handle("end"); if (entry.tryLoc <= this.prev) { var hasCatch = hasOwn.call(entry, "catchLoc"), hasFinally = hasOwn.call(entry, "finallyLoc"); if (hasCatch && hasFinally) { if (this.prev < entry.catchLoc) return handle(entry.catchLoc, !0); if (this.prev < entry.finallyLoc) return handle(entry.finallyLoc); } else if (hasCatch) { if (this.prev < entry.catchLoc) return handle(entry.catchLoc, !0); } else { if (!hasFinally) throw new Error("try statement without catch or finally"); if (this.prev < entry.finallyLoc) return handle(entry.finallyLoc); } } } }, abrupt: function abrupt(type, arg) { for (var i = this.tryEntries.length - 1; i >= 0; --i) { var entry = this.tryEntries[i]; if (entry.tryLoc <= this.prev && hasOwn.call(entry, "finallyLoc") && this.prev < entry.finallyLoc) { var finallyEntry = entry; break; } } finallyEntry && ("break" === type || "continue" === type) && finallyEntry.tryLoc <= arg && arg <= finallyEntry.finallyLoc && (finallyEntry = null); var record = finallyEntry ? finallyEntry.completion : {}; return record.type = type, record.arg = arg, finallyEntry ? (this.method = "next", this.next = finallyEntry.finallyLoc, ContinueSentinel) : this.complete(record); }, complete: function complete(record, afterLoc) { if ("throw" === record.type) throw record.arg; return "break" === record.type || "continue" === record.type ? this.next = record.arg : "return" === record.type ? (this.rval = this.arg = record.arg, this.method = "return", this.next = "end") : "normal" === record.type && afterLoc && (this.next = afterLoc), ContinueSentinel; }, finish: function finish(finallyLoc) { for (var i = this.tryEntries.length - 1; i >= 0; --i) { var entry = this.tryEntries[i]; if (entry.finallyLoc === finallyLoc) return this.complete(entry.completion, entry.afterLoc), resetTryEntry(entry), ContinueSentinel; } }, "catch": function _catch(tryLoc) { for (var i = this.tryEntries.length - 1; i >= 0; --i) { var entry = this.tryEntries[i]; if (entry.tryLoc === tryLoc) { var record = entry.completion; if ("throw" === record.type) { var thrown = record.arg; resetTryEntry(entry); } return thrown; } } throw new Error("illegal catch attempt"); }, delegateYield: function delegateYield(iterable, resultName, nextLoc) { return this.delegate = { iterator: values(iterable), resultName: resultName, nextLoc: nextLoc }, "next" === this.method && (this.arg = undefined), ContinueSentinel; } }, exports; }
@@ -563,6 +711,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 
 
 
+
 var video = document.getElementById('player0');
 var playerParent = null;
 var playerObserver = null; // Observer
@@ -571,9 +720,53 @@ var controlsContainer = null; // Null for now, because the #vilosControlsContain
 
 var controlsContainerObserver = null; // Observer
 
-ObserveVideoPlayer(); // Video player observer
+var themeColor; // Asynchronous player initializer
 
-function ObserveVideoPlayer() {
+(function () {
+  var _InitPlayer = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee() {
+    return _regeneratorRuntime().wrap(function _callee$(_context) {
+      while (1) {
+        switch (_context.prev = _context.next) {
+          case 0:
+            _context.next = 2;
+            return _classes_message_api_js__WEBPACK_IMPORTED_MODULE_1__["default"].getStorage('themeColor');
+
+          case 2:
+            themeColor = _context.sent;
+            _context.t0 = _classes_page_style_js__WEBPACK_IMPORTED_MODULE_3__["default"];
+            _context.next = 6;
+            return _classes_message_api_js__WEBPACK_IMPORTED_MODULE_1__["default"].getStorage("showPlayerThumbnail");
+
+          case 6:
+            _context.t1 = _context.sent;
+            _context.t2 = {
+              state: _context.t1
+            };
+
+            _context.t0.set.call(_context.t0, "togglePlayerThumbnail", _context.t2);
+
+            setLoadingSpinnerColor(themeColor); // Initialize player controls
+
+            initPlayerTools(); // Start oberving video player
+
+            observeVideoPlayer();
+
+          case 12:
+          case "end":
+            return _context.stop();
+        }
+      }
+    }, _callee);
+  }));
+
+  function InitPlayer() {
+    return _InitPlayer.apply(this, arguments);
+  }
+
+  return InitPlayer;
+})()(); // Video player observer
+
+function observeVideoPlayer() {
   var config = {
     attributes: false,
     childList: true,
@@ -581,34 +774,32 @@ function ObserveVideoPlayer() {
   };
   playerObserver = new MutationObserver(function (mutations) {
     mutations.forEach(function (mutation) {
-      if (mutation.type == 'childList') {
-        if (mutation.addedNodes.length > 0) {
-          Array.from(mutation.addedNodes).map(function (node) {
-            if (node.id == 'vilosControlsContainer') {
-              controlsContainer = node; //console.clear();
+      if (mutation.addedNodes.length > 0) {
+        Array.from(mutation.addedNodes).map(function (node) {
+          if (node.id == 'vilosControlsContainer') {
+            controlsContainer = node;
+            console.clear();
+            console.log("%c[Crunchyroll PLUS]", "color: #ea2600");
 
-              console.log("%cCrunchyroll PLUS", "color: #ea2600");
-
-              if (controlsContainer.firstChild.hasChildNodes()) {
-                LoadCrpTools(); // Load CrunchyrollPlus controls if controlsContainer has child nodes
-              }
-
-              ObserveControlsContainer(); // Start observing controls when vilosControlsContainer is loaded
-              // Init opening skippers through the Skipper Manager
-              // (Skipper need to be appended to the parentNode to be displayed in fullscreen)
-
-              _classes_skipper_manager_js__WEBPACK_IMPORTED_MODULE_2__["default"].initOpeningSkipper(video, controlsContainer.parentNode);
+            if (controlsContainer.firstChild.hasChildNodes()) {
+              loadCrpTools(); // Load CrunchyrollPlus controls if controlsContainer has child nodes
             }
-          });
-        }
 
-        if (mutation.removedNodes.length > 0) {
-          Array.from(mutation.removedNodes).map(function (node) {
-            if (node.id == 'vilosControlsContainer' && controlsContainerObserver != null) {
-              controlsContainerObserver.disconnect(); // Stop observing controls when vilosControlsContainer is destroyed
-            }
-          });
-        }
+            observeControlsContainer(); // Start observing controls when vilosControlsContainer is loaded
+            // Init opening skippers through the Skipper Manager
+            // (Skipper need to be appended to the parentNode to be displayed in fullscreen)
+
+            _classes_skipper_manager_js__WEBPACK_IMPORTED_MODULE_2__["default"].initOpeningSkipper(video, controlsContainer.parentNode);
+          }
+        });
+      }
+
+      if (mutation.removedNodes.length > 0) {
+        Array.from(mutation.removedNodes).map(function (node) {
+          if (node.id == 'vilosControlsContainer' && controlsContainerObserver != null) {
+            controlsContainerObserver.disconnect(); // Stop observing controls when vilosControlsContainer is destroyed
+          }
+        });
       }
     });
   }); // Crunchyroll seems to instanciate and destroy the video player multiple time, this will probably need to be revisited later
@@ -617,11 +808,12 @@ function ObserveVideoPlayer() {
     // Get node and check if it is not null
     playerObserver.observe(playerParent, config);
   }
-}
+} // Default Crunchyroll controls observer
 
-var isMenuOpen = false; // Default Crunchyroll controls observer
 
-function ObserveControlsContainer() {
+var isMenuOpen = false;
+
+function observeControlsContainer() {
   var config = {
     attributes: false,
     childList: true,
@@ -632,67 +824,63 @@ function ObserveControlsContainer() {
       if (mutation.type == 'childList' && mutation.addedNodes.length > 0) {
         if (mutation.addedNodes[0].hasChildNodes()) {
           isMenuOpen = true;
-          LoadCrpTools();
+          loadCrpTools();
         } else {
           isMenuOpen = false;
-          DestroyCrpTools();
+          destroyCrpTools();
         }
       }
     });
   });
   controlsContainerObserver.observe(controlsContainer, config);
-} // CrunchyrollPlus controls initializer
+}
 
+var moveBackward, moveForward, soundBooster; // Crunchyroll PLUS player initializer (colors, buttons, etc.)
 
-function LoadCrpTools() {
-  return _LoadCrpTools.apply(this, arguments);
-} // CRP controls destroyer
+function initPlayerTools() {
+  return _initPlayerTools.apply(this, arguments);
+}
 
-
-function _LoadCrpTools() {
-  _LoadCrpTools = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee() {
-    var leftControls, toolClasses, moveBackward, moveBackwardTime, moveForward, moveForwardTime, soundBooster, soundMultiplier, themeColor;
-    return _regeneratorRuntime().wrap(function _callee$(_context) {
+function _initPlayerTools() {
+  _initPlayerTools = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee2() {
+    var toolClasses, moveBackwardTime, moveForwardTime, soundMultiplier;
+    return _regeneratorRuntime().wrap(function _callee2$(_context2) {
       while (1) {
-        switch (_context.prev = _context.next) {
+        switch (_context2.prev = _context2.next) {
           case 0:
-            // Controls on the left of the player
-            leftControls = controlsContainer.querySelector("[data-testid='vilos-play_pause_button']").parentNode.parentNode; // const rightControls = controlsContainer.querySelector("#settingsControl").parentNode;
-
             toolClasses = ['crpTools', "r-1ozmr9b"]; // Move backward button
 
             moveBackward = new _classes_player_tool_js__WEBPACK_IMPORTED_MODULE_0__["default"]('moveBackward', toolClasses, 'moveBackward.svg').tool;
-            leftControls.appendChild(moveBackward);
-            _context.next = 6;
+            _context2.next = 4;
             return _classes_message_api_js__WEBPACK_IMPORTED_MODULE_1__["default"].getStorage('moveBackwardTime');
 
-          case 6:
-            moveBackwardTime = _context.sent;
+          case 4:
+            moveBackwardTime = _context2.sent;
             moveBackward.addEventListener("click", function () {
               video.currentTime -= ~~moveBackwardTime;
             }); // Move forward button
 
             moveForward = new _classes_player_tool_js__WEBPACK_IMPORTED_MODULE_0__["default"]('moveForward', toolClasses, 'moveForward.svg').tool;
-            leftControls.appendChild(moveForward);
-            _context.next = 12;
+            _context2.next = 9;
             return _classes_message_api_js__WEBPACK_IMPORTED_MODULE_1__["default"].getStorage('moveForwardTime');
 
-          case 12:
-            moveForwardTime = _context.sent;
+          case 9:
+            moveForwardTime = _context2.sent;
             moveForward.addEventListener("click", function () {
               video.currentTime += ~~moveForwardTime;
             }); // Sound booster button (https://developer.mozilla.org/en-US/docs/Web/API/AudioContext/createMediaElementSource)
 
-            soundBooster = new _classes_player_tool_js__WEBPACK_IMPORTED_MODULE_0__["default"]('soundBoosterOff', toolClasses, soundBoosterEnabled ? 'soundBoosterOn.svg' : 'soundBoosterOff.svg').tool;
-            leftControls.appendChild(soundBooster);
-            _context.next = 18;
+            soundBooster = new _classes_player_tool_js__WEBPACK_IMPORTED_MODULE_0__["default"]('soundBoosterOff', toolClasses, soundBoosterEnabled ? 'soundBoosterOn.svg' : 'soundBoosterOff.svg', {
+              size: 27
+            }).tool;
+            _context2.next = 14;
             return _classes_message_api_js__WEBPACK_IMPORTED_MODULE_1__["default"].getStorage('soundMultiplier');
 
-          case 18:
-            soundMultiplier = _context.sent;
+          case 14:
+            soundMultiplier = _context2.sent;
             soundBooster.addEventListener("click", function () {
               if (!soundBoosterInitialized) {
-                InitSoundBooster();
+                initSoundBooster();
               }
 
               if (!soundBoosterEnabled) {
@@ -707,31 +895,30 @@ function _LoadCrpTools() {
                 soundBooster.firstChild.src = chrome.runtime.getURL("images/controls/soundBoosterOff.svg");
               }
             });
-            _classes_skipper_manager_js__WEBPACK_IMPORTED_MODULE_2__["default"].openingSkippersVisible(true); // Change playbar color to the stored theme color
 
-            _context.next = 23;
-            return _classes_message_api_js__WEBPACK_IMPORTED_MODULE_1__["default"].getStorage('themeColor');
-
-          case 23:
-            themeColor = _context.sent;
-
-            if (!!themeColor && isMenuOpen) {
-              // themeColor not null and menu is still open
-              changePlayBarColor(themeColor);
-              changeVolumeSelectorColor(themeColor);
-            }
-
-          case 25:
+          case 16:
           case "end":
-            return _context.stop();
+            return _context2.stop();
         }
       }
-    }, _callee);
+    }, _callee2);
   }));
-  return _LoadCrpTools.apply(this, arguments);
+  return _initPlayerTools.apply(this, arguments);
 }
 
-function DestroyCrpTools() {
+function loadCrpTools() {
+  // Controls on the left of the player
+  var leftControls = controlsContainer.querySelector("[data-testid='vilos-volume_container']").parentNode.parentNode; // const rightControls = controlsContainer.querySelector("#settingsControl").parentNode;
+
+  leftControls.appendChild(moveBackward);
+  leftControls.appendChild(moveForward);
+  leftControls.appendChild(soundBooster);
+  _classes_skipper_manager_js__WEBPACK_IMPORTED_MODULE_2__["default"].openingSkippersVisible(true);
+  changePlayBarColor(themeColor);
+  changeVolumeSelectorColor(themeColor);
+}
+
+function destroyCrpTools() {
   _classes_skipper_manager_js__WEBPACK_IMPORTED_MODULE_2__["default"].openingSkippersVisible(false);
 }
 
@@ -741,7 +928,7 @@ var audioCtx = null,
     gainNode = null,
     source = null; // Initialize sound booster variables
 
-function InitSoundBooster() {
+function initSoundBooster() {
   audioCtx = new AudioContext();
   source = audioCtx.createMediaElementSource(video);
   gainNode = audioCtx.createGain();
@@ -753,6 +940,8 @@ function InitSoundBooster() {
 
 
 function changePlayBarColor(themeColor) {
+  // Note: playerPointer and watchedTime "style" properties cannot be changed because it is automatically updated by the player
+  // This is why child nodes are created, while their parent's visibility is set to "hidden"
   var playerPointer = document.querySelector('div[data-testid="vilos-knob"]');
   playerPointer.style.visibility = "hidden";
   var crpPointer = document.createElement('div');
@@ -765,12 +954,10 @@ function changePlayBarColor(themeColor) {
   var crpWatchedTime = document.createElement('div');
   crpWatchedTime.id = "crpWatchedTime";
   crpWatchedTime.style.backgroundColor = themeColor;
-  watchedTime.appendChild(crpWatchedTime); // playerPointer and watchedTime "style" properties cannot be changed because it is automatically updated by the player
-  // This is why child nodes are created, while their parent's visibility is set to "hidden"
+  watchedTime.appendChild(crpWatchedTime);
 }
 
-var volumeObserver = null; // Change the volume knob color
-// (Requires a MutationObserver because it is not initially loaded)
+var volumeObserver = null; // Change the volume knob color (requires a MutationObserver because it is not initially loaded)
 
 function changeVolumeSelectorColor(themeColor) {
   var volumeButton = controlsContainer.querySelector("[data-testid='vilos-volume_container']");
@@ -801,171 +988,23 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
 
   switch (type) {
     case "togglePlayerThumbnail":
-      togglePlayerThumbnail(parameters.state);
-      break;
-
-    case "definePlayerOpenings":
-      //  startListeningVideoPlayer(request.openingTimes);
+      _classes_page_style_js__WEBPACK_IMPORTED_MODULE_3__["default"].set("togglePlayerThumbnail", {
+        state: parameters.state
+      });
       break;
   }
 
   return true; // Tell Chrome that response is sent asynchronously
-}); // Load data from the chrome storage, and call needed functions
+});
+var loadSpinner = document.querySelectorAll('div[data-testid="vilos-loading"] path'); // Change loading spinner color to the stored theme color
 
-(function InitPage() {
-  chrome.runtime.sendMessage({
-    action: "showPlayerThumbnail"
-  }, function (response) {
-    togglePlayerThumbnail(response.message);
+function setLoadingSpinnerColor(themeColor) {
+  loadSpinner.forEach(function (element) {
+    element.style.stroke = themeColor;
   });
-})();
-
-var playerThumbnailStyle = createStyleElement("playerThumbnailStyle"); // Create style element and add it to the DOM
-
-function createStyleElement(id) {
-  var myStyle = document.createElement('style');
-  myStyle.id = id;
-  document.getElementsByTagName('head')[0].appendChild(myStyle);
-  return myStyle;
 }
 
-function togglePlayerThumbnail(state) {
-  if (state) {
-    playerThumbnailStyle.innerHTML = "";
-  } else {
-    // CSS to hide the progress bar thumbnail
-    playerThumbnailStyle.innerHTML = "\n        div[class=\"css-1dbjc4n r-1awozwy r-1777fci\"] {\n            visibility: hidden;\n        }";
-  }
-} // Wait for given milliseconds
-// USE : delay(1000).then(() => { ... });
-
-/*function delay(time) {
-    return new Promise(resolve => setTimeout(resolve, time));
-}*/
-// Change loading spinner color to the stored theme color
-
-
-var loadSpinner = document.querySelectorAll('div[data-testid="vilos-loading"] path');
-
-(function setLoadingSpinnerColor() {
-  chrome.runtime.sendMessage({
-    action: "themeColor"
-  }, function (response) {
-    if (!!response.message) {
-      loadSpinner.forEach(function (element) {
-        element.style.stroke = response.message;
-      });
-    }
-  });
-})(); // ----------------------------- //
-//  Opening skippers management  //
-// ----------------------------- //
-
-/*
-var openingList = [];
-var crpSkipperList = [];
-
-async function initOpeningSkipper() {
-
-    // Check if CRP skippers are enabled, and get the duration of an opening
-    var { enabled, openingDuration } = await MessageAPI.getStorage("crpSkipper");
-
-    if (enabled) {
-        // Hide default opening skipper
-        var defaultSkipper = createStyleElement("hideDefaultSkipper");
-        defaultSkipper.innerHTML = `
-        div[data-testid="skipButton"] {
-            display: none;
-        }
-        #skipButton {
-            display: none;
-        }`;
-
-        // Openings need to be detected from main page content-script to avoid CORS restrictions when accessing subtitles links
-        const opList = (await MessageAPI.sendToContentScripts("detectOpenings", { openingDuration, videoDuration: video.duration }));
-
-        // Create a new skipper for each opening
-        opList.forEach((op, index) => {
-            const skipper = new Skipper(index, controlsContainer.parentNode);
-            crpSkipperList.push(skipper.crpSkipper);
-
-            op.skipperId = skipper.crpSkipper.id;
-            op.skipperTimerId = skipper.timer.id;
-            op.handler = "none";
-        });
-
-        startListeningVideoPlayer(opList, openingDuration);
-    };
-}
-
-// Listen to the video player timeupdate, and display the opening skipper if it is the right time
-function startListeningVideoPlayer(openings, opDuration) {
-    openingList = openings; // Now used as a global variable
-    var remainingTimeSec;
-
-    video.addEventListener("timeupdate", function () {
-        var time = Math.round(this.currentTime);
-
-        openingList.forEach((op, index) => {
-            const crpSkipper = crpSkipperList[index];   // Get Skipper
-            const { start, end, skipperTimerId } = op;  // Get OP data
-
-            if (time >= start && time < end) {  // If this opening is playing
-                remainingTimeSec = end - time > opDuration ? opDuration : end - time;
-                const remainingTime = new Date(remainingTimeSec * 1000).toISOString().substring(14, 19);
-                crpSkipper.querySelector('#' + skipperTimerId).innerText = `(${remainingTime})`;
-
-                if (op.handler === "none") { enableSkipper() }  // Enable if not handled yet
-            }
-            else if (op.handler !== "none") { disableSkipper() }// Disable if handled while opening has ended
-
-
-            function enableSkipper() {
-                op.handler = "initializing";    // Prevent the skipper from being handled multiple times at once
-                crpSkipper.style.visibility = "visible";
-                crpSkipper.style.opacity = 1;   // Force the skipper to be displayed for a moment
-
-                addSkipperEvents(); // Skipper mouse events
-
-                const timeout = (((end - time) * 1000) > 4000) ? 4000 : ((end - time) * 1000);  // Timeout (max: 4s)
-                setTimeout(() => {
-                    crpSkipper.style.opacity = isMenuOpen ? 1 : 0;
-                    op.handler = "mouseMovements"; // Skipper is now handled by mouse movements
-                }, timeout);
-            }
-
-            function disableSkipper() {
-                op.handler = "none";    // Stop handling
-                coolCollapse(crpSkipper);
-            }
-
-            function addSkipperEvents() {
-                crpSkipper.addEventListener('click', () => { video.currentTime += ~~remainingTimeSec });    // Skip the opening
-                crpSkipper.addEventListener('mouseover', () => { crpSkipper.style.opacity = 1 });   // Don't hide on hover
-            }
-        });
-    }, false);
-}
-
-// Toggle skipper if an opening is playing
-function openingSkippersVisible(state) {
-    openingList.forEach((op, index) => {
-        const crpSkipper = crpSkipperList[index];
-
-        if (op.handler === "mouseMovements") {
-            crpSkipper.style.opacity = state ? 1 : 0;
-        }
-        else if (op.handler === "none") {
-            coolCollapse(crpSkipper);
-        }
-    });
-}
-
-// Wait for opacity transition (0.3s), then collapse the visibility
-function coolCollapse(skipper){
-    skipper.style.opacity = 0;
-    setTimeout(() => { skipper.style.visibility = 'collapse'; }, 300);
-}*/
+;
 })();
 
 /******/ })()

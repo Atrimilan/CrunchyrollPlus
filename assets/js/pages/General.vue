@@ -25,8 +25,7 @@
 
 
 <script>
-import MessageSender from '../classes/message-api.js';
-    
+import MessageAPI from '../classes/message-api.js';
 import ColorInput from "./components/ColorInput.vue";
 import SwitchButton from "./components/SwitchButton.vue";
 
@@ -54,9 +53,7 @@ export default {
         },
         themeColorChoosing(color){
             // Show changes dynamically, without saving to chrome storage
-            chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
-                chrome.tabs.sendMessage(tabs[0].id, {type: "themeColorUpdate", themeColor: color});
-            });
+            MessageAPI.sendToContentScripts("themeColorUpdate", { themeColor: color });
         },
         themeColorSelected(color){
             // Save final selection to chrome storage
@@ -64,16 +61,12 @@ export default {
         },
         toggleBlurring(status) {
             // Toggle thumbnails blurring dynamically
-            chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
-                chrome.tabs.sendMessage(tabs[0].id, {type: "toggleThumbnails", state: status});
-            });
             // And save status to chrome storage
+            MessageAPI.sendToContentScripts("toggleThumbnails", { state: status });
             chrome.storage.sync.set({ blurredThumbnails: status });
         },
         toggleAvatarFavicon(status) {
-            chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
-                chrome.tabs.sendMessage(tabs[0].id, {type: "toggleAvatarFavicon", state: status});
-            });
+            MessageAPI.sendToContentScripts("toggleAvatarFavicon", { state: status });
             chrome.storage.sync.set({ avatarFavicon: status });
         }
     },
@@ -81,9 +74,9 @@ export default {
         // Components need to be initialized in the Popup to their current status
         // They must be initialized asynchronously, <input> are not updated if the result is not awaited
         (async () => {
-            this.themeColor = await MessageSender.getStorage("themeColor");
-            this.blurringState = await MessageSender.getStorage("blurredThumbnails");
-            this.avatarFaviconState = await MessageSender.getStorage("avatarFavicon");
+            this.themeColor = await MessageAPI.getStorage("themeColor");
+            this.blurringState = await MessageAPI.getStorage("blurredThumbnails");
+            this.avatarFaviconState = await MessageAPI.getStorage("avatarFavicon");
         })();
     }
 };

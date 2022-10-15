@@ -24,6 +24,7 @@
 
 
 <script>
+import MessageAPI from '../classes/message-api.js';
 import SimpleButton from "./components/SimpleButton.vue";
 import InfoArea from "./components/InfoArea.vue";
 
@@ -47,7 +48,7 @@ export default {
         },
         resetConfig(){
             // Reset all Crunchyroll Plus customizations
-            chrome.runtime.sendMessage({ type: "resetStorage" });
+            MessageAPI.sendToBackground("resetStorage", { });
         }
     }
 };

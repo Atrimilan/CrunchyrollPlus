@@ -8,6 +8,7 @@
 
 <script>
 import MenuButton from "./components/MenuButton.vue";
+
 export default {
     name: "Home",
     components: {

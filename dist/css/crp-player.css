@@ -8,19 +8,9 @@
 }
 .crpTools img {
   width: 100%;
-  height: 20px;
 }
-
-#moveForwardImg,
-#moveBackwardImg {
-  width: 15px;
-  height: 15px;
-}
-
-#soundBoosterOffImg,
-#soundBoosterOnImg {
-  width: 30px;
-  height: 30px;
+.crpTools:hover {
+  background-color: rgba(0, 0, 0, 0.6);
 }
 
 .crpKnob {

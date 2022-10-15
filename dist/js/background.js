@@ -49,7 +49,7 @@ function _InitStorage() {
               // Set website theme color
               'blurredThumbnails': result.blurredThumbnails === undefined ? true : result.blurredThumbnails,
               // Blur episode thumbnails
-              'showPlayerThumbnail': result.blurredThumbnails === undefined ? true : result.showPlayerThumbnail,
+              'showPlayerThumbnail': result.showPlayerThumbnail === undefined ? true : result.showPlayerThumbnail,
               // Progress bar thumbnail
               'avatarFavicon': result.avatarFavicon === undefined ? false : result.avatarFavicon,
               // Use avatar as favicon
@@ -140,30 +140,6 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
 
     case "downloadFile":
       chrome.downloads.download((_parameters = parameters, url = _parameters.url, filename = _parameters.filename, _parameters));
-      break;
-
-    case "getOpeningTimes":
-      chrome.tabs.query({
-        active: true,
-        currentWindow: true
-      }, function (tabs) {
-        chrome.tabs.sendMessage(tabs[0].id, {
-          type: "getOpeningTimes",
-          videoDuration: request.videoDuration
-        });
-      });
-      break;
-
-    case "definePlayerOpenings":
-      chrome.tabs.query({
-        active: true,
-        currentWindow: true
-      }, function (tabs) {
-        chrome.tabs.sendMessage(tabs[0].id, {
-          type: "definePlayerOpenings",
-          openingTimes: request.openingTimes
-        });
-      });
       break;
 
     default:

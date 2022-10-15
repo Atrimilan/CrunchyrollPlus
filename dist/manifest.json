@@ -35,11 +35,10 @@
         },
         {
             "matches": [
-                "https://beta.crunchyroll.com/*",
-                "https://www.crunchyroll.com/*"
+                "https://beta.crunchyroll.com/*"
             ],
             "exclude_matches": [
-                "https://www.crunchyroll.com/forum*"
+                "https://www.crunchyroll.com/*"
             ],
             "all_frames": true,
             "js": [

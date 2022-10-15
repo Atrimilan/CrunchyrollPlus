@@ -23,7 +23,9 @@
 
 
 <script>
+import MessageAPI from '../classes/message-api.js';
 import SimpleButton from './components/SimpleButton.vue';
+
 export default {
     name: "Advanced",
     components: {
@@ -41,9 +43,7 @@ export default {
             return chrome.i18n.getMessage(message);
         },
         downloadSubtitles() {
-            chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
-                chrome.tabs.sendMessage(tabs[0].id, {type: "downloadSubtitles" });  // Start download from page content-script
-            });
+            MessageAPI.sendToContentScripts("downloadSubtitles");  // Start download from page content-script
         }
     }
 };

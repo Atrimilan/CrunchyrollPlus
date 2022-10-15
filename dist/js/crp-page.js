@@ -593,6 +593,148 @@ var MessageAPI = /*#__PURE__*/function () {
 
 /***/ }),
 
+/***/ "./assets/js/classes/page-style.js":
+/*!*****************************************!*\
+  !*** ./assets/js/classes/page-style.js ***!
+  \*****************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ PageStyle)
+/* harmony export */ });
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
+
+var PageStyle = /*#__PURE__*/function () {
+  function PageStyle() {
+    _classCallCheck(this, PageStyle);
+  }
+
+  _createClass(PageStyle, null, [{
+    key: "set",
+    value: function set(type, parameters) {
+      switch (type) {
+        case "updateThemeColor":
+          updateThemeColor(parameters.color);
+          break;
+
+        case "toggleThumbnails":
+          toggleThumbnails(parameters.state);
+          break;
+
+        case "toggleAvatarFavicon":
+          toggleAvatarFavicon(parameters.state);
+          break;
+
+        case "togglePlayerThumbnail":
+          togglePlayerThumbnail(parameters.state);
+          break;
+      }
+    }
+  }]);
+
+  return PageStyle;
+}();
+/*
+ * Create style element and add it to the DOM
+ */
+
+
+
+
+function createStyleElement(id) {
+  var myStyle = document.createElement('style');
+  myStyle.id = id;
+  document.getElementsByTagName('head')[0].appendChild(myStyle);
+  return myStyle;
+}
+
+var blurredThumbnailStyle = createStyleElement("blurredThumbnailStyle");
+
+function toggleThumbnails(state) {
+  // Blur/show episode thumbnails
+  blurredThumbnailStyle.innerHTML = state ? ".prev-next-episodes img,.episode-list img,.erc-up-next-section img {\n            filter: blur(20px);\n            -webkit-filter: blur(20px);\n            -moz-filter: blur(20px);\n            -o-filter: blur(20px);\n            -ms-filter: blur(20px);\n        }" : "";
+}
+
+var playerThumbnailStyle = createStyleElement("playerThumbnailStyle");
+
+function togglePlayerThumbnail(state) {
+  // Hide/show player thumbnail
+  playerThumbnailStyle.innerHTML = state ? "" : "div[class=\"css-1dbjc4n r-1awozwy r-1777fci\"] {\n            visibility: hidden;\n        }";
+}
+
+var themeColorStyle = createStyleElement("themeColorStyle");
+
+function updateThemeColor(color) {
+  themeColorStyle.innerHTML = ".erc-logo .logo-icon {\n        fill: ".concat(color, ";\n    }\n    ::selection,\n    .erc-current-media-info .show-title-link,\n    .info-tag--is-six--oJ2yw,\n    svg[data-t=\"loader-svg\"] > path,\n    .erc-user-menu-nav-item.state-active,\n    .navigation-link.state-active > span,\n    .erc-menu-item-title.state-active,\n    .submenu-item-title.state-active > h5,\n    .activate-device-nav-link > span,\n    .button--is-type-one-weak--KLvCX {\n        color: ").concat(color, ";\n    }\n    .progress-bar__progress--PhR3h,\n    .button--is-type-one--3uIzT,\n    .tabs-item--is-active--66UFY:after,\n    .carousel-tabs__tab--is-active--OWPNm > div:before {\n        background-color: ").concat(color, ";\n    }\n    .button--is-type-one--3uIzT:hover {\n        background-color: ").concat(increaseBrightness(color, 20), ";\n    }\n    .button--is-type-one-weak--KLvCX:hover {\n        color: ").concat(increaseBrightness(color, 20), ";\n    }"); // https://stackoverflow.com/a/33385707
+
+  function increaseBrightness(color, percent) {
+    var ctx = document.createElement('canvas').getContext('2d');
+    ctx.fillStyle = color;
+    ctx.fillRect(0, 0, 1, 1);
+    var color = ctx.getImageData(0, 0, 1, 1);
+    var r = color.data[0] + Math.floor(percent / 100 * 255);
+    var g = color.data[1] + Math.floor(percent / 100 * 255);
+    var b = color.data[2] + Math.floor(percent / 100 * 255);
+    return 'rgb(' + r + ',' + g + ',' + b + ')';
+  }
+}
+
+var favicons = null;
+var userAvatar = null;
+
+function toggleAvatarFavicon(state) {
+  // Set user avatar as favicon
+  if (state) {
+    if (userAvatar == null) {
+      favicons = document.querySelectorAll('link[rel][type="image/png"]');
+      waitForElement('div[class="erc-header-avatar"] img[class="content-image__image--7tGlg"]').then(function (myImg) {
+        userAvatar = myImg.src;
+      }); // Init user avatar image asynchronously
+    }
+
+    favicons.forEach(function (favicon) {
+      favicon.href = userAvatar;
+    });
+  } // Set default Crunchyroll favicon
+  else {
+    favicons.forEach(function (favicon) {
+      favicon.href = "https://static.crunchyroll.com/cxweb/assets/img/favicons/favicon-".concat(favicon.sizes, ".png");
+    });
+  }
+}
+/*
+ * Promise for document.querySelector(selector)
+ * https://stackoverflow.com/a/61511955
+ */
+
+
+function waitForElement(selector) {
+  return new Promise(function (resolve) {
+    if (document.querySelector(selector)) {
+      return resolve(document.querySelector(selector));
+    }
+
+    var observer = new MutationObserver(function () {
+      if (document.querySelector(selector)) {
+        resolve(document.querySelector(selector));
+        observer.disconnect();
+      }
+    });
+    observer.observe(document.body, {
+      childList: true,
+      subtree: true
+    });
+  });
+}
+
+/***/ }),
+
 /***/ "./node_modules/flatmap/index.js":
 /*!***************************************!*\
   !*** ./node_modules/flatmap/index.js ***!
@@ -2968,6 +3110,7 @@ var __webpack_exports__ = {};
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _classes_message_api_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../classes/message-api.js */ "./assets/js/classes/message-api.js");
 /* harmony import */ var _classes_crp_api_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../classes/crp-api.js */ "./assets/js/classes/crp-api.js");
+/* harmony import */ var _classes_page_style_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../classes/page-style.js */ "./assets/js/classes/page-style.js");
 function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
 
 function _regeneratorRuntime() { "use strict"; /*! regenerator-runtime -- Copyright (c) 2014-present, Facebook, Inc. -- license (MIT): https://github.com/facebook/regenerator/blob/main/LICENSE */ _regeneratorRuntime = function _regeneratorRuntime() { return exports; }; var exports = {}, Op = Object.prototype, hasOwn = Op.hasOwnProperty, $Symbol = "function" == typeof Symbol ? Symbol : {}, iteratorSymbol = $Symbol.iterator || "@@iterator", asyncIteratorSymbol = $Symbol.asyncIterator || "@@asyncIterator", toStringTagSymbol = $Symbol.toStringTag || "@@toStringTag"; function define(obj, key, value) { return Object.defineProperty(obj, key, { value: value, enumerable: !0, configurable: !0, writable: !0 }), obj[key]; } try { define({}, ""); } catch (err) { define = function define(obj, key, value) { return obj[key] = value; }; } function wrap(innerFn, outerFn, self, tryLocsList) { var protoGenerator = outerFn && outerFn.prototype instanceof Generator ? outerFn : Generator, generator = Object.create(protoGenerator.prototype), context = new Context(tryLocsList || []); return generator._invoke = function (innerFn, self, context) { var state = "suspendedStart"; return function (method, arg) { if ("executing" === state) throw new Error("Generator is already running"); if ("completed" === state) { if ("throw" === method) throw arg; return doneResult(); } for (context.method = method, context.arg = arg;;) { var delegate = context.delegate; if (delegate) { var delegateResult = maybeInvokeDelegate(delegate, context); if (delegateResult) { if (delegateResult === ContinueSentinel) continue; return delegateResult; } } if ("next" === context.method) context.sent = context._sent = context.arg;else if ("throw" === context.method) { if ("suspendedStart" === state) throw state = "completed", context.arg; context.dispatchException(context.arg); } else "return" === context.method && context.abrupt("return", context.arg); state = "executing"; var record = tryCatch(innerFn, self, context); if ("normal" === record.type) { if (state = context.done ? "completed" : "suspendedYield", record.arg === ContinueSentinel) continue; return { value: record.arg, done: context.done }; } "throw" === record.type && (state = "completed", context.method = "throw", context.arg = record.arg); } }; }(innerFn, self, context), generator; } function tryCatch(fn, obj, arg) { try { return { type: "normal", arg: fn.call(obj, arg) }; } catch (err) { return { type: "throw", arg: err }; } } exports.wrap = wrap; var ContinueSentinel = {}; function Generator() {} function GeneratorFunction() {} function GeneratorFunctionPrototype() {} var IteratorPrototype = {}; define(IteratorPrototype, iteratorSymbol, function () { return this; }); var getProto = Object.getPrototypeOf, NativeIteratorPrototype = getProto && getProto(getProto(values([]))); NativeIteratorPrototype && NativeIteratorPrototype !== Op && hasOwn.call(NativeIteratorPrototype, iteratorSymbol) && (IteratorPrototype = NativeIteratorPrototype); var Gp = GeneratorFunctionPrototype.prototype = Generator.prototype = Object.create(IteratorPrototype); function defineIteratorMethods(prototype) { ["next", "throw", "return"].forEach(function (method) { define(prototype, method, function (arg) { return this._invoke(method, arg); }); }); } function AsyncIterator(generator, PromiseImpl) { function invoke(method, arg, resolve, reject) { var record = tryCatch(generator[method], generator, arg); if ("throw" !== record.type) { var result = record.arg, value = result.value; return value && "object" == _typeof(value) && hasOwn.call(value, "__await") ? PromiseImpl.resolve(value.__await).then(function (value) { invoke("next", value, resolve, reject); }, function (err) { invoke("throw", err, resolve, reject); }) : PromiseImpl.resolve(value).then(function (unwrapped) { result.value = unwrapped, resolve(result); }, function (error) { return invoke("throw", error, resolve, reject); }); } reject(record.arg); } var previousPromise; this._invoke = function (method, arg) { function callInvokeWithMethodAndArg() { return new PromiseImpl(function (resolve, reject) { invoke(method, arg, resolve, reject); }); } return previousPromise = previousPromise ? previousPromise.then(callInvokeWithMethodAndArg, callInvokeWithMethodAndArg) : callInvokeWithMethodAndArg(); }; } function maybeInvokeDelegate(delegate, context) { var method = delegate.iterator[context.method]; if (undefined === method) { if (context.delegate = null, "throw" === context.method) { if (delegate.iterator["return"] && (context.method = "return", context.arg = undefined, maybeInvokeDelegate(delegate, context), "throw" === context.method)) return ContinueSentinel; context.method = "throw", context.arg = new TypeError("The iterator does not provide a 'throw' method"); } return ContinueSentinel; } var record = tryCatch(method, delegate.iterator, context.arg); if ("throw" === record.type) return context.method = "throw", context.arg = record.arg, context.delegate = null, ContinueSentinel; var info = record.arg; return info ? info.done ? (context[delegate.resultName] = info.value, context.next = delegate.nextLoc, "return" !== context.method && (context.method = "next", context.arg = undefined), context.delegate = null, ContinueSentinel) : info : (context.method = "throw", context.arg = new TypeError("iterator result is not an object"), context.delegate = null, ContinueSentinel); } function pushTryEntry(locs) { var entry = { tryLoc: locs[0] }; 1 in locs && (entry.catchLoc = locs[1]), 2 in locs && (entry.finallyLoc = locs[2], entry.afterLoc = locs[3]), this.tryEntries.push(entry); } function resetTryEntry(entry) { var record = entry.completion || {}; record.type = "normal", delete record.arg, entry.completion = record; } function Context(tryLocsList) { this.tryEntries = [{ tryLoc: "root" }], tryLocsList.forEach(pushTryEntry, this), this.reset(!0); } function values(iterable) { if (iterable) { var iteratorMethod = iterable[iteratorSymbol]; if (iteratorMethod) return iteratorMethod.call(iterable); if ("function" == typeof iterable.next) return iterable; if (!isNaN(iterable.length)) { var i = -1, next = function next() { for (; ++i < iterable.length;) { if (hasOwn.call(iterable, i)) return next.value = iterable[i], next.done = !1, next; } return next.value = undefined, next.done = !0, next; }; return next.next = next; } } return { next: doneResult }; } function doneResult() { return { value: undefined, done: !0 }; } return GeneratorFunction.prototype = GeneratorFunctionPrototype, define(Gp, "constructor", GeneratorFunctionPrototype), define(GeneratorFunctionPrototype, "constructor", GeneratorFunction), GeneratorFunction.displayName = define(GeneratorFunctionPrototype, toStringTagSymbol, "GeneratorFunction"), exports.isGeneratorFunction = function (genFun) { var ctor = "function" == typeof genFun && genFun.constructor; return !!ctor && (ctor === GeneratorFunction || "GeneratorFunction" === (ctor.displayName || ctor.name)); }, exports.mark = function (genFun) { return Object.setPrototypeOf ? Object.setPrototypeOf(genFun, GeneratorFunctionPrototype) : (genFun.__proto__ = GeneratorFunctionPrototype, define(genFun, toStringTagSymbol, "GeneratorFunction")), genFun.prototype = Object.create(Gp), genFun; }, exports.awrap = function (arg) { return { __await: arg }; }, defineIteratorMethods(AsyncIterator.prototype), define(AsyncIterator.prototype, asyncIteratorSymbol, function () { return this; }), exports.AsyncIterator = AsyncIterator, exports.async = function (innerFn, outerFn, self, tryLocsList, PromiseImpl) { void 0 === PromiseImpl && (PromiseImpl = Promise); var iter = new AsyncIterator(wrap(innerFn, outerFn, self, tryLocsList), PromiseImpl); return exports.isGeneratorFunction(outerFn) ? iter : iter.next().then(function (result) { return result.done ? result.value : iter.next(); }); }, defineIteratorMethods(Gp), define(Gp, toStringTagSymbol, "Generator"), define(Gp, iteratorSymbol, function () { return this; }), define(Gp, "toString", function () { return "[object Generator]"; }), exports.keys = function (object) { var keys = []; for (var key in object) { keys.push(key); } return keys.reverse(), function next() { for (; keys.length;) { var key = keys.pop(); if (key in object) return next.value = key, next.done = !1, next; } return next.done = !0, next; }; }, exports.values = values, Context.prototype = { constructor: Context, reset: function reset(skipTempReset) { if (this.prev = 0, this.next = 0, this.sent = this._sent = undefined, this.done = !1, this.delegate = null, this.method = "next", this.arg = undefined, this.tryEntries.forEach(resetTryEntry), !skipTempReset) for (var name in this) { "t" === name.charAt(0) && hasOwn.call(this, name) && !isNaN(+name.slice(1)) && (this[name] = undefined); } }, stop: function stop() { this.done = !0; var rootRecord = this.tryEntries[0].completion; if ("throw" === rootRecord.type) throw rootRecord.arg; return this.rval; }, dispatchException: function dispatchException(exception) { if (this.done) throw exception; var context = this; function handle(loc, caught) { return record.type = "throw", record.arg = exception, context.next = loc, caught && (context.method = "next", context.arg = undefined), !!caught; } for (var i = this.tryEntries.length - 1; i >= 0; --i) { var entry = this.tryEntries[i], record = entry.completion; if ("root" === entry.tryLoc) return handle("end"); if (entry.tryLoc <= this.prev) { var hasCatch = hasOwn.call(entry, "catchLoc"), hasFinally = hasOwn.call(entry, "finallyLoc"); if (hasCatch && hasFinally) { if (this.prev < entry.catchLoc) return handle(entry.catchLoc, !0); if (this.prev < entry.finallyLoc) return handle(entry.finallyLoc); } else if (hasCatch) { if (this.prev < entry.catchLoc) return handle(entry.catchLoc, !0); } else { if (!hasFinally) throw new Error("try statement without catch or finally"); if (this.prev < entry.finallyLoc) return handle(entry.finallyLoc); } } } }, abrupt: function abrupt(type, arg) { for (var i = this.tryEntries.length - 1; i >= 0; --i) { var entry = this.tryEntries[i]; if (entry.tryLoc <= this.prev && hasOwn.call(entry, "finallyLoc") && this.prev < entry.finallyLoc) { var finallyEntry = entry; break; } } finallyEntry && ("break" === type || "continue" === type) && finallyEntry.tryLoc <= arg && arg <= finallyEntry.finallyLoc && (finallyEntry = null); var record = finallyEntry ? finallyEntry.completion : {}; return record.type = type, record.arg = arg, finallyEntry ? (this.method = "next", this.next = finallyEntry.finallyLoc, ContinueSentinel) : this.complete(record); }, complete: function complete(record, afterLoc) { if ("throw" === record.type) throw record.arg; return "break" === record.type || "continue" === record.type ? this.next = record.arg : "return" === record.type ? (this.rval = this.arg = record.arg, this.method = "return", this.next = "end") : "normal" === record.type && afterLoc && (this.next = afterLoc), ContinueSentinel; }, finish: function finish(finallyLoc) { for (var i = this.tryEntries.length - 1; i >= 0; --i) { var entry = this.tryEntries[i]; if (entry.finallyLoc === finallyLoc) return this.complete(entry.completion, entry.afterLoc), resetTryEntry(entry), ContinueSentinel; } }, "catch": function _catch(tryLoc) { for (var i = this.tryEntries.length - 1; i >= 0; --i) { var entry = this.tryEntries[i]; if (entry.tryLoc === tryLoc) { var record = entry.completion; if ("throw" === record.type) { var thrown = record.arg; resetTryEntry(entry); } return thrown; } } throw new Error("illegal catch attempt"); }, delegateYield: function delegateYield(iterable, resultName, nextLoc) { return this.delegate = { iterator: values(iterable), resultName: resultName, nextLoc: nextLoc }, "next" === this.method && (this.arg = undefined), ContinueSentinel; } }, exports; }
@@ -2975,6 +3118,7 @@ function _regeneratorRuntime() { "use strict"; /*! regenerator-runtime -- Copyri
 function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
 
 function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
+
 
 
  // Keyboard input events listener
@@ -2993,15 +3137,13 @@ document.addEventListener('keydown', /*#__PURE__*/function () {
             break;
 
           case 5:
-            console.clear(); // Clear the console
-
+            console.clear();
             return _context.abrupt("break", 16);
 
           case 7:
             timeout = setTimeout(function () {
               debugger;
-            }, 0); // Pause page after 0 ms
-
+            }, 0);
             return _context.abrupt("break", 16);
 
           case 9:
@@ -3028,86 +3170,59 @@ document.addEventListener('keydown', /*#__PURE__*/function () {
   return function (_x) {
     return _ref.apply(this, arguments);
   };
-}(), false); // ----------------------------------------------------------------------------------------------------
-
-var blurredThumbnailStyle = CreateStyleElement("blurredThumbnailStyle");
-var themeColorStyle = CreateStyleElement("themeColorStyle");
-var favicons = null;
-var userAvatar = null; // Create style element and add it to the DOM
-
-function CreateStyleElement(id) {
-  var myStyle = document.createElement('style');
-  myStyle.id = id;
-  document.getElementsByTagName('head')[0].appendChild(myStyle);
-  return myStyle;
-}
-
-chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
-  var type = request.type,
-      parameters = request.parameters;
-
-  switch (type) {
-    case "toggleThumbnails":
-      toggleThumbnails(request.state);
-      break;
-
-    case "themeColorUpdate":
-      themeColorUpdate(request.themeColor);
-      break;
-
-    case "toggleAvatarFavicon":
-      toggleAvatarFavicon(request.state);
-      break;
-
-    case "downloadSubtitles":
-      _classes_crp_api_js__WEBPACK_IMPORTED_MODULE_1__["default"].SUBTITLES.then(function (subtitles) {
-        downloadFile(subtitles.url, "subtitles.".concat(subtitles.format));
-      });
-      break;
-
-    case "getOpeningTimes":
-      getOpeningTimes(parameters.videoDuration);
-      sendResponse({
-        response: parameters.videoDuration
-      });
-      break;
-
-    case "detectOpenings":
-      detectOpenings(parameters, sendResponse); // Pass the sendResponse callback as parameter
-
-      break;
-  }
-
-  return true; // Tell Chrome that response is sent asynchronously
-}); // Load data from the chrome storage, and call needed functions
+}(), false);
+/* 
+ * Initialize CrunchyrollPlus
+ * Load data from the chrome storage
+ */
 
 (function () {
   var _InitPage = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee2() {
-    var blurredThumbnails, themeColor, avatarFavicon;
     return _regeneratorRuntime().wrap(function _callee2$(_context2) {
       while (1) {
         switch (_context2.prev = _context2.next) {
           case 0:
-            _context2.next = 2;
+            _context2.t0 = _classes_page_style_js__WEBPACK_IMPORTED_MODULE_2__["default"];
+            _context2.next = 3;
             return _classes_message_api_js__WEBPACK_IMPORTED_MODULE_0__["default"].getStorage("blurredThumbnails");
 
-          case 2:
-            blurredThumbnails = _context2.sent;
-            toggleThumbnails(blurredThumbnails);
-            _context2.next = 6;
-            return _classes_message_api_js__WEBPACK_IMPORTED_MODULE_0__["default"].getStorage("themeColor");
+          case 3:
+            _context2.t1 = _context2.sent;
+            _context2.t2 = {
+              state: _context2.t1
+            };
 
-          case 6:
-            themeColor = _context2.sent;
-            themeColorUpdate(themeColor);
+            _context2.t0.set.call(_context2.t0, "toggleThumbnails", _context2.t2);
+
+            _context2.t3 = _classes_page_style_js__WEBPACK_IMPORTED_MODULE_2__["default"];
+            _context2.t4 = themeColorStyle;
             _context2.next = 10;
             return _classes_message_api_js__WEBPACK_IMPORTED_MODULE_0__["default"].getStorage("avatarFavicon");
 
           case 10:
-            avatarFavicon = _context2.sent;
-            toggleAvatarFavicon(avatarFavicon);
+            _context2.t5 = _context2.sent;
+            _context2.t6 = {
+              themeColorStyle: _context2.t4,
+              state: _context2.t5
+            };
 
-          case 12:
+            _context2.t3.set.call(_context2.t3, "toggleAvatarFavicon", _context2.t6);
+
+            _context2.t7 = _classes_page_style_js__WEBPACK_IMPORTED_MODULE_2__["default"];
+            _context2.t8 = themeColorStyle;
+            _context2.next = 17;
+            return _classes_message_api_js__WEBPACK_IMPORTED_MODULE_0__["default"].getStorage("themeColor");
+
+          case 17:
+            _context2.t9 = _context2.sent;
+            _context2.t10 = {
+              themeColorStyle: _context2.t8,
+              color: _context2.t9
+            };
+
+            _context2.t7.set.call(_context2.t7, "updateThemeColor", _context2.t10);
+
+          case 20:
           case "end":
             return _context2.stop();
         }
@@ -3120,93 +3235,50 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
   }
 
   return InitPage;
-})()(); // ---------------------------------------------------------- //
-// Functions called on page initialization and edit in Popup  //
-// ---------------------------------------------------------- //
+})()();
+/*
+ * Listen for background-script messages
+ */
 
-function toggleThumbnails(state) {
-  if (state) {
-    // CSS to blur images
-    blurredThumbnailStyle.innerHTML = "\n        .prev-next-episodes img,.episode-list img,.erc-up-next-section img {\n            filter: blur(20px);\n            -webkit-filter: blur(20px);\n            -moz-filter: blur(20px);\n            -o-filter: blur(20px);\n            -ms-filter: blur(20px);\n        }";
-  } else {
-    blurredThumbnailStyle.innerHTML = "";
-  }
-}
+chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
+  var type = request.type,
+      parameters = request.parameters;
 
-function themeColorUpdate(color) {
-  // CSS to change theme color
-  // Cannot change the player bar color, because the default color is given in a style="" property
-  themeColorStyle.innerHTML = "\n    .erc-logo .logo-icon {\n        fill: ".concat(color, ";\n    }\n    ::selection,\n    .erc-current-media-info .show-title-link,\n    .info-tag--is-six--oJ2yw,\n    svg[data-t=\"loader-svg\"] > path,\n    .erc-user-menu-nav-item.state-active,\n    .navigation-link.state-active > span,\n    .erc-menu-item-title.state-active,\n    .submenu-item-title.state-active > h5,\n    .activate-device-nav-link > span,\n    .button--is-type-one-weak--KLvCX {\n        color: ").concat(color, ";\n    }\n    .progress-bar__progress--PhR3h,\n    .button--is-type-one--3uIzT,\n    .tabs-item--is-active--66UFY:after,\n    .carousel-tabs__tab--is-active--OWPNm > div:before {\n        background-color: ").concat(color, ";\n    }\n    .button--is-type-one--3uIzT:hover {\n        background-color: ").concat(increaseBrightness(color, 20), ";\n    }\n    .button--is-type-one-weak--KLvCX:hover {\n        color: ").concat(increaseBrightness(color, 20), ";\n    } \n    ");
-  /* Home gradient lines :
-  .feed-divider--is-even--dCcSs {
-      background-image: linear-gradient(to var(--cr-start-direction),${increaseBrightness(color, 75)},${color});
-  }
-  */
-  // https://stackoverflow.com/a/33385707
-
-  function increaseBrightness(color, percent) {
-    var ctx = document.createElement('canvas').getContext('2d');
-    ctx.fillStyle = color;
-    ctx.fillRect(0, 0, 1, 1);
-    var color = ctx.getImageData(0, 0, 1, 1);
-    var r = color.data[0] + Math.floor(percent / 100 * 255);
-    var g = color.data[1] + Math.floor(percent / 100 * 255);
-    var b = color.data[2] + Math.floor(percent / 100 * 255);
-    return 'rgb(' + r + ',' + g + ',' + b + ')';
-  }
-}
-
-function toggleAvatarFavicon(state) {
-  // Init favicon nodes
-  if (favicons == null) {
-    favicons = document.querySelectorAll('link[rel][type="image/png"]');
-  }
-
-  if (state) {
-    // Init user avatar asynchronously
-    if (userAvatar == null) {
-      waitForElementLoaded('div[class="erc-header-avatar"] img[class="content-image__image--7tGlg"]').then(function (myImg) {
-        userAvatar = myImg.src; // Then set user avatar as favicon
-
-        favicons.forEach(function (favicon) {
-          favicon.href = userAvatar;
-        });
+  switch (type) {
+    case "toggleThumbnails":
+      _classes_page_style_js__WEBPACK_IMPORTED_MODULE_2__["default"].set("toggleThumbnails", {
+        state: parameters.state
       });
-    } else {
-      // Set user avatar as favicon
-      favicons.forEach(function (favicon) {
-        favicon.href = userAvatar;
+      break;
+
+    case "toggleAvatarFavicon":
+      _classes_page_style_js__WEBPACK_IMPORTED_MODULE_2__["default"].set("toggleAvatarFavicon", {
+        state: parameters.state
       });
-    }
-  } else {
-    // Set default favicon
-    favicons.forEach(function (favicon) {
-      favicon.href = "https://static.crunchyroll.com/cxweb/assets/img/favicons/favicon-".concat(favicon.sizes, ".png");
-    });
+      break;
+
+    case "themeColorUpdate":
+      _classes_page_style_js__WEBPACK_IMPORTED_MODULE_2__["default"].set("updateThemeColor", {
+        themeColorStyle: themeColorStyle,
+        color: parameters.themeColor
+      });
+      break;
+
+    case "downloadSubtitles":
+      _classes_crp_api_js__WEBPACK_IMPORTED_MODULE_1__["default"].SUBTITLES.then(function (subtitles) {
+        downloadFile(subtitles.url, "subtitles.".concat(subtitles.format));
+      });
+      break;
+
+    case "detectOpenings":
+      detectOpenings(parameters, sendResponse); // Pass the sendResponse callback as parameter
+
+      break;
   }
-} // Promise for document.querySelector(selector) : https://stackoverflow.com/a/61511955
 
-
-function waitForElementLoaded(selector) {
-  return new Promise(function (resolve) {
-    if (document.querySelector(selector)) {
-      return resolve(document.querySelector(selector));
-    }
-
-    var observer = new MutationObserver(function (mutations) {
-      if (document.querySelector(selector)) {
-        resolve(document.querySelector(selector));
-        observer.disconnect();
-      }
-    });
-    observer.observe(document.body, {
-      childList: true,
-      subtree: true
-    });
-  });
-} // File can only be downloaded from the background script
+  return true; // Tell Chrome that response is sent asynchronously
+}); // File can only be downloaded from the background script
 // -> File format seems not working for security reasons
-
 
 function downloadFile(url, filename) {
   _classes_message_api_js__WEBPACK_IMPORTED_MODULE_0__["default"].sendToBackground("downloadFile", {
@@ -3215,75 +3287,35 @@ function downloadFile(url, filename) {
       filename: filename
     }
   });
-} // Detect openings in the video
-
-
-function getOpeningTimes(_x2) {
-  return _getOpeningTimes.apply(this, arguments);
 }
 
-function _getOpeningTimes() {
-  _getOpeningTimes = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee3(videoDuration) {
-    var openingDuration;
-    return _regeneratorRuntime().wrap(function _callee3$(_context3) {
-      while (1) {
-        switch (_context3.prev = _context3.next) {
-          case 0:
-            _context3.next = 2;
-            return console.log("getOpeningTimes", videoDuration);
-
-          case 2:
-            _context3.next = 4;
-            return _classes_message_api_js__WEBPACK_IMPORTED_MODULE_0__["default"].getStorage("openingDuration");
-
-          case 4:
-            openingDuration = _context3.sent;
-            _classes_crp_api_js__WEBPACK_IMPORTED_MODULE_1__["default"].OPENINGS(videoDuration, openingDuration).then(function (response) {
-              // Send to background, then let crp-player handle openings skipper
-              chrome.runtime.sendMessage({
-                action: "definePlayerOpenings",
-                openingTimes: response
-              });
-              /* I didn't succeed, but it should be possible to send a response rather than creating a new request */
-            });
-
-          case 6:
-          case "end":
-            return _context3.stop();
-        }
-      }
-    }, _callee3);
-  }));
-  return _getOpeningTimes.apply(this, arguments);
-}
-
-function detectOpenings(_x3, _x4) {
+function detectOpenings(_x2, _x3) {
   return _detectOpenings.apply(this, arguments);
 }
 
 function _detectOpenings() {
-  _detectOpenings = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee4(_ref2, sendResponse) {
+  _detectOpenings = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee3(_ref2, sendResponse) {
     var openingDuration, videoDuration, openings;
-    return _regeneratorRuntime().wrap(function _callee4$(_context4) {
+    return _regeneratorRuntime().wrap(function _callee3$(_context3) {
       while (1) {
-        switch (_context4.prev = _context4.next) {
+        switch (_context3.prev = _context3.next) {
           case 0:
             openingDuration = _ref2.openingDuration, videoDuration = _ref2.videoDuration;
-            _context4.next = 3;
+            _context3.next = 3;
             return _classes_crp_api_js__WEBPACK_IMPORTED_MODULE_1__["default"].OPENINGS(videoDuration, openingDuration);
 
           case 3:
-            openings = _context4.sent;
+            openings = _context3.sent;
             sendResponse({
               response: openings
             });
 
           case 5:
           case "end":
-            return _context4.stop();
+            return _context3.stop();
         }
       }
-    }, _callee4);
+    }, _callee3);
   }));
   return _detectOpenings.apply(this, arguments);
 }

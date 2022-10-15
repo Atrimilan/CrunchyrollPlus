@@ -12,7 +12,7 @@ async function InitStorage() {
         'moveBackwardTime': (result.moveBackwardTime === undefined) ? 5 : result.moveBackwardTime,    // Time to move backward
         'themeColor': (result.themeColor === undefined) ? "#f47521" : result.themeColor,  // Set website theme color
         'blurredThumbnails': (result.blurredThumbnails === undefined) ? true : result.blurredThumbnails, // Blur episode thumbnails
-        'showPlayerThumbnail': (result.blurredThumbnails === undefined) ? true : result.showPlayerThumbnail,  // Progress bar thumbnail
+        'showPlayerThumbnail': (result.showPlayerThumbnail === undefined) ? true : result.showPlayerThumbnail,  // Progress bar thumbnail
         'avatarFavicon': (result.avatarFavicon === undefined) ? false : result.avatarFavicon, // Use avatar as favicon
         'soundMultiplier': (result.soundMultiplier === undefined) ? 10 : result.soundMultiplier,   // Increase video player's sound
         'crpOpeningSkipper': (result.crpOpeningSkipper === undefined) ? true : result.crpOpeningSkipper,  // Use CRP opening skipper
@@ -29,7 +29,6 @@ function ResetStorage() {
 // Listen for messages from popup or content-script, and return the corresponding result
 chrome.runtime.onMessage.addListener(
     function (request, sender, sendResponse) {
-
         const { action, type, parameters } = request;
 
         switch (action) {
@@ -50,17 +49,6 @@ chrome.runtime.onMessage.addListener(
                 break;
             case "downloadFile":
                 chrome.downloads.download({ url, filename } = parameters);
-                break;
-
-            case "getOpeningTimes":
-                chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
-                    chrome.tabs.sendMessage(tabs[0].id, { type: "getOpeningTimes", videoDuration: request.videoDuration });
-                });
-                break;
-            case "definePlayerOpenings":
-                chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
-                    chrome.tabs.sendMessage(tabs[0].id, { type: "definePlayerOpenings", openingTimes: request.openingTimes });
-                });
                 break;
 
             default:
