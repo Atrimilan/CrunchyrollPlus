@@ -1,6 +1,6 @@
 
 chrome.runtime.onInstalled.addListener(() => {
-    chrome.storage.sync.get((result) => { console.log(result); });  // Log existing storage data to the console
+    chrome.storage.sync.get((result) => { console.log(result) });  // Log existing storage data to the console
     InitStorage();
 });
 
@@ -24,6 +24,18 @@ async function InitStorage() {
 function ResetStorage() {
     chrome.storage.sync.clear();
     InitStorage();
+}
+
+// On new updated/activated tab, toggle Popup if the current URL is a Crunchyroll URL
+chrome.tabs.onActivated.addListener(() => {
+    chrome.tabs.query({ currentWindow: true, active: true }, (tabs) => { togglePopup(tabs[0].url) });
+});
+chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => { togglePopup(tab.url) });
+
+function togglePopup(tabUrl) {
+    chrome.action.setPopup({    // Allow Popup on https://beta.crunchyroll.com and https://www.crunchyroll.com
+        popup: (/^https:\/\/(www|beta).crunchyroll.com/.test(tabUrl)) ? "../default_popup.html" : ""
+    });
 }
 
 // Listen for messages from popup or content-script, and return the corresponding result

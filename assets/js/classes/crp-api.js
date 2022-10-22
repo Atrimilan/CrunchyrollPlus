@@ -10,7 +10,8 @@ export default class API {
 
                 const appConfig = JSON.parse(text.match(/(?<=window.__APP_CONFIG__ = ){.*}/)[0]);
                 const accountAuthClientId = appConfig.cxApiParams.accountAuthClientId;
-                const apiDomain = appConfig.cxApiParams.apiDomain;
+                const apiDomain = location.origin; // appConfig.cxApiParams.apiDomain;
+                // In the new www.crunchyroll.com release, API domain remains beta.crunchyroll.com
 
                 return { apiDomain, accountAuthClientId, locale };
             })
@@ -32,7 +33,7 @@ export default class API {
                 })
                 .catch((error) => console.log("%cCannot get access_token", 'color:red;font-weight:bold'));
         });
-        
+
         return token;
     }
 
@@ -45,14 +46,14 @@ export default class API {
                 },
             })
                 .then((response) => response.json())
-                .then(({ cms_beta: { bucket, signature, policy, key_pair_id } }) => {
+                .then(({ cms_web: { bucket, signature, policy, key_pair_id } }) => {
                     return {
                         apiDomain, bucket, searchParams: {
                             locale, Signature: signature, Policy: policy, 'Key-Pair-Id': key_pair_id
                         }
                     };
                 })
-                .catch((error) => console.log("%cCannot get cms_beta", 'color:red;font-weight:bold'));
+                .catch((error) => console.log("%cCannot get cms_web", 'color:red;font-weight:bold'));
 
         }).then((response) => {
             return response;
@@ -92,13 +93,17 @@ export default class API {
 
             /* It would be nice to find the Stream ID in another way */
 
+            if (sP.locale === 'es-419') { sP.locale = 'es-LA' }
+            if (sP.locale === 'ar-SA') { sP.locale = 'ar-ME' }
+            if (sP.locale === 'pt-PT') { sP.locale = 'pt-BR' }  // pt-PT does not seem supported
+
             return fetch(`${apiDomain}/cms/v2${bucket}/videos/${streamId}/streams?
             locale=${sP.locale}&Signature=${sP.Signature}&Policy=${sP.Policy}&Key-Pair-Id=${sP['Key-Pair-Id']}`)
                 .then((response) => response.json())
                 .then((response) => {
                     return { stream: response, subtitleLocaleKey: sP.locale };
                 })
-                .catch((error) => console.log("%cCannot get current episode data", 'color:red;font-weight:bold'));
+                .catch((error) => console.log("%cCannot get current stream data", 'color:red;font-weight:bold'));
 
         }).then((response) => {
             return response;
@@ -110,9 +115,6 @@ export default class API {
     static get SUBTITLES() {
 
         const subtitles = this.STREAM.then(({ stream, subtitleLocaleKey }) => {
-
-            // Some language codes needs to be converted first, like 'es-419' to 'es-LA'
-
             return stream.subtitles[subtitleLocaleKey]; // Locale identifier is used as a JSON key ("subtitleLocaleKey" here)
 
         }).then(({ format, locale, url }) => {

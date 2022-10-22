@@ -183,7 +183,9 @@ var API = /*#__PURE__*/function () {
         var locale = initialState.localization.locale;
         var appConfig = JSON.parse(text.match(/(?<=window.__APP_CONFIG__ = ){.*}/)[0]);
         var accountAuthClientId = appConfig.cxApiParams.accountAuthClientId;
-        var apiDomain = appConfig.cxApiParams.apiDomain;
+        var apiDomain = location.origin; // appConfig.cxApiParams.apiDomain;
+        // In the new www.crunchyroll.com release, API domain remains beta.crunchyroll.com
+
         return {
           apiDomain: apiDomain,
           accountAuthClientId: accountAuthClientId,
@@ -239,11 +241,11 @@ var API = /*#__PURE__*/function () {
         }).then(function (response) {
           return response.json();
         }).then(function (_ref4) {
-          var _ref4$cms_beta = _ref4.cms_beta,
-              bucket = _ref4$cms_beta.bucket,
-              signature = _ref4$cms_beta.signature,
-              policy = _ref4$cms_beta.policy,
-              key_pair_id = _ref4$cms_beta.key_pair_id;
+          var _ref4$cms_web = _ref4.cms_web,
+              bucket = _ref4$cms_web.bucket,
+              signature = _ref4$cms_web.signature,
+              policy = _ref4$cms_web.policy,
+              key_pair_id = _ref4$cms_web.key_pair_id;
           return {
             apiDomain: apiDomain,
             bucket: bucket,
@@ -255,7 +257,7 @@ var API = /*#__PURE__*/function () {
             }
           };
         })["catch"](function (error) {
-          return console.log("%cCannot get cms_beta", 'color:red;font-weight:bold');
+          return console.log("%cCannot get cms_web", 'color:red;font-weight:bold');
         });
       }).then(function (response) {
         return response;
@@ -308,6 +310,19 @@ var API = /*#__PURE__*/function () {
 
         /* It would be nice to find the Stream ID in another way */
 
+        if (sP.locale === 'es-419') {
+          sP.locale = 'es-LA';
+        }
+
+        if (sP.locale === 'ar-SA') {
+          sP.locale = 'ar-ME';
+        }
+
+        if (sP.locale === 'pt-PT') {
+          sP.locale = 'pt-BR';
+        } // pt-PT does not seem supported
+
+
         return fetch("".concat(apiDomain, "/cms/v2").concat(bucket, "/videos/").concat(streamId, "/streams?\n            locale=").concat(sP.locale, "&Signature=").concat(sP.Signature, "&Policy=").concat(sP.Policy, "&Key-Pair-Id=").concat(sP['Key-Pair-Id'])).then(function (response) {
           return response.json();
         }).then(function (response) {
@@ -316,7 +331,7 @@ var API = /*#__PURE__*/function () {
             subtitleLocaleKey: sP.locale
           };
         })["catch"](function (error) {
-          return console.log("%cCannot get current episode data", 'color:red;font-weight:bold');
+          return console.log("%cCannot get current stream data", 'color:red;font-weight:bold');
         });
       }).then(function (response) {
         return response;
@@ -329,7 +344,6 @@ var API = /*#__PURE__*/function () {
       var subtitles = this.STREAM.then(function (_ref8) {
         var stream = _ref8.stream,
             subtitleLocaleKey = _ref8.subtitleLocaleKey;
-        // Some language codes needs to be converted first, like 'es-419' to 'es-LA'
         return stream.subtitles[subtitleLocaleKey]; // Locale identifier is used as a JSON key ("subtitleLocaleKey" here)
       }).then(function (_ref9) {
         var format = _ref9.format,
@@ -3266,7 +3280,7 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
 
     case "downloadSubtitles":
       _classes_crp_api_js__WEBPACK_IMPORTED_MODULE_1__["default"].SUBTITLES.then(function (subtitles) {
-        downloadFile(subtitles.url, "subtitles.".concat(subtitles.format));
+        downloadFile(subtitles.url, "subtitles_".concat(subtitles.locale, ".").concat(subtitles.format));
       });
       break;
 

@@ -53,7 +53,7 @@ chrome.runtime.onMessage.addListener(
                 PageStyle.set("updateThemeColor", { themeColorStyle, color: parameters.themeColor });
                 break;
             case "downloadSubtitles":
-                API.SUBTITLES.then((subtitles) => { downloadFile(subtitles.url, `subtitles.${subtitles.format}`); });
+                API.SUBTITLES.then((subtitles) => { downloadFile(subtitles.url, `subtitles_${subtitles.locale}.${subtitles.format}`); });
                 break;
             case "detectOpenings":
                 detectOpenings(parameters, sendResponse);   // Pass the sendResponse callback as parameter
