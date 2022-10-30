@@ -25,7 +25,7 @@ var themeColor;
 
 // Asynchronous player initializer
 (async function InitPlayer() {
-    
+
     // Initialize styles
     themeColor = await MessageAPI.getStorage('themeColor');
     PageStyle.set("togglePlayerThumbnail", { state: await MessageAPI.getStorage("showPlayerThumbnail") });
@@ -185,7 +185,7 @@ function changePlayBarColor(themeColor) {
     playerPointer.appendChild(crpPointer);
 
     var watchedTime = document.querySelector('div[data-testid="vilos-scrub_bar"]').children[0].children[0].children[0]
-        .children[1].children[0].children[0];  // They should hire someone to add ids wherever they are missing !
+        .children[1].children[0].children[0];
     watchedTime.style.visibility = "hidden";
 
     var crpWatchedTime = document.createElement('div');

@@ -17941,12 +17941,18 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
     toggleCRPSKipper: function toggleCRPSKipper(status) {
       this.crpOpeningSkipper = status;
       chrome.storage.sync.set({
-        crpOpeningSkipper: status
+        crpSkipper: {
+          enabled: status,
+          openingDuration: 90
+        }
       });
     },
     setOpeningDuration: function setOpeningDuration(value) {
       chrome.storage.sync.set({
-        openingDuration: value
+        crpSkipper: {
+          enabled: true,
+          openingDuration: value
+        }
       });
     }
   },
@@ -17956,6 +17962,8 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
     // Components need to be initialized in the Popup to their current status
     // They must be initialized asynchronously, <input> are not updated if the result is not awaited
     _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee2() {
+      var _yield$MessageAPI$get, enabled, openingDuration;
+
       return _regeneratorRuntime().wrap(function _callee2$(_context2) {
         while (1) {
           switch (_context2.prev = _context2.next) {
@@ -17974,19 +17982,16 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
               _this.soundMultiplier = (0, _context2.t0)(_context2.t1);
               _this.soundGainInfo = _this.soundMultiplier / 10 + 1;
               _context2.next = 11;
-              return _classes_message_api_js__WEBPACK_IMPORTED_MODULE_0__["default"].getStorage("crpOpeningSkipper");
+              return _classes_message_api_js__WEBPACK_IMPORTED_MODULE_0__["default"].getStorage("crpSkipper");
 
             case 11:
-              _this.crpOpeningSkipper = _context2.sent;
-              _context2.t2 = parseInt;
-              _context2.next = 15;
-              return _classes_message_api_js__WEBPACK_IMPORTED_MODULE_0__["default"].getStorage("openingDuration");
+              _yield$MessageAPI$get = _context2.sent;
+              enabled = _yield$MessageAPI$get.enabled;
+              openingDuration = _yield$MessageAPI$get.openingDuration;
+              _this.crpOpeningSkipper = enabled;
+              _this.openingDuration = parseInt(openingDuration);
 
-            case 15:
-              _context2.t3 = _context2.sent;
-              _this.openingDuration = (0, _context2.t2)(_context2.t3);
-
-            case 17:
+            case 16:
             case "end":
               return _context2.stop();
           }

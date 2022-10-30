@@ -15,8 +15,6 @@ async function InitStorage() {
         'showPlayerThumbnail': (result.showPlayerThumbnail === undefined) ? true : result.showPlayerThumbnail,  // Progress bar thumbnail
         'avatarFavicon': (result.avatarFavicon === undefined) ? false : result.avatarFavicon, // Use avatar as favicon
         'soundMultiplier': (result.soundMultiplier === undefined) ? 10 : result.soundMultiplier,   // Increase video player's sound
-        'crpOpeningSkipper': (result.crpOpeningSkipper === undefined) ? true : result.crpOpeningSkipper,  // Use CRP opening skipper
-        'openingDuration': (result.openingDuration === undefined) ? 90 : result.openingDuration,   // Opening duration to skip (1:30 here)
         'crpSkipper': (result.crpSkipper === undefined) ? { enabled: true, openingDuration: 90 } : result.crpSkipper,
     });
 }
@@ -45,7 +43,7 @@ chrome.runtime.onMessage.addListener(
 
         switch (action) {
 
-            // Generic functions from message-api.js
+            // Functions from message-api.js
             case "getStorage":
                 chrome.storage.sync.get([type], (result) => { sendResponse({ response: result[type] }) });
                 break;

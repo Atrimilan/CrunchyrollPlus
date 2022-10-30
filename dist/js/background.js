@@ -55,10 +55,6 @@ function _InitStorage() {
               // Use avatar as favicon
               'soundMultiplier': result.soundMultiplier === undefined ? 10 : result.soundMultiplier,
               // Increase video player's sound
-              'crpOpeningSkipper': result.crpOpeningSkipper === undefined ? true : result.crpOpeningSkipper,
-              // Use CRP opening skipper
-              'openingDuration': result.openingDuration === undefined ? 90 : result.openingDuration,
-              // Opening duration to skip (1:30 here)
               'crpSkipper': result.crpSkipper === undefined ? {
                 enabled: true,
                 openingDuration: 90
@@ -109,7 +105,7 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
       parameters = request.parameters;
 
   switch (action) {
-    // Generic functions from message-api.js
+    // Functions from message-api.js
     case "getStorage":
       chrome.storage.sync.get([type], function (result) {
         sendResponse({

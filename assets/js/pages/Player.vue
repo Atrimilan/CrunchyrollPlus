@@ -73,10 +73,10 @@ export default {
         },
         toggleCRPSKipper(status) {
             this.crpOpeningSkipper = status;
-            chrome.storage.sync.set({ crpOpeningSkipper: status });
+            chrome.storage.sync.set({ crpSkipper: { enabled: status, openingDuration: 90 } });
         },
         setOpeningDuration(value){
-            chrome.storage.sync.set({ openingDuration: value });
+            chrome.storage.sync.set({ crpSkipper: { enabled: true, openingDuration: value } });
         }
     },
     mounted() {
@@ -87,8 +87,9 @@ export default {
             this.playerThumbnailState = await MessageAPI.getStorage("showPlayerThumbnail");
             this.soundMultiplier = parseInt(await MessageAPI.getStorage("soundMultiplier"));
             this.soundGainInfo = this.soundMultiplier / 10  + 1;
-            this.crpOpeningSkipper = await MessageAPI.getStorage("crpOpeningSkipper");
-            this.openingDuration = parseInt(await MessageAPI.getStorage("openingDuration"));
+            const { enabled, openingDuration } = await MessageAPI.getStorage("crpSkipper");
+            this.crpOpeningSkipper = enabled;
+            this.openingDuration = parseInt(openingDuration);
         })();
     },
     watch: {

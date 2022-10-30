@@ -155,7 +155,7 @@ export default class API {
                             if (data.section === "Events") {
 
                                 var prevEnd = "00:00:00.00";
-                                const regex = new RegExp("^(sign|credits|crédits)$");   // Excluded words
+                                const regex = new RegExp("^(sign|credits|crédits|op|ed)$");   // Excluded words
 
                                 data.body.forEach(({ key, value }, index) => {  // For each dialogue
 
@@ -164,7 +164,6 @@ export default class API {
 
                                         const prevEndSeconds = toSeconds(prevEnd);
                                         const startSeconds = toSeconds(value.Start);
-
                                         if ((startSeconds - prevEndSeconds) >= openingDuration) {
                                             openings.push({ "start": prevEndSeconds + 1, "end": startSeconds - 1, "start_full": prevEnd, "end_full": value.Start });
                                             console.log("Opening detected from " + prevEnd + " to " + value.Start + ", duration : " + (startSeconds - prevEndSeconds) + "s");

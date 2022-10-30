@@ -98,12 +98,12 @@ function updateThemeColor(color) {
 
 var favicons = null;
 var userAvatar = null;
-function toggleAvatarFavicon(state) {
+async function toggleAvatarFavicon(state) {
     // Set user avatar as favicon
     if (state) {
-        if (userAvatar == null) {
+        if (userAvatar === null) {
             favicons = document.querySelectorAll('link[rel][type="image/png"]');
-            waitForElement('div[class="erc-header-avatar"] img[class="content-image__image--7tGlg"]')
+            await waitForElement('div[class="erc-header-avatar"] img[class="content-image__image--7tGlg"]')
                 .then(myImg => { userAvatar = myImg.src }); // Init user avatar image asynchronously
         }
         favicons.forEach(favicon => { favicon.href = userAvatar });
