@@ -437,7 +437,7 @@ var SkipperManager = /*#__PURE__*/function () {
     key: "initOpeningSkipper",
     value: function () {
       var _initOpeningSkipper = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee(videoPlayer, skipperParent) {
-        var _yield$MessageAPI$get, enabled, openingDuration, defaultSkipper, opList, createStyleElement, startListeningVideoPlayer;
+        var _yield$MessageAPI$get, enabled, openingDuration, opList, defaultSkipper, createStyleElement, startListeningVideoPlayer;
 
         return _regeneratorRuntime().wrap(function _callee$(_context) {
           while (1) {
@@ -446,7 +446,7 @@ var SkipperManager = /*#__PURE__*/function () {
                 startListeningVideoPlayer = function _startListeningVideoP(openings, opDuration) {
                   openingList = openings; // Now used as a global variable
 
-                  var remainingTimeSec;
+                  var remainingTimeSec, expectedTimeSec;
                   video.addEventListener("timeupdate", function () {
                     var time = Math.round(this.currentTime);
                     openingList.forEach(function (op, index) {
@@ -461,6 +461,8 @@ var SkipperManager = /*#__PURE__*/function () {
                         remainingTimeSec = end - time > opDuration ? opDuration : end - time;
                         var remainingTime = new Date(remainingTimeSec * 1000).toISOString().substring(14, 19);
                         crpSkipper.querySelector('#' + skipperTimerId).innerText = "(".concat(remainingTime, ")"); // Update remaining time
+
+                        expectedTimeSec = video.currentTime + ~~remainingTimeSec; // Time expected when the user click on the skipper
 
                         if (op.handler === "none") {
                           enableSkipper();
@@ -487,6 +489,7 @@ var SkipperManager = /*#__PURE__*/function () {
                       }
 
                       function disableSkipper() {
+                        removeSkipperEvents();
                         op.handler = "none"; // Stop handling
 
                         crpSkipper.style.opacity = 0;
@@ -494,15 +497,26 @@ var SkipperManager = /*#__PURE__*/function () {
                           crpSkipper.style.visibility = 'collapse';
                         }, 300); // Wait for opacity transition (0.3s)
                       }
+                      /* --- Events --- */
+
+
+                      function click() {
+                        video.currentTime = expectedTimeSec;
+                      }
+
+                      function mouseover() {
+                        crpSkipper.style.opacity = 1;
+                      }
 
                       function addSkipperEvents() {
-                        crpSkipper.addEventListener('click', function () {
-                          video.currentTime += ~~remainingTimeSec;
-                        }); // Skip the opening
+                        crpSkipper.addEventListener('click', click); // Skip the opening
 
-                        crpSkipper.addEventListener('mouseover', function () {
-                          crpSkipper.style.opacity = 1;
-                        }); // Don't hide on hover
+                        crpSkipper.addEventListener('mouseover', mouseover); // Don't hide on hover
+                      }
+
+                      function removeSkipperEvents() {
+                        crpSkipper.removeEventListener('click', click);
+                        crpSkipper.removeEventListener('mouseover', mouseover);
                       }
                     });
                   }, false);
@@ -526,23 +540,26 @@ var SkipperManager = /*#__PURE__*/function () {
                 openingDuration = _yield$MessageAPI$get.openingDuration;
 
                 if (!enabled) {
-                  _context.next = 16;
+                  _context.next = 15;
                   break;
                 }
 
-                // Hide default opening skipper
-                defaultSkipper = createStyleElement("hideDefaultSkipper");
-                defaultSkipper.innerHTML = " div[data-testid=\"skipButton\"], #skipButton { display:none; } "; // Openings need to be detected from main page content-script to avoid CORS restrictions when accessing subtitles links
-
-                _context.next = 13;
+                _context.next = 11;
                 return _classes_message_api_js__WEBPACK_IMPORTED_MODULE_0__["default"].sendToContentScripts("detectOpenings", {
                   openingDuration: openingDuration,
                   videoDuration: video.duration
                 });
 
-              case 13:
+              case 11:
                 opList = _context.sent;
-                // Create a new skipper for each opening
+
+                // Hide default opening skipper if any opening is found
+                if (opList.length != 0) {
+                  defaultSkipper = createStyleElement("hideDefaultSkipper");
+                  defaultSkipper.innerHTML = " div[data-testid=\"skipButton\"], #skipButton { display:none; } ";
+                } // Create a new skipper for each opening
+
+
                 opList.forEach(function (op, index) {
                   var skipper = new _classes_skipper_js__WEBPACK_IMPORTED_MODULE_1__["default"](index, skipperParent);
                   crpSkipperList.push(skipper.crpSkipper);
@@ -552,10 +569,10 @@ var SkipperManager = /*#__PURE__*/function () {
                 });
                 startListeningVideoPlayer(opList, openingDuration);
 
-              case 16:
+              case 15:
                 ;
 
-              case 17:
+              case 16:
               case "end":
                 return _context.stop();
             }

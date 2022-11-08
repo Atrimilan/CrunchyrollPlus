@@ -161,7 +161,6 @@ export default class API {
 
                                     // Check if interval between two dialogues can contain an opening
                                     if (key == "Dialogue" && !regex.test(value.Name.toLowerCase())) {
-
                                         const prevEndSeconds = toSeconds(prevEnd);
                                         const startSeconds = toSeconds(value.Start);
                                         if ((startSeconds - prevEndSeconds) >= openingDuration) {

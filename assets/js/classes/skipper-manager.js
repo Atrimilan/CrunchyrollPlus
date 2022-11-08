@@ -15,13 +15,14 @@ export default class SkipperManager {
         var { enabled, openingDuration } = await MessageAPI.getStorage("crpSkipper");
 
         if (enabled) {
-            // Hide default opening skipper
-            var defaultSkipper = createStyleElement("hideDefaultSkipper");
-            defaultSkipper.innerHTML = ` div[data-testid="skipButton"], #skipButton { display:none; } `;
-
-
             // Openings need to be detected from main page content-script to avoid CORS restrictions when accessing subtitles links
             const opList = (await MessageAPI.sendToContentScripts("detectOpenings", { openingDuration, videoDuration: video.duration }));
+
+            // Hide default opening skipper if any opening is found
+            if (opList.length != 0) {
+                var defaultSkipper = createStyleElement("hideDefaultSkipper");
+                defaultSkipper.innerHTML = ` div[data-testid="skipButton"], #skipButton { display:none; } `;
+            }
 
             // Create a new skipper for each opening
             opList.forEach((op, index) => {
@@ -47,7 +48,7 @@ export default class SkipperManager {
         // Listen to the video player timeupdate, and display the opening skipper if it is the right time
         function startListeningVideoPlayer(openings, opDuration) {
             openingList = openings; // Now used as a global variable
-            var remainingTimeSec;
+            var remainingTimeSec, expectedTimeSec;
 
             video.addEventListener("timeupdate", function () {
                 var time = Math.round(this.currentTime);
@@ -61,6 +62,8 @@ export default class SkipperManager {
                         const remainingTime = new Date(remainingTimeSec * 1000).toISOString().substring(14, 19);
                         crpSkipper.querySelector('#' + skipperTimerId).innerText = `(${remainingTime})`;    // Update remaining time
 
+                        expectedTimeSec = video.currentTime + ~~remainingTimeSec;   // Time expected when the user click on the skipper
+
                         if (op.handler === "none") { enableSkipper(); } // Enable if not handled yet
                     }
                     else if (op.handler !== "none") {
@@ -68,7 +71,6 @@ export default class SkipperManager {
                     }
 
                     function enableSkipper() {
-
                         op.handler = "initializing";    // Prevent multiple handlings at the same time
                         crpSkipper.style.visibility = "visible";
                         crpSkipper.style.opacity = 1;   // Force the skipper to be displayed for a moment
@@ -83,14 +85,26 @@ export default class SkipperManager {
                     }
 
                     function disableSkipper() {
+                        removeSkipperEvents();
+
                         op.handler = "none";    // Stop handling
                         crpSkipper.style.opacity = 0;
                         setTimeout(() => { crpSkipper.style.visibility = 'collapse'; }, 300);   // Wait for opacity transition (0.3s)
                     }
 
+                    /* --- Events --- */
+
+                    function click() { video.currentTime = expectedTimeSec }
+                    function mouseover() { crpSkipper.style.opacity = 1 }
+
                     function addSkipperEvents() {
-                        crpSkipper.addEventListener('click', () => { video.currentTime += ~~remainingTimeSec });    // Skip the opening
-                        crpSkipper.addEventListener('mouseover', () => { crpSkipper.style.opacity = 1 });   // Don't hide on hover
+                        crpSkipper.addEventListener('click', click);    // Skip the opening
+                        crpSkipper.addEventListener('mouseover', mouseover);   // Don't hide on hover
+                    }
+
+                    function removeSkipperEvents() {
+                        crpSkipper.removeEventListener('click', click);
+                        crpSkipper.removeEventListener('mouseover', mouseover);
                     }
                 });
             }, false);
