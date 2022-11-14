@@ -120,8 +120,10 @@ async function initPlayerTools() {
     // Sound booster button (https://developer.mozilla.org/en-US/docs/Web/API/AudioContext/createMediaElementSource)
     soundBooster = new PlayerTool('soundBoosterOff', toolClasses,
         soundBoosterEnabled ? 'soundBoosterOn.svg' : 'soundBoosterOff.svg', { size: 27 }).tool;
-    const soundMultiplier = await MessageAPI.getStorage('soundMultiplier');
-    soundBooster.addEventListener("click", () => {
+    
+    soundBooster.addEventListener("click", async () => {
+        const soundMultiplier = await MessageAPI.getStorage('soundMultiplier');
+
         if (!soundBoosterInitialized) {
             initSoundBooster();
         }

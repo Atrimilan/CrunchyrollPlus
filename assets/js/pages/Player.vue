@@ -10,10 +10,7 @@
 
             <div class="tool">
                 <SwitchButton v-if="item.id==='playerThumbnail'" :isChecked=playerThumbnailState @switched="togglePlayerThumbnail($event)" />
-                <div v-else-if="item.id==='soundMultiplier'" class="sliderWithInfo">
-                    <RangeSlider ref="soundMultiplier" :min=0 :max=40 :value=soundMultiplier @selected="soundMultiplierSelected($event)" @isChoosing="soundMultiplierChoosing($event)" />
-                    <InfoArea :text="soundGainInfo.toFixed(1)" />
-                </div>
+                <FloatSlider v-else-if="item.id==='soundMultiplier'" :min=0 :max=40 :value="soundMultiplier" @selected="soundMultiplierSelected($event)" />
                 <SwitchButton v-if="item.id==='crpOpeningSkipper'" :isChecked=crpOpeningSkipper @switched="toggleCRPSKipper($event)" />
                 <TimeInput v-else-if="item.id==='openingDuration'" :timeInSeconds=openingDuration @selected="setOpeningDuration($event)"/>
             </div>
@@ -30,16 +27,14 @@
 <script>
 import MessageAPI from '../classes/message-api.js';
 import SwitchButton from "./components/SwitchButton.vue";
-import RangeSlider from "./components/RangeSlider.vue";
-import InfoArea from "./components/InfoArea.vue";
+import FloatSlider from "./components/FloatSlider.vue";
 import TimeInput from "./components/TimeInput.vue";
 
 export default {
     name: "Player",
     components: {
         SwitchButton,
-        RangeSlider,
-        InfoArea,
+        FloatSlider,
         TimeInput
     },
     data() {
@@ -52,7 +47,6 @@ export default {
             ],
             playerThumbnailState: true,
             soundMultiplier: 0,
-            soundGainInfo: 1,
             crpOpeningSkipper: true,
             openingDuration: 90 // 1:30 in seconds
         };
@@ -64,9 +58,6 @@ export default {
         async togglePlayerThumbnail(status) {
             chrome.storage.sync.set({ showPlayerThumbnail: status });
             await MessageAPI.sendToContentScripts("togglePlayerThumbnail", { state: status });
-        },
-        soundMultiplierChoosing(value){
-            this.soundGainInfo = value / 10  + 1;
         },
         soundMultiplierSelected(value){
             chrome.storage.sync.set({ soundMultiplier: value });
@@ -83,10 +74,8 @@ export default {
         // Components need to be initialized in the Popup to their current status
         // They must be initialized asynchronously, <input> are not updated if the result is not awaited
         (async () => {
-            //this.playerThumbnailState = (await chrome.runtime.sendMessage({ type: "showPlayerThumbnail" })).message;
             this.playerThumbnailState = await MessageAPI.getStorage("showPlayerThumbnail");
             this.soundMultiplier = parseInt(await MessageAPI.getStorage("soundMultiplier"));
-            this.soundGainInfo = this.soundMultiplier / 10  + 1;
             const { enabled, openingDuration } = await MessageAPI.getStorage("crpSkipper");
             this.crpOpeningSkipper = enabled;
             this.openingDuration = parseInt(openingDuration);
@@ -109,14 +98,4 @@ export default {
     
 @import "../../sass/list-items.scss";
 
-.sliderWithInfo {
-    width: fit-content;
-    > * {
-        display: inline-block;
-        vertical-align: middle;
-    }
-    :deep(textarea) {
-        margin-left: 5px;
-    }
-}
 </style>

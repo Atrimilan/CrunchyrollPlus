@@ -894,30 +894,30 @@ function initPlayerTools() {
 }
 
 function _initPlayerTools() {
-  _initPlayerTools = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee2() {
-    var toolClasses, moveBackwardTime, moveForwardTime, soundMultiplier;
-    return _regeneratorRuntime().wrap(function _callee2$(_context2) {
+  _initPlayerTools = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee3() {
+    var toolClasses, moveBackwardTime, moveForwardTime;
+    return _regeneratorRuntime().wrap(function _callee3$(_context3) {
       while (1) {
-        switch (_context2.prev = _context2.next) {
+        switch (_context3.prev = _context3.next) {
           case 0:
             toolClasses = ['crpTools', "r-1ozmr9b"]; // Move backward button
 
             moveBackward = new _classes_player_tool_js__WEBPACK_IMPORTED_MODULE_0__["default"]('moveBackward', toolClasses, 'moveBackward.svg').tool;
-            _context2.next = 4;
+            _context3.next = 4;
             return _classes_message_api_js__WEBPACK_IMPORTED_MODULE_1__["default"].getStorage('moveBackwardTime');
 
           case 4:
-            moveBackwardTime = _context2.sent;
+            moveBackwardTime = _context3.sent;
             moveBackward.addEventListener("click", function () {
               video.currentTime -= ~~moveBackwardTime;
             }); // Move forward button
 
             moveForward = new _classes_player_tool_js__WEBPACK_IMPORTED_MODULE_0__["default"]('moveForward', toolClasses, 'moveForward.svg').tool;
-            _context2.next = 9;
+            _context3.next = 9;
             return _classes_message_api_js__WEBPACK_IMPORTED_MODULE_1__["default"].getStorage('moveForwardTime');
 
           case 9:
-            moveForwardTime = _context2.sent;
+            moveForwardTime = _context3.sent;
             moveForward.addEventListener("click", function () {
               video.currentTime += ~~moveForwardTime;
             }); // Sound booster button (https://developer.mozilla.org/en-US/docs/Web/API/AudioContext/createMediaElementSource)
@@ -925,35 +925,48 @@ function _initPlayerTools() {
             soundBooster = new _classes_player_tool_js__WEBPACK_IMPORTED_MODULE_0__["default"]('soundBoosterOff', toolClasses, soundBoosterEnabled ? 'soundBoosterOn.svg' : 'soundBoosterOff.svg', {
               size: 27
             }).tool;
-            _context2.next = 14;
-            return _classes_message_api_js__WEBPACK_IMPORTED_MODULE_1__["default"].getStorage('soundMultiplier');
+            soundBooster.addEventListener("click", /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee2() {
+              var soundMultiplier;
+              return _regeneratorRuntime().wrap(function _callee2$(_context2) {
+                while (1) {
+                  switch (_context2.prev = _context2.next) {
+                    case 0:
+                      _context2.next = 2;
+                      return _classes_message_api_js__WEBPACK_IMPORTED_MODULE_1__["default"].getStorage('soundMultiplier');
 
-          case 14:
-            soundMultiplier = _context2.sent;
-            soundBooster.addEventListener("click", function () {
-              if (!soundBoosterInitialized) {
-                initSoundBooster();
-              }
+                    case 2:
+                      soundMultiplier = _context2.sent;
 
-              if (!soundBoosterEnabled) {
-                // If disabled, boost gain with stored sound multiplier
-                gainNode.gain.value = 1 + soundMultiplier / 10;
-                soundBoosterEnabled = true;
-                soundBooster.firstChild.src = chrome.runtime.getURL("images/controls/soundBoosterOn.svg");
-              } else {
-                // If enabled, set gain value to 1
-                gainNode.gain.value = 1;
-                soundBoosterEnabled = false;
-                soundBooster.firstChild.src = chrome.runtime.getURL("images/controls/soundBoosterOff.svg");
-              }
-            });
+                      if (!soundBoosterInitialized) {
+                        initSoundBooster();
+                      }
 
-          case 16:
+                      if (!soundBoosterEnabled) {
+                        // If disabled, boost gain with stored sound multiplier
+                        gainNode.gain.value = 1 + soundMultiplier / 10;
+                        soundBoosterEnabled = true;
+                        soundBooster.firstChild.src = chrome.runtime.getURL("images/controls/soundBoosterOn.svg");
+                      } else {
+                        // If enabled, set gain value to 1
+                        gainNode.gain.value = 1;
+                        soundBoosterEnabled = false;
+                        soundBooster.firstChild.src = chrome.runtime.getURL("images/controls/soundBoosterOff.svg");
+                      }
+
+                    case 5:
+                    case "end":
+                      return _context2.stop();
+                  }
+                }
+              }, _callee2);
+            })));
+
+          case 13:
           case "end":
-            return _context2.stop();
+            return _context3.stop();
         }
       }
-    }, _callee2);
+    }, _callee3);
   }));
   return _initPlayerTools.apply(this, arguments);
 }
