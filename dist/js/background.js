@@ -21,7 +21,10 @@ chrome.runtime.onInstalled.addListener(function () {
   }); // Log existing storage data to the console
 
   InitStorage();
-}); // Initialize default storage settings
+});
+/**
+ * Initialize default storage settings
+ */
 
 function InitStorage() {
   return _InitStorage.apply(this, arguments);
@@ -56,7 +59,7 @@ function _InitStorage() {
               'soundMultiplier': result.soundMultiplier === undefined ? 10 : result.soundMultiplier,
               // Increase video player's sound
               'crpSkipper': result.crpSkipper === undefined ? {
-                enabled: true,
+                enabled: false,
                 openingDuration: 90
               } : result.crpSkipper
             });
@@ -74,28 +77,44 @@ function _InitStorage() {
 function ResetStorage() {
   chrome.storage.sync.clear();
   InitStorage();
-} // On new updated/activated tab, toggle Popup if the current URL is a Crunchyroll URL
+}
 
-
-chrome.tabs.onActivated.addListener(function () {
-  chrome.tabs.query({
-    currentWindow: true,
-    active: true
-  }, function (tabs) {
-    togglePopup(tabs[0].url);
+chrome.tabs.onActivated.addListener(function (activeInfo) {
+  chrome.tabs.get(activeInfo.tabId, function (tab) {
+    onTabChange(tab);
   });
 });
 chrome.tabs.onUpdated.addListener(function (tabId, changeInfo, tab) {
-  togglePopup(tab.url);
+  onTabChange(tab);
 });
 
-function togglePopup(tabUrl) {
-  chrome.action.setPopup({
-    // Allow Popup on https://beta.crunchyroll.com and https://www.crunchyroll.com
-    popup: /^https:\/\/(www|beta).crunchyroll.com/.test(tabUrl) ? "../default_popup.html" : ""
-  });
+function onTabChange(_x) {
+  return _onTabChange.apply(this, arguments);
 } // Listen for messages from popup or content-script, and return the corresponding result
 
+
+function _onTabChange() {
+  _onTabChange = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee3(tab) {
+    var isCrunchyroll;
+    return _regeneratorRuntime().wrap(function _callee3$(_context3) {
+      while (1) {
+        switch (_context3.prev = _context3.next) {
+          case 0:
+            isCrunchyroll = /^https:\/\/(www|beta).crunchyroll.com/.test(tab.url);
+            chrome.action.setPopup({
+              // Allow Popup on https://beta.crunchyroll.com and https://www.crunchyroll.com
+              popup: isCrunchyroll ? "../default_popup.html" : ""
+            });
+
+          case 2:
+          case "end":
+            return _context3.stop();
+        }
+      }
+    }, _callee3);
+  }));
+  return _onTabChange.apply(this, arguments);
+}
 
 chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
   var _parameters;
@@ -143,7 +162,7 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
           }, _callee);
         }));
 
-        return function (_x) {
+        return function (_x2) {
           return _ref.apply(this, arguments);
         };
       }());

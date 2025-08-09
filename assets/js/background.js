@@ -4,7 +4,9 @@ chrome.runtime.onInstalled.addListener(() => {
     InitStorage();
 });
 
-// Initialize default storage settings
+/**
+ * Initialize default storage settings
+ */
 async function InitStorage() {
     const result = await chrome.storage.sync.get();
     chrome.storage.sync.set({   // Set a default value if not set yet
@@ -15,7 +17,7 @@ async function InitStorage() {
         'showPlayerThumbnail': (result.showPlayerThumbnail === undefined) ? true : result.showPlayerThumbnail,  // Progress bar thumbnail
         'avatarFavicon': (result.avatarFavicon === undefined) ? false : result.avatarFavicon, // Use avatar as favicon
         'soundMultiplier': (result.soundMultiplier === undefined) ? 10 : result.soundMultiplier,   // Increase video player's sound
-        'crpSkipper': (result.crpSkipper === undefined) ? { enabled: true, openingDuration: 90 } : result.crpSkipper,
+        'crpSkipper': (result.crpSkipper === undefined) ? { enabled: false, openingDuration: 90 } : result.crpSkipper,
     });
 }
 
@@ -24,15 +26,17 @@ function ResetStorage() {
     InitStorage();
 }
 
-// On new updated/activated tab, toggle Popup if the current URL is a Crunchyroll URL
-chrome.tabs.onActivated.addListener(() => {
-    chrome.tabs.query({ currentWindow: true, active: true }, (tabs) => { togglePopup(tabs[0].url) });
+chrome.tabs.onActivated.addListener((activeInfo) => {
+    chrome.tabs.get(activeInfo.tabId, (tab) => { onTabChange(tab) });
 });
-chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => { togglePopup(tab.url) });
 
-function togglePopup(tabUrl) {
+chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => { onTabChange(tab) });
+
+async function onTabChange(tab) {
+    let isCrunchyroll = (/^https:\/\/(www|beta).crunchyroll.com/.test(tab.url));
+
     chrome.action.setPopup({    // Allow Popup on https://beta.crunchyroll.com and https://www.crunchyroll.com
-        popup: (/^https:\/\/(www|beta).crunchyroll.com/.test(tabUrl)) ? "../default_popup.html" : ""
+        popup: isCrunchyroll ? "../default_popup.html" : ""
     });
 }
 

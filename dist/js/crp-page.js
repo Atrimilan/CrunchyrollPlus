@@ -3220,7 +3220,7 @@ document.addEventListener('keydown', /*#__PURE__*/function () {
     return _ref.apply(this, arguments);
   };
 }(), false);
-/* 
+/**
  * Initialize CrunchyrollPlus
  * Load data from the chrome storage
  */
@@ -3244,34 +3244,30 @@ document.addEventListener('keydown', /*#__PURE__*/function () {
             _context2.t0.set.call(_context2.t0, "toggleThumbnails", _context2.t2);
 
             _context2.t3 = _classes_page_style_js__WEBPACK_IMPORTED_MODULE_2__["default"];
-            _context2.t4 = themeColorStyle;
-            _context2.next = 10;
+            _context2.next = 9;
             return _classes_message_api_js__WEBPACK_IMPORTED_MODULE_0__["default"].getStorage("avatarFavicon");
 
-          case 10:
-            _context2.t5 = _context2.sent;
-            _context2.t6 = {
-              themeColorStyle: _context2.t4,
-              state: _context2.t5
+          case 9:
+            _context2.t4 = _context2.sent;
+            _context2.t5 = {
+              state: _context2.t4
             };
 
-            _context2.t3.set.call(_context2.t3, "toggleAvatarFavicon", _context2.t6);
+            _context2.t3.set.call(_context2.t3, "toggleAvatarFavicon", _context2.t5);
 
-            _context2.t7 = _classes_page_style_js__WEBPACK_IMPORTED_MODULE_2__["default"];
-            _context2.t8 = themeColorStyle;
-            _context2.next = 17;
+            _context2.t6 = _classes_page_style_js__WEBPACK_IMPORTED_MODULE_2__["default"];
+            _context2.next = 15;
             return _classes_message_api_js__WEBPACK_IMPORTED_MODULE_0__["default"].getStorage("themeColor");
 
-          case 17:
-            _context2.t9 = _context2.sent;
-            _context2.t10 = {
-              themeColorStyle: _context2.t8,
-              color: _context2.t9
+          case 15:
+            _context2.t7 = _context2.sent;
+            _context2.t8 = {
+              color: _context2.t7
             };
 
-            _context2.t7.set.call(_context2.t7, "updateThemeColor", _context2.t10);
+            _context2.t6.set.call(_context2.t6, "updateThemeColor", _context2.t8);
 
-          case 20:
+          case 18:
           case "end":
             return _context2.stop();
         }
@@ -3285,7 +3281,7 @@ document.addEventListener('keydown', /*#__PURE__*/function () {
 
   return InitPage;
 })()();
-/*
+/**
  * Listen for background-script messages
  */
 
@@ -3308,7 +3304,6 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
 
     case "themeColorUpdate":
       _classes_page_style_js__WEBPACK_IMPORTED_MODULE_2__["default"].set("updateThemeColor", {
-        themeColorStyle: themeColorStyle,
         color: parameters.themeColor
       });
       break;
@@ -3326,10 +3321,11 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
   }
 
   return true; // Tell Chrome that response is sent asynchronously
-}); // File can only be downloaded from the background script
-// -> File format seems not working for security reasons
+});
 
 function downloadFile(url, filename) {
+  // File can only be downloaded from the background script
+  // -> File format seems not working for security reasons
   _classes_message_api_js__WEBPACK_IMPORTED_MODULE_0__["default"].sendToBackground("downloadFile", {
     parameters: {
       url: url,

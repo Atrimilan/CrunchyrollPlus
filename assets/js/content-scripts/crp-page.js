@@ -17,7 +17,7 @@ document.addEventListener('keydown', async (event) => {
     }
 }, false);
 
-/* 
+/**
  * Initialize CrunchyrollPlus
  * Load data from the chrome storage
  */
@@ -26,16 +26,14 @@ document.addEventListener('keydown', async (event) => {
         state: await MessageAPI.getStorage("blurredThumbnails")
     });
     PageStyle.set("toggleAvatarFavicon", {
-        themeColorStyle,
         state: await MessageAPI.getStorage("avatarFavicon")
     });
     PageStyle.set("updateThemeColor", {
-        themeColorStyle,
         color: await MessageAPI.getStorage("themeColor")
     });
 })();
 
-/*
+/**
  * Listen for background-script messages
  */
 chrome.runtime.onMessage.addListener(
@@ -50,7 +48,7 @@ chrome.runtime.onMessage.addListener(
                 PageStyle.set("toggleAvatarFavicon", { state: parameters.state });
                 break;
             case "themeColorUpdate":
-                PageStyle.set("updateThemeColor", { themeColorStyle, color: parameters.themeColor });
+                PageStyle.set("updateThemeColor", { color: parameters.themeColor });
                 break;
             case "downloadSubtitles":
                 API.SUBTITLES.then((subtitles) => { downloadFile(subtitles.url, `subtitles_${subtitles.locale}.${subtitles.format}`); });
@@ -63,10 +61,10 @@ chrome.runtime.onMessage.addListener(
     }
 );
 
-// File can only be downloaded from the background script
-// -> File format seems not working for security reasons
 function downloadFile(url, filename) {
-    MessageAPI.sendToBackground("downloadFile", { parameters: { url, filename } })
+    // File can only be downloaded from the background script
+    // -> File format seems not working for security reasons
+    MessageAPI.sendToBackground("downloadFile", { parameters: { url, filename } });
 }
 
 async function detectOpenings({ openingDuration, videoDuration }, sendResponse) {

@@ -62,3 +62,7 @@
   font-weight: 500;
   font-size: 9px;
 }
+
+.crpSubMenu:hover {
+  background-color: rgb(35, 37, 43);
+}

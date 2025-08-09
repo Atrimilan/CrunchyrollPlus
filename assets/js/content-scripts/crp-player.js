@@ -21,9 +21,13 @@ var playerObserver = null;  // Observer
 var controlsContainer = null;   // Null for now, because the #vilosControlsContainer div is not loaded yet
 var controlsContainerObserver = null;   // Observer
 
+let settingsMenu = null;
+
 var themeColor;
 
-// Asynchronous player initializer
+/**
+ * Asynchronous player initializer
+ */
 (async function InitPlayer() {
 
     // Initialize styles
@@ -38,7 +42,9 @@ var themeColor;
     observeVideoPlayer();
 })();
 
-// Video player observer
+/**
+ * Video player observer
+ */
 function observeVideoPlayer() {
     const config = { attributes: false, childList: true, subtree: false };
 
@@ -47,10 +53,14 @@ function observeVideoPlayer() {
 
             if (mutation.addedNodes.length > 0) {
                 Array.from(mutation.addedNodes).map((node) => {
-                    if (node.id == 'vilosControlsContainer') {
+
+                    settingsMenu = node.querySelector('#velocity-settings-menu');
+                    if (!!settingsMenu) {
+                        onSettingsMenuOpen();
+                    }
+                    else if (node.id == 'vilosControlsContainer') {
                         controlsContainer = node;
 
-                        console.clear();
                         console.log("%c[Crunchyroll PLUS]", `color: #ea2600`);
 
                         if (controlsContainer.firstChild.hasChildNodes()) {
@@ -69,6 +79,9 @@ function observeVideoPlayer() {
                     if (node.id == 'vilosControlsContainer' && controlsContainerObserver != null) {
                         controlsContainerObserver.disconnect(); // Stop observing controls when vilosControlsContainer is destroyed
                     }
+                    // else if (!!node.querySelector('#velocity-settings-menu')) {
+                    //     settingsMenu = null;
+                    // }
                 });
             }
         });
@@ -80,8 +93,9 @@ function observeVideoPlayer() {
     }
 }
 
-// Default Crunchyroll controls observer
-var isMenuOpen = false;
+/**
+ * Default Crunchyroll controls observer
+ */
 function observeControlsContainer() {
     const config = { attributes: false, childList: true, subtree: false };
 
@@ -89,10 +103,8 @@ function observeControlsContainer() {
         mutations.forEach((mutation) => {
             if (mutation.type == 'childList' && mutation.addedNodes.length > 0) {
                 if (mutation.addedNodes[0].hasChildNodes()) {
-                    isMenuOpen = true;
                     loadCrpTools();
                 } else {
-                    isMenuOpen = false;
                     destroyCrpTools();
                 }
             }
@@ -103,7 +115,9 @@ function observeControlsContainer() {
 
 var moveBackward, moveForward, soundBooster;
 
-// Crunchyroll PLUS player initializer (colors, buttons, etc.)
+/**
+ * Crunchyroll PLUS player initializer (colors, buttons, etc.)
+ */
 async function initPlayerTools() {
     const toolClasses = ['crpTools', "r-1ozmr9b"];
 
@@ -120,7 +134,7 @@ async function initPlayerTools() {
     // Sound booster button (https://developer.mozilla.org/en-US/docs/Web/API/AudioContext/createMediaElementSource)
     soundBooster = new PlayerTool('soundBoosterOff', toolClasses,
         soundBoosterEnabled ? 'soundBoosterOn.svg' : 'soundBoosterOff.svg', { size: 27 }).tool;
-    
+
     soundBooster.addEventListener("click", async () => {
         const soundMultiplier = await MessageAPI.getStorage('soundMultiplier');
 
@@ -159,10 +173,48 @@ function destroyCrpTools() {
     SkipperManager.openingSkippersVisible(false);
 }
 
+function onSettingsMenuOpen() {
+    let audioSubMenu = settingsMenu.querySelector("div[data-testid='vilos-settings_audio_track_submenu']");
+
+    let playbackSpeedSubMenu = audioSubMenu.parentNode.appendChild(audioSubMenu.cloneNode(true));
+    playbackSpeedSubMenu.id = 'playbackSpeedSubMenu';
+    playbackSpeedSubMenu.removeAttribute("data-testid");
+    playbackSpeedSubMenu.classList.add("crpSubMenu");
+
+
+    let test = document.createElement("div");
+    test.innerHTML = `
+    <div tabindex="0" class="css-1dbjc4n r-1loqt21 r-1otgn73" data-testid="vilos-settings_back_button">
+        <div class="css-1dbjc4n r-1awozwy r-18u37iz r-1wtj0ep r-b5h31w r-1ah4tor" style="height: 42px;">
+            <div class="css-1dbjc4n r-1awozwy r-18u37iz">
+                <div tabindex="0" class="css-1dbjc4n r-1mlwlqe r-1udh08x r-417010"
+                    style="height: 24px; margin-left: -2px; transform: scaleX(1); width: 24px;">
+                    <div class="css-1dbjc4n r-1niwhzg r-vvn4in r-u6sd8q r-4gszlv r-1p0dtai r-1pi2tsx r-1d2f490 r-u8s1d r-zchlnj r-ipm5af r-13qz1uu r-1wyyakw"
+                        style="background-image: url(&quot;data:image/svg+xml;utf8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%3E%3Cpath%20fill%3D%22%23FFF%22%20fill-rule%3D%22evenodd%22%20d%3D%22M15.4%2016.6L14%2018l-6-6%206-6%201.4%201.4-4.6%204.6z%22%3E%3C%2Fpath%3E%3C%2Fsvg%3E&quot;);">
+                    </div><img alt="" draggable="false"
+                        src="data:image/svg+xml;utf8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%3E%3Cpath%20fill%3D%22%23FFF%22%20fill-rule%3D%22evenodd%22%20d%3D%22M15.4%2016.6L14%2018l-6-6%206-6%201.4%201.4-4.6%204.6z%22%3E%3C%2Fpath%3E%3C%2Fsvg%3E"
+                        class="css-9pa8cd">
+                </div>
+                <div dir="auto" class="css-901oao r-jwli3a"
+                    style="font-family: Lato; font-size: 18px; line-height: 26px; margin-left: 6px;">Audio</div>
+            </div>
+        </div>
+    </div>`;
+
+
+    playbackSpeedSubMenu.addEventListener('click', () => {
+        console.log("Playback Speed Sub Menu");
+        audioSubMenu.parentNode.appendChild(test);
+    });
+
+}
+
 var soundBoosterInitialized = false, soundBoosterEnabled = false;
 var audioCtx = null, gainNode = null, source = null;
 
-// Initialize sound booster variables
+/**
+ * Initialize sound booster variables
+ */
 function initSoundBooster() {
     audioCtx = new AudioContext();
     source = audioCtx.createMediaElementSource(video);
@@ -173,7 +225,11 @@ function initSoundBooster() {
     soundBoosterInitialized = true;
 }
 
-// Change the playbar color (watched time bar and reticle)
+/**
+ * Change the playbar color (watched time bar and reticle)
+ * 
+ * @param {string} themeColor Hexadecimal color (with #)
+ */
 function changePlayBarColor(themeColor) {
     // Note: playerPointer and watchedTime "style" properties cannot be changed because it is automatically updated by the player
     // This is why child nodes are created, while their parent's visibility is set to "hidden"
@@ -199,7 +255,11 @@ function changePlayBarColor(themeColor) {
 
 var volumeObserver = null;
 
-// Change the volume knob color (requires a MutationObserver because it is not initially loaded)
+/**
+ * Change the volume knob color (requires a MutationObserver because it is not initially loaded)
+ * 
+ * @param {string} themeColor Hexadecimal color (with #)
+ */
 function changeVolumeSelectorColor(themeColor) {
     const volumeButton = controlsContainer.querySelector("[data-testid='vilos-volume_container']");
     const config = { attributes: false, childList: true, subtree: false };
@@ -221,7 +281,9 @@ function changeVolumeSelectorColor(themeColor) {
     volumeObserver.observe(volumeButton, config);
 }
 
-// Messages received from Popup
+/**
+ * Messages received from Popup
+ */
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     const { type, parameters } = request;
 
@@ -235,7 +297,11 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
 var loadSpinner = document.querySelectorAll('div[data-testid="vilos-loading"] path');
 
-// Change loading spinner color to the stored theme color
+/**
+ * Change loading spinner color to the stored theme color
+ * 
+ * @param {string} themeColor Hexadecimal color (with #)
+ */
 function setLoadingSpinnerColor(themeColor) {
     loadSpinner.forEach(element => { element.style.stroke = themeColor });
 };
